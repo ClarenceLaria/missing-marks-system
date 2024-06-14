@@ -1,7 +1,7 @@
 import Image from "next/image";
 import AuthForm from "./Components/AuthForm";
 import Students from '@/public/images/graduation.jpg'
-import Logo from '@/public/images/logo.jpg'
+import Logo from '@/public/images/logo.png'
 
 export default function Home() {
   return (
