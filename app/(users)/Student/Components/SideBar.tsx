@@ -10,11 +10,11 @@ export default function SideNav() {
 
   const links = [
     
-    { name: 'Home', href: '/', icon: HomeIcon },
-    { name: 'Submitted', href: '/', icon: FolderIcon },
-    { name: 'Drafts', href: '/', icon: ClipboardDocumentListIcon },
-    { name: 'Create Submission', href: '/', icon: PlusCircleIcon },
-    { name: 'Help', href: '/', icon: QuestionMarkCircleIcon },
+    { name: 'Home', href: '/Student/home', icon: HomeIcon },
+    { name: 'Reported Missing Marks', href: '/Student/reported', icon: FolderIcon },
+    { name: 'Drafts', href: '/Student/drafts', icon: ClipboardDocumentListIcon },
+    { name: 'Create a Report', href: '/Student/create', icon: PlusCircleIcon },
+    { name: 'Help', href: '/Student/help', icon: QuestionMarkCircleIcon },
     { name: 'Logout', href: '/', icon: ArrowRightEndOnRectangleIcon },
 ];
 

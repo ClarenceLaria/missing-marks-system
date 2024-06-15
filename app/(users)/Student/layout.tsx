@@ -16,10 +16,10 @@ export default function StudentLayout({
     <>
       <div className="w-screen h-screen flex flex-col overflow-hidden">
           <div className="flex flex-row">
-            <div className="h-screen w-[15vw] bg-sky-400">
+            <div className="h-screen px-4 w-[15vw] bg-sky-400">
               <SideNav></SideNav>
             </div>
-            <div>{children}</div>
+            <div className="w-full h-full">{children}</div>
           </div>
       </div>
     </>
