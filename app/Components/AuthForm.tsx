@@ -54,18 +54,6 @@ export default function AuthForm() {
 //     }
 //   });
 
-  const handleGuestSubmit = async() =>{
-    const event = window.event;
-    if (!event) {
-      return;
-    }
-    event.preventDefault();
-
-    toggleLoading();
-
-    router.push('/Guest/Projects');   
-  }
-
   const handleSubmit = async () => {
     const event = window.event;
     if (!event) {
@@ -243,16 +231,6 @@ export default function AuthForm() {
             {variant === 'LOGIN' ? 'Sign up' : 'Login'}
           </div>
         </div>
-        <div className='mt-4 text-gray-100 '>
-            <button
-              type='submit'
-              onClick={() => handleGuestSubmit()}
-              disabled={disabled}
-              className={clsx(`flex justify-center rounded-md px-2 py-1 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 bg-sky-500 hover:bg-sky-600 focus-visible:outline-sky-600`,disabled&&'opacity-50 cursor-not-allowed')}
-            >
-              Access as Guest
-            </button>
-          </div>
       </div>
     </>
   );

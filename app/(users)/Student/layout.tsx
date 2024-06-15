@@ -1,10 +1,6 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
 import SideNav from "./Components/SideBar";
 import NavBar from "@/app/Components/NavBar";
-
-const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -17,20 +13,15 @@ export default function StudentLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <div className="w-screen h-screen flex flex-col overflow-hidden">
-          <div className="w-full bg-gray-200 mb-2">
-            <NavBar></NavBar>
-          </div>
+    <>
+      <div className="w-screen h-screen flex flex-col overflow-hidden">
           <div className="flex flex-row">
-            <div className="h-full w-[15vw] ">
+            <div className="h-screen w-[15vw] bg-sky-400">
               <SideNav></SideNav>
             </div>
             <div>{children}</div>
           </div>
-        </div>
-      </body>
-    </html>
+      </div>
+    </>
   );
 }

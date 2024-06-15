@@ -2,7 +2,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import {  FolderIcon,  ArrowRightEndOnRectangleIcon } from '@heroicons/react/24/outline';
+import { HomeIcon, FolderIcon,  ArrowRightEndOnRectangleIcon, QuestionMarkCircleIcon , ClipboardDocumentListIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
 
 export default function SideNav() {
@@ -10,11 +10,11 @@ export default function SideNav() {
 
   const links = [
     
-    { name: 'Home', href: '/', icon: FolderIcon },
-    { name: 'Submitted', href: '/', icon: ArrowRightEndOnRectangleIcon },
-    { name: 'Drafts', href: '/', icon: ArrowRightEndOnRectangleIcon },
-    { name: 'Create Submission', href: '/', icon: ArrowRightEndOnRectangleIcon },
-    { name: 'Help', href: '/', icon: ArrowRightEndOnRectangleIcon },
+    { name: 'Home', href: '/', icon: HomeIcon },
+    { name: 'Submitted', href: '/', icon: FolderIcon },
+    { name: 'Drafts', href: '/', icon: ClipboardDocumentListIcon },
+    { name: 'Create Submission', href: '/', icon: PlusCircleIcon },
+    { name: 'Help', href: '/', icon: QuestionMarkCircleIcon },
     { name: 'Logout', href: '/', icon: ArrowRightEndOnRectangleIcon },
 ];
 
