@@ -1,4 +1,5 @@
 import React from 'react'
+import { EyeIcon, TrashIcon } from '@heroicons/react/24/outline'
 
 export default function page() {
   return (
@@ -16,9 +17,6 @@ export default function page() {
                 <h1>Drafts</h1>
                 <h1>3</h1>
             </div>
-        </div>
-        <div className=''>
-            
         </div>
     </div>
   )
