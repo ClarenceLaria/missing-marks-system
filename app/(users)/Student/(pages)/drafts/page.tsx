@@ -1,6 +1,6 @@
 import React from 'react'
-import Search from '../Components/Search'
-import Card from '../Components/Card'
+import Search from '../../Components/Search'
+import Card from '../../Components/Card'
 
 export default function page() {
   return (
