@@ -10,7 +10,7 @@ export default function page() {
         <h1 className='text-4xl font-extrabold '>FREQUENTLY ASKED QUESTIONS</h1>
         <h1 className='font-bold opacity-55'>Do you need some help with something or do you have questions on some features?</h1>
       </div>
-      <div className='w-3/5 h-[55vh] bg-gray-50 mx-auto my-5 rounded-lg'>
+      <div className='w-3/5 bg-gray-50 mx-auto my-5 rounded-lg'>
         <FAQCard></FAQCard>
         <FAQCard></FAQCard>
         <FAQCard></FAQCard>
