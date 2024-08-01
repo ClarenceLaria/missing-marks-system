@@ -79,7 +79,7 @@ export default function page() {
                 label='Exam Period'
                 required
                 type='text'
-                placeholder='Enter Exam Period'
+                placeholder='Enter Exam Period e.g April'
                 disabled={false}
                 value={''}
                 // onChange={()=>{}}
@@ -90,7 +90,7 @@ export default function page() {
                 label='Academic Year'
                 required
                 type='text'
-                placeholder='Enter Academic Year'
+                placeholder='Enter Academic Year e.g 2021/2022'
                 disabled={false}
                 value={''}
                 // onChange={()=>{}}
