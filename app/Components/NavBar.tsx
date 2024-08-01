@@ -1,10 +1,15 @@
 'use client'
-import React from 'react'
+import React, { useState } from 'react'
 import Image from 'next/image'
 import dp from '@/public/images/ProfilePic.jpeg'
 import logo from '@/public/images/scilogo.png'
+import clsx from 'clsx'
 
-export default   function NavBar() {     
+export default   function NavBar() { 
+  const [visible, setVisible] = useState(false);
+  const toggle = () => {
+    setVisible((prev) => !prev);
+  }    
   return (
     <div className='w-full h-full flex items-center justify-around px-1 sm:px-4 lg:px-8 '>
       <div className='sm:w-1/4  flex justify-start   '>
@@ -14,7 +19,11 @@ export default   function NavBar() {
         Missing Mark System
       </div>
       <div className='w-1/4 flex justify-end max-[420px]:hidden md:text-lg lg:text-xl text-xs'>
-        <Image src={dp} alt='ProfilePic' className='w-11 h-11 rounded-full' width={1400} height={1400}></Image>
+        <Image src={dp} alt='ProfilePic' className='w-11 h-11 rounded-full cursor-pointer hover:opacity-70' onClick={toggle} width={1400} height={1400}></Image>
+      </div>
+      <div className={clsx(`absolute right-8 top-14 bg-gray-50 rounded-lg w-32 text-center text-sm`, !visible && 'hidden')}>
+        <h1 className='py-3 px-3 hover:bg-gray-100 cursor-pointer border-b-2'>Profile</h1>
+        <h1 className='py-3 px-3 hover:bg-gray-100 cursor-pointer'>Logout</h1>
       </div>
     </div>
   )
