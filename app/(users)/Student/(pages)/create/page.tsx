@@ -61,7 +61,7 @@ export default function page() {
                     label='Unit Name'
                     required
                     type='text'
-                    placeholder='Websystems and Technologies II'
+                    placeholder='Websystems and Technologies IIx'
                     disabled={false}
                     value={''}
                     // onChange={()=>{}}
