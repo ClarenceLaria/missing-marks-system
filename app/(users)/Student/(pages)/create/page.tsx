@@ -6,7 +6,6 @@ export default function page() {
   return (
     <div className='w-full h-full mx-10 my-5'>
         <h1 className='font-semibold text-2xl flex justify-center'>Make a Report over your missing mark</h1>
-        {/* <div className='mx-auto w-[25vw]'> */}
         <div className='grid grid-cols-3 w-full gap-y-10 my-10'>
             <div className='w-[18vw]'>
                 <label>Select Academic Year</label><br/>
@@ -19,6 +18,15 @@ export default function page() {
                     <option value="2019/2020">2019/2020</option>
                     <option value="2018/2019">2018/2019</option>
                     <option value="2017/2018">2017/2018</option>
+                </select>
+            </div>
+            <div className='w-[18vw]'>
+                <label>Select Year</label><br/>
+                <select className='my-2 w-[18vw] px-2 py-1 rounded' name="cars" id="cars" >
+                    <option value="SEMESTER1">Year 1</option>
+                    <option value="SEMESTER2">Year 2</option>
+                    <option value="SEMESTER3">Year 3</option>
+                    <option value="SEMESTER3">Year 4</option>
                 </select>
             </div>
             <div className='w-[18vw]'>
@@ -61,7 +69,7 @@ export default function page() {
                     label='Unit Name'
                     required
                     type='text'
-                    placeholder='Websystems and Technologies IIx'
+                    placeholder='Websystems and Technologies II'
                     disabled={false}
                     value={''}
                     // onChange={()=>{}}
