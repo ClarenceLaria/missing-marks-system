@@ -36,7 +36,7 @@ export default   function NavBar() {
         <Image src={dp} alt='ProfilePic' className='w-11 h-11 rounded-full cursor-pointer hover:opacity-70' onClick={toggle} width={1400} height={1400}></Image>
       </div>
       <div className={clsx(`absolute right-8 top-14 bg-gray-50 rounded-lg w-32 text-center text-sm`, !visible && 'hidden')}>
-        <Link href='/'>
+        <Link href='/Student/profile'>
         <h1 className='py-3 px-3 hover:bg-gray-100 cursor-pointer border-b-2'>Profile</h1>
         </Link>
         <h1 className='py-3 px-3 hover:bg-gray-100 cursor-pointer'>Logout</h1>
