@@ -76,9 +76,9 @@ export default function page() {
                     // onChange={()=>{}}
                 />  
             </div>
-            <div className='w-[15vw] mx-auto my-5'>
-                <Button type='submit' fullWidth={true} /*onClick={()=>{}}*/disabled={false}>Change Password</Button>
-            </div>   
+            {/* <div className='w-[15vw] mx-auto my-5'>
+                <Button type='submit' fullWidth={true} onClick={()=>{}} disabled={false}>Change Password</Button>
+            </div>    */}
         </div>
     </div>
   )
