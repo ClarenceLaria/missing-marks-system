@@ -1,0 +1,86 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  id          Int        @id @default(autoincrement())
+  email       String     @unique
+  firstName   String
+  secondName  String
+  phoneNumber String?    @unique // Optional for users
+  password    String
+  userType    UserType
+  regNo       String?     @unique
+  departments  Department[] // Admin can manage multiple departments
+  reports    MissingMarksReport[]
+
+}
+
+
+model School {
+  id          Int         @id @default(autoincrement())
+  name        String
+  abbreviation String
+  departments Department[]
+}
+
+model Department {
+  id         Int      @id @default(autoincrement())
+  name       String
+  school     School   @relation(fields: [schoolId], references: [id])
+  schoolId   Int
+  users      Users[]
+  user      Users     @relation(fields: [user], references: [id])
+  user      Int     // Reference to the Admin managing this department
+  courses    Course[]   // A department can have multiple courses
+}
+
+model Course {
+  id          Int      @id @default(autoincrement())
+  name        String
+  department  Department @relation(fields: [departmentId], references: [id])
+  departmentId Int
+  units       Unit[]    // A course can have multiple units
+}
+
+model Unit {
+  id            Int      @id @default(autoincrement())
+  name          String   // UnitName
+  code          String   // UnitCode
+  yearOfStudy   Int      // Year of Study (e.g., 1, 2, 3, etc.)
+  academicYear  String    // Academic Year (e.g., "2024/2025")
+  semester      String
+  course        Course   @relation(fields: [courseId], references: [id])
+  courseId      Int
+}
+
+
+model MissingMarksReport {
+  id           Int      @id @default(autoincrement())
+  unitName     String
+  unitCode     String
+  lecturerName String
+  academicYear String
+  examPeriod   String
+  yearOfStudy  Int
+  semester     Int
+  users        users?  @relation(fields: [user], references: [id])
+  user         Int
+}
+
+enum UserType {
+  ADMIN
+  LECTURER
+  STUDENT
+}
