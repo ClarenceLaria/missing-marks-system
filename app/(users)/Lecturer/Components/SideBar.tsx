@@ -13,7 +13,7 @@ export default function SideNav() {
     { name: 'Home', href: '/Lecturer', icon: HomeIcon },
     { name: 'Submissions', href: '/Lecturer/submissions', icon: FolderIcon },
     { name: 'Cleared Submissions', href: '/Lecturer/cleared', icon: DocumentCheckIcon },
-    { name: 'Forwarded', href: '/Lecturer/Forwarded', icon: PaperAirplaneIcon },
+    { name: 'Forwarded', href: '/Lecturer/forwarded', icon: PaperAirplaneIcon },
     { name: 'Logout', href: '/', icon: ArrowRightEndOnRectangleIcon },
 ];
 
