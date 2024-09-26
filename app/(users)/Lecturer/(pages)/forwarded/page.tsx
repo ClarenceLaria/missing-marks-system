@@ -7,7 +7,7 @@ export default function page() {
     <div className='w-full h-full'>
         <div className='p-10'>
             <h1 className='text-2xl font-bold'>Forwarded Missing Marks</h1>
-            <Search placeholder='Search for a Reported Missing mark...'></Search>
+            <Search placeholder='Search for a forwarded Missing mark...'></Search>
             <Table></Table>
         </div>
     </div>
