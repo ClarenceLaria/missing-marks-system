@@ -13,7 +13,7 @@ export default function SideNav() {
     { name: 'Home', href: '/Admin', icon: HomeIcon },
     { name: 'Users', href: '/Admin/users', icon: UserCircleIcon },
     { name: 'Pending', href: '/Admin/pending', icon: ClockIcon },
-    { name: 'Add Lecturer', href: '/Admin/add', icon: PlusCircleIcon },
+    { name: 'Add Lecturer', href: '/Admin/addLec', icon: PlusCircleIcon },
     { name: 'Logout', href: '/', icon: ArrowRightEndOnRectangleIcon },
 ];
 
