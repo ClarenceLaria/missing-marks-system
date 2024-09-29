@@ -7,8 +7,8 @@ export default function page({ params }: { params: { id: string } }) {
 
   return (
     <div className='w-full h-full my-5'>
-        <div className='w-1/4 mx-auto bg-white rounded-md'>
-        <div className='m-2'>
+        <div className='w-1/2 mx-auto bg-white rounded-md'>
+        <div className='m-2 p-3 grid grid-cols-2'>
             <Input
             id='FName'
             name='fullName'

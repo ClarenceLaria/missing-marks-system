@@ -15,14 +15,16 @@ datasource db {
 
 model Users {
   id          Int        @id @default(autoincrement())
+  createdAt   DateTime   @default(now())
   email       String     @unique
   firstName   String
   secondName  String
   phoneNumber String?    @unique // Optional for users
   password    String
-  userType    UserType
+  userType    UserType   @default(STUDENT)
   regNo       String?     @unique
-  departments  Department[] // Admin can manage multiple departments
+  department  Department? @relation(fields: [departmentId], references: [id]) // Admin manages one department
+  departmentId Int?  
   reports    MissingMarksReport[]
 
 }
