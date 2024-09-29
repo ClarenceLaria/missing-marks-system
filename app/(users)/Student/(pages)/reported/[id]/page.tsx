@@ -1,10 +1,7 @@
-'use client'
 import Input from '@/app/Components/Input'
 import React, { useState } from 'react'
 
 export default function page({ params }: { params: { id: string } }) {
-  const [disabled, setDisabled] = useState(false);
-
   return (
     <div className='w-full h-full my-5'>
         <div className='w-1/2 mx-auto bg-white rounded-md'>

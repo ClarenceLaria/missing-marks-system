@@ -85,6 +85,16 @@ const VirtuosoTableComponents: TableComponents<Data> = {
   )),
 };
 
+if (VirtuosoTableComponents.Scroller) {
+  VirtuosoTableComponents.Scroller.displayName = 'Scroller';
+}
+if (VirtuosoTableComponents.TableHead) {
+  VirtuosoTableComponents.TableHead.displayName = 'TableHead';
+}
+if (VirtuosoTableComponents.TableBody) {
+  VirtuosoTableComponents.TableBody.displayName = 'TableBody';
+}
+
 function fixedHeaderContent() {
   return (
     <TableRow>
