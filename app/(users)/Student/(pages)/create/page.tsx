@@ -4,15 +4,15 @@ import Input from '@/app/Components/Input'
 import React, { useEffect, useState } from 'react'
 
 export default function page() {
-    const [disabled, setDisabled] = useState(false);
-    const [loading, setisLoading] = useState(false);
+    // const [disabled, setDisabled] = useState(false);
+    // const [loading, setisLoading] = useState(false);
     
-    const toggleLoading = () => {
-        setisLoading((prevLoading) => !prevLoading);
-      };
-    useEffect(() => {
-        setDisabled(loading);
-      }, [loading]);
+    // const toggleLoading = () => {
+    //     setisLoading((prevLoading) => !prevLoading);
+    //   };
+    // useEffect(() => {
+    //     setDisabled(loading);
+    //   }, [loading]);
   return (
     <div className='w-full h-full mx-10 my-5'>
         <h1 className='font-semibold text-2xl flex justify-center'>Make a Report over your missing mark</h1>
@@ -58,6 +58,7 @@ export default function page() {
             <div className='w-[18vw]'>
                 <label>Select Unit Code</label><br/>
                 <select className='my-2 w-[18vw] px-2 py-1 rounded' name="cars" id="cars" >
+                    <option value="" disabled selected>SELECT A UNIT</option>
                     <option value="BIT313">BIT 313</option>
                     <option value="BIT314">BIT 314</option>
                     <option value="BIT316">BIT 316</option>
@@ -67,18 +68,18 @@ export default function page() {
                     <option value="BIT311">BIT 311</option>
                 </select>
             </div>
-            <div className='w-[18vw]'> 
-                <Input
-                    id='unitName'
-                    name='unitName'
-                    label='Unit Name'
-                    required
-                    type='text'
-                    placeholder='Websystems and Technologies II'
-                    disabled={disabled}
-                    value={''}
-                    // onChange={()=>{}}
-                    />
+            <div className='w-[18vw]'>
+                <label>Select Course Title</label><br/>
+                <select className='my-2 w-[18vw] px-2 py-1 rounded' name="cars" id="cars" >
+                    <option value="" disabled selected>SELECT A UNIT</option>
+                    <option value="WEBSYSTEMS AND TECHNOLOGIES II">WEBSYSTEMS AND TECHNOLOGIES II</option>
+                    <option value="SOFTWARE ENGINEERING">SOFTWARE ENGINEERING</option>
+                    <option value="OPERATIONS RESEARCH">OPERATIONS RESEARCH</option>
+                    <option value="INFORMATION ASSSURANCE AND SECURITY I">INFORMATION ASSSURANCE AND SECURITY I</option>
+                    <option value="INFORMATION MANAGEMENT">INFORMATION MANAGEMENT</option>
+                    <option value="DATABASE MANAGEMENT">DATABASE MANAGEMENT</option>
+                    <option value="NETWORK ADMIN AND MANAGEMENT">NETWORK ADMIN AND MANAGEMENT</option>
+                </select>
             </div>
             <div className='w-[18vw]'> 
                 <Input
@@ -88,8 +89,8 @@ export default function page() {
                     required
                     type='text'
                     placeholder='Enter Lecturer Name'
-                    disabled={disabled}
-                    value={''}
+                    disabled={false}
+                    // value={''}
                     onChange={()=>{}}
                 />
             </div>
