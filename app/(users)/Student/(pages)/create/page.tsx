@@ -1,8 +1,18 @@
+'use client'
 import Button from '@/app/Components/Button'
 import Input from '@/app/Components/Input'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 export default function page() {
+    const [disabled, setDisabled] = useState(false);
+    const [loading, setisLoading] = useState(false);
+    
+    const toggleLoading = () => {
+        setisLoading((prevLoading) => !prevLoading);
+      };
+    useEffect(() => {
+        setDisabled(loading);
+      }, [loading]);
   return (
     <div className='w-full h-full mx-10 my-5'>
         <h1 className='font-semibold text-2xl flex justify-center'>Make a Report over your missing mark</h1>
@@ -38,17 +48,12 @@ export default function page() {
                 </select>
             </div>
             <div className='w-[18vw]'>
-                <Input
-                    id='examPeriod'
-                    name='examPeriod'
-                    label='Exam Period'
-                    required
-                    type='text'
-                    placeholder='Enter Exam Period e.g April'
-                    disabled={false}
-                    value={''}
-                    // onChange={()=>{}}
-                />
+                <label>Select Semester</label><br/>
+                <select className='my-2 w-[18vw] px-2 py-1 rounded' name="cars" id="cars" >
+                    <option value="SEMESTER1">MAIN EXAMS</option>
+                    <option value="SEMESTER2">SPECIAL EXAMS</option>
+                    <option value="SEMESTER3">SUPLIMENTARY EXAMS</option>
+                </select>
             </div>
             <div className='w-[18vw]'>
                 <label>Select Unit Code</label><br/>
@@ -70,7 +75,7 @@ export default function page() {
                     required
                     type='text'
                     placeholder='Websystems and Technologies II'
-                    disabled={false}
+                    disabled={disabled}
                     value={''}
                     // onChange={()=>{}}
                     />
@@ -83,9 +88,9 @@ export default function page() {
                     required
                     type='text'
                     placeholder='Enter Lecturer Name'
-                    disabled={false}
+                    disabled={disabled}
                     value={''}
-                    // onChange={()=>{}}
+                    onChange={()=>{}}
                 />
             </div>
         </div>

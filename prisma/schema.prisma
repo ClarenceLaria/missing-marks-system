@@ -13,43 +13,52 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Users {
-  id          Int        @id @default(autoincrement())
+model Staff {
+  id          Int        @id @Unique @default(autoincrement())
   createdAt   DateTime   @default(now())
   email       String     @unique
   firstName   String
   secondName  String
-  phoneNumber String?    @unique // Optional for users
+  phoneNumber String?    @unique 
   password    String
-  userType    UserType   @default(STUDENT)
-  regNo       String?     @unique
-  department   Department?
-  departmentId Int?
-  departments Department[] @relation("StudentsDepartments")
+  userType    UserType   @default(LECTURER)
+  department  Department @relation(fields: [departmentId], references: [id])
+  departmentId Int 
+}
+
+model Student {
+  id          Int        @id @Unique @default(autoincrement())
+  createdAt   DateTime   @default(now())
+  email       String     @unique
+  firstName   String
+  secondName  String
+  password    String
+  regNo       String     @unique
+  department  Department @relation(fields: [departmentId], references: [id])
+  departmentId Int
   reports     MissingMarksReport[]
 }
 
 
 model School {
-  id          Int         @id @default(autoincrement())
+  id          Int         @id @Unique @default(autoincrement())
   name        String
   abbreviation String
   departments Department[]
 }
 
 model Department {
-  id         Int      @id @default(autoincrement())
+  id         Int      @id @Unique @default(autoincrement())
   name       String
   school     School   @relation(fields: [schoolId], references: [id])
   schoolId   Int
-  admin      Users?  @relation(fields: [adminId], references: [id])
-  adminId    Int?    @unique    // This enforces the one-to-one relationship
-  students   Users[]  @relation("StudentsDepartments") // Many students can belong to a department
+  students   Student[] 
+  staffS      Staff[]
   courses    Course[]   // A department can have multiple courses
 }
 
 model Course {
-  id          Int      @id @default(autoincrement())
+  id          Int      @id @Unique @default(autoincrement())
   name        String
   department  Department @relation(fields: [departmentId], references: [id])
   departmentId Int
@@ -57,7 +66,7 @@ model Course {
 }
 
 model Unit {
-  id            Int      @id @default(autoincrement())
+  id            Int      @id @Unique @default(autoincrement())
   name          String   // UnitName
   code          String   // UnitCode
   yearOfStudy   Int      // Year of Study (e.g., 1, 2, 3, etc.)
@@ -69,7 +78,7 @@ model Unit {
 
 
 model MissingMarksReport {
-  id           Int      @id @default(autoincrement())
+  id           Int      @id @Unique @default(autoincrement())
   unitName     String
   unitCode     String
   lecturerName String
@@ -77,12 +86,14 @@ model MissingMarksReport {
   examPeriod   String
   yearOfStudy  Int
   semester     Int
-  users        Users?  @relation(fields: [user], references: [id])
-  user         Int
+  student      Student  @relation(fields: [studentId], references: [id])
+  studentId    Int
 }
 
 enum UserType {
-  ADMIN
+  SUPERADMIN
+  DEAN
+  COD
   LECTURER
   STUDENT
 }

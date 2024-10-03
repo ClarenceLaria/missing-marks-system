@@ -26,21 +26,19 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        {/* <AuthContext> */}
+        <AuthContext>
           {/* <ToasterContext/> */}
-
           <div className='w-screen h-screen flex flex-col overflow-hidden gap-1'>
-      <div className={clsx(`w-full bg-gray-200 shadow-md h-[10vh]`, pathname === '/' && 'hidden')}>
-        <NavBar></NavBar>
-      </div>
-      <div className='w-full  max-h-full h-full flex flex-row'>
-        <div className='h-full overflow-y-auto w-full bg-gray-200 overflow-x-clip'>{children}
-        </div>
-      </div>
-   
-    </div>
-        {/* </AuthContext> */}
-        </body>
+            <div className={clsx(`w-full bg-gray-200 shadow-md h-[10vh]`, pathname === '/' && 'hidden')}>
+              <NavBar></NavBar>
+            </div>
+            <div className='w-full  max-h-full h-full flex flex-row'>
+              <div className='h-full overflow-y-auto w-full bg-gray-200 overflow-x-clip'>{children}
+              </div>
+            </div>
+          </div>
+        </AuthContext>
+      </body>
     </html>
   )
 }

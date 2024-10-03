@@ -2,7 +2,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import Input from './Input';
 import Button from './Button';
-// import { signIn, useSession } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import clsx from 'clsx'
@@ -34,25 +34,25 @@ export default function AuthForm() {
     setVariant((prevVariant) => (prevVariant === 'LOGIN' ? 'REGISTER' : 'LOGIN'));
   }, []);
 
-//   const session = useSession();
+  const session = useSession();
 
   const router = useRouter();
 
-//   useEffect(() => {
-//     if (session?.status === 'authenticated') {
-//       if (session.data.userType === 'ADMIN') {
-//         router.push('/Admin/Dashboard');
-//       } else if(session.data.userType === 'STUDENT') {
-//         router.push('/User/Dashboard');
-//       }
-//        else if(session.data.userType === 'MODERATOR') {
-//         router.push('/Moderator/Dashboard');
-//       }else{
-//         router.push('/SuperAdmin/Dashboard')
-//       }
+  // useEffect(() => {
+  //   if (session?.status === 'authenticated') {
+  //     if (session.data.userType === 'Lecturer') {
+  //       router.push('/Lecturer');
+  //     } else if(session.data.userType === 'STUDENT') {
+  //       router.push('/Student/home');
+  //     }
+  //      else if(session.data.userType === 'ADMIN') {
+  //       router.push('/Admin');
+  //     }else{
+  //       router.push('/SuperAdmin/Dashboard')
+  //     }
 
-//     }
-//   });
+  //   }
+  // });
 
   const handleSubmit = async () => {
     const event = window.event;
@@ -109,24 +109,24 @@ export default function AuthForm() {
       }
 
 
-    //   if (variant === 'LOGIN') {
-    //     toast.loading("Authenticating user...")
+      if (variant === 'LOGIN') {
+        toast.loading("Authenticating user...")
 
-    //     const callback = await signIn('credentials', {
-    //       ...formData,
-    //       redirect: false,
-    //     });
+        const callback = await signIn('credentials', {
+          ...formData,
+          redirect: false,
+        });
 
 
 
-    //     if (callback?.status === 401) {
-    //       toast.dismiss();
-    //       toast.error('Unauthorized');
-    //     } else if (callback?.ok && !callback?.error) {
-    //       toast.dismiss();
-    //       toast.success('Logged In');
-    //     }
-    //   }
+        if (callback?.status === 401) {
+          toast.dismiss();
+          toast.error('Unauthorized');
+        } else if (callback?.ok && !callback?.error) {
+          toast.dismiss();
+          toast.success('Logged In');
+        }
+      }
     } catch (error) {
       toast.dismiss();
       toast.error('Something went wrong');
