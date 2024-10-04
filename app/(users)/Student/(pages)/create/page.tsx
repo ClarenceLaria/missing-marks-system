@@ -4,15 +4,6 @@ import Input from '@/app/Components/Input'
 import React, { useEffect, useState } from 'react'
 
 export default function page() {
-    // const [disabled, setDisabled] = useState(false);
-    // const [loading, setisLoading] = useState(false);
-    
-    // const toggleLoading = () => {
-    //     setisLoading((prevLoading) => !prevLoading);
-    //   };
-    // useEffect(() => {
-    //     setDisabled(loading);
-    //   }, [loading]);
   return (
     <div className='w-full h-full mx-10 my-5'>
         <h1 className='font-semibold text-2xl flex justify-center'>Make a Report over your missing mark</h1>
