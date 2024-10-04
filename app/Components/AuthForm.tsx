@@ -90,19 +90,19 @@ export default function AuthForm() {
 
         toast.loading("Sending request...")
 
-        const preUser = await fetch ('/api/createPreuser',{
+        const user = await fetch ('/api/register',{
           method:'POST',
           body:JSON.stringify(formData)
         })
         toast.dismiss()
-        if(preUser?.ok && preUser?.status===200){
+        if(user?.ok && user?.status===200){
           toast.dismiss()
           toast.success('Request sent to admin successfully')
-        } else if(!preUser?.ok && preUser?.status===400){
+        } else if(!user?.ok && user?.status===400){
           toast.dismiss()
           toast.error('Something went wrong')
         }
-        else if(preUser?.status===402){
+        else if(user?.status===402){
           toast.dismiss()
           toast.error('User with credentials already exists')
         }

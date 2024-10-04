@@ -37,6 +37,7 @@ model Student {
   department  Department @relation(fields: [departmentId], references: [id])
   departmentId Int
   reports     MissingMarksReport[]
+  userType    UserType @default(STUDENT)
 }
 
 
