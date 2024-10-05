@@ -28,6 +28,7 @@ export default async function register(req: NextApiRequest, res: NextApiResponse
 
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
+    
 
     // Create a new user in the database
     const user = await prisma.user.create({
