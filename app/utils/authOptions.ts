@@ -13,16 +13,16 @@ enum UserType {
     SUPERADMIN = 'SUPERADMIN',
     COD = 'COD',
   }
-type Student = {
-    id: string,
-    firstName: string,
-    secondName: string,
-    registrationNumber: string,
-    hashedPassword: string,
-    email: string,
-    userType: UserType,
-    createdAt: Date,
-}
+// type Student = {
+//     id: number;
+//     firstName: string;
+//     secondName: string;
+//     regNo: string;
+//     password: string;
+//     email: string;
+//     userType: UserType;
+//     createdAt: Date;
+// }
 export const authOptions: AuthOptions = {
   session: {
     strategy: 'jwt', 
@@ -35,47 +35,46 @@ export const authOptions: AuthOptions = {
         email: { label: 'Email', type: 'email'},
         password: { label: 'Password', type: 'password' },
       },
-      async authorize(credentials): Promise<Student | null>  {
-        const user = await prisma.Student.findUnique({
-          where: { email: credentials?.email },
+      async authorize(credentials) {
+        const student = await prisma.student.findUnique({
+          where: { 
+            email: credentials?.email, 
+            password: credentials?.password 
+        },
           select:{
             id: true,
             firstName: true,
             secondName: true,
-            registrationNumber: true,
+            regNo: true,
             email: true,
             userType: true,
-            hashedPassword: true,
+            password: true,
             createdAt: true,
           },
         });
 
-        if (user) {
-          user.id = user.id.toString(); // Convert id to string
-        }
-
-        if (!user) {
+        if (!student) {
           throw new Error('User not found');
         }
 
         if (!credentials?.password) {
           throw new Error('Password is required');
         }
-        const isValid = await bcrypt.compare(credentials.password, user.password);
+        const isValid = await bcrypt.compare(credentials.password, student.password);
 
         if (!credentials.email && !isValid) {
           throw new Error('Incorrect email or password');
         }
 
         return {
-          id: user.id,
-          firstName: user.firstName,
-          secondName: user.secondName,
-          hashedPassword: user.hashedPassword,
-          registrationNumber: user.registrationNumber,
-          email: user.email,
-          userType: user.userType,
-          createdAt: user.createdAt,
+          id: student.id.toString(),
+          firstName: student.firstName,
+          secondName: student.secondName,
+          password: student.password,
+          regNo: student.regNo,
+          email: student.email,
+          userType: student.userType,
+          createdAt: student.createdAt,
         };
       },
     }),
@@ -85,18 +84,18 @@ export const authOptions: AuthOptions = {
 //     error: '/auth/error',   
 //   },
   callbacks: {
-    async jwt({ token, user }: { token: any, user?: any }) {
-      if (user) {
+    async jwt({ token, student }: { token: any, student?: any }) {
+      if (student) {
         return{
             ...token,
-            id: user.id,
-            firstName: user.firstName,
-            secondName: user.secondName,
-            hashedPassword: user.hashedPassword,
-            registrationNumber: user.registrationNumber,
-            email: user.email,
-            userType: user.userType,
-            createdAt: user.createdAt,
+            id: student.id,
+            firstName: student.firstName,
+            secondName: student.secondName,
+            password: student.password,
+            regNo: student.regNo,
+            email: student.email,
+            userType: student.userType,
+            createdAt: student.createdAt,
         }
       }
       return token;
@@ -104,7 +103,7 @@ export const authOptions: AuthOptions = {
     async session({ session, token }: { session: any, token: any }) {
       return{
         ...session,
-        user: token,
+        student: token,
       }
     },
   },
