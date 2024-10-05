@@ -1,4 +1,4 @@
-// Define UserType if it doesn't exist in @prisma/client
+import { UserType } from '@prisma/client';
 import NextAuth from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import prisma from '@/app/lib/prismadb';
@@ -6,23 +6,16 @@ import bcrypt from 'bcrypt';
 import { AuthOptions } from 'next-auth';
 import {PrismaAdapter} from '@next-auth/prisma-adapter';
 
-enum UserType {
-    STUDENT = 'STUDENT',
-    LECTURER = 'LECTURER',
-    ADMIN = 'ADMIN',
-    SUPERADMIN = 'SUPERADMIN',
-    COD = 'COD',
-  }
-// type Student = {
-//     id: number;
-//     firstName: string;
-//     secondName: string;
-//     regNo: string;
-//     password: string;
-//     email: string;
-//     userType: UserType;
-//     createdAt: Date;
-// }
+type Student = {
+    id: string;
+    firstName: string;
+    secondName: string;
+    regNo: string;
+    password: string;
+    email: string;
+    userType: UserType;
+    createdAt: Date;
+}
 export const authOptions: AuthOptions = {
   session: {
     strategy: 'jwt', 
@@ -35,8 +28,8 @@ export const authOptions: AuthOptions = {
         email: { label: 'Email', type: 'email'},
         password: { label: 'Password', type: 'password' },
       },
-      async authorize(credentials) {
-        const student = await prisma.student.findUnique({
+      async authorize(credentials: Record<'email' | 'password', string> | undefined): Promise<Student | null>  {
+        const student = await prisma.student.findUnique ({
           where: { 
             email: credentials?.email, 
             password: credentials?.password 
@@ -67,7 +60,7 @@ export const authOptions: AuthOptions = {
         }
 
         return {
-          id: student.id.toString(),
+          id: `${student.id}`,
           firstName: student.firstName,
           secondName: student.secondName,
           password: student.password,
