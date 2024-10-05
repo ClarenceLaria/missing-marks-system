@@ -14,7 +14,7 @@ datasource db {
 }
 
 model Staff {
-  id          Int        @id @Unique @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   createdAt   DateTime   @default(now())
   email       String     @unique
   firstName   String
@@ -27,7 +27,7 @@ model Staff {
 }
 
 model Student {
-  id          Int        @id @Unique @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   createdAt   DateTime   @default(now())
   email       String     @unique
   firstName   String
@@ -42,14 +42,14 @@ model Student {
 
 
 model School {
-  id          Int         @id @Unique @default(autoincrement())
+  id          Int         @id @default(autoincrement())
   name        String
   abbreviation String
   departments Department[]
 }
 
 model Department {
-  id         Int      @id @Unique @default(autoincrement())
+  id         Int      @id @default(autoincrement())
   name       String
   school     School   @relation(fields: [schoolId], references: [id])
   schoolId   Int
@@ -59,7 +59,7 @@ model Department {
 }
 
 model Course {
-  id          Int      @id @Unique @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   name        String
   department  Department @relation(fields: [departmentId], references: [id])
   departmentId Int
@@ -67,7 +67,7 @@ model Course {
 }
 
 model Unit {
-  id            Int      @id @Unique @default(autoincrement())
+  id            Int      @id @default(autoincrement())
   name          String   // UnitName
   code          String   // UnitCode
   yearOfStudy   Int      // Year of Study (e.g., 1, 2, 3, etc.)
@@ -79,7 +79,7 @@ model Unit {
 
 
 model MissingMarksReport {
-  id           Int      @id @Unique @default(autoincrement())
+  id           Int      @id @default(autoincrement())
   unitName     String
   unitCode     String
   lecturerName String

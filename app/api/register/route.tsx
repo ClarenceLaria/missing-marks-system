@@ -1,28 +1,51 @@
-import { NextResponse } from "next/server"
+import { NextApiRequest, NextApiResponse } from 'next';
+import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcrypt';
 
-export async function POST (req: Request) {
-    try {
-        const {fname, sname, email, password, regNo} = await req.json();
+const prisma = new PrismaClient();
 
-        console.log("Name: ", fname + " " + sname);
-        console.log("Email: ", email);
-        console.log("regNo: ", regNo);
-        // const res = await fetch('/api/register', {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //     },
-        //     body: JSON.stringify({
-        //         firstName: fname,
-        //         secondName: sname,
-        //         email: email,
-        //         regNo: regNo,
-        //         password: password,
-        //     }),
-        // });
+export default async function register(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ message: 'Method Not Allowed' });
+  }
 
-        return NextResponse.json({message: "user registered successfully"}, {status:201});
-    } catch (error) {
-        return NextResponse.json({message: "Error registering user"}, {status:500});
+  try {
+    const { firstName, secondName, email, password, registrationNumber, userType } = JSON.parse(req.body);
+
+    // Validate input
+    if (!firstName || !secondName || !email || !password || !registrationNumber || !userType) {
+      return res.status(400).json({ message: 'Missing required fields' });
     }
+
+    // Check if the user already exists
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (existingUser) {
+      return res.status(402).json({ message: 'User with credentials already exists' });
+    }
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create a new user in the database
+    const user = await prisma.user.create({
+      data: {
+        firstName,
+        secondName,
+        email,
+        password: hashedPassword,
+        registrationNumber,
+        userType,
+      },
+    });
+
+    // Return success response
+    return res.status(200).json({ message: 'User registered successfully', user });
+
+  } catch (error) {
+    console.error('Error in /api/register:', error);
+    return res.status(500).json({ message: 'Something went wrong' });
+  }
 }
