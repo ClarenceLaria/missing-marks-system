@@ -55,7 +55,7 @@ model Department {
   schoolId   Int
   students   Student[] 
   staffS      Staff[]
-  courses    Course[]   // A department can have multiple courses
+  courses    Course[]   
 }
 
 model Course {
@@ -63,15 +63,15 @@ model Course {
   name        String
   department  Department @relation(fields: [departmentId], references: [id])
   departmentId Int
-  units       Unit[]    // A course can have multiple units
+  units       Unit[]    
 }
 
 model Unit {
   id            Int      @id @default(autoincrement())
-  name          String   // UnitName
-  code          String   // UnitCode
-  yearOfStudy   Int      // Year of Study (e.g., 1, 2, 3, etc.)
-  academicYear  String    // Academic Year (e.g., "2024/2025")
+  name          String   
+  code          String   
+  yearOfStudy   Int      
+  academicYear  String    
   semester      String
   course        Course   @relation(fields: [courseId], references: [id])
   courseId      Int
