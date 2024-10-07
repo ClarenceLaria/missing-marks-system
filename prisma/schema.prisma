@@ -98,3 +98,14 @@ enum UserType {
   LECTURER
   STUDENT
 }
+
+enum ExamType{
+  MAIN
+  SPECIAL
+  SUPPLIMENTARY
+}
+
+enum Semester{
+  SEMESTER1
+  SEMESTER2
+}
