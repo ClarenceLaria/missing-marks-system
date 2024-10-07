@@ -84,29 +84,37 @@ export default function AuthForm() {
      
 
       if (variant === 'REGISTER') {
-
-        
-
-
-        toast.loading("Sending request...")
-
-        const user = await fetch ('/api/register',{
-          method:'POST',
-          body:JSON.stringify(formData)
-        })
-        toast.dismiss()
-        if(user?.ok && user?.status===200){
-          toast.dismiss()
-          toast.success('Request sent to admin successfully')
-        } else if(!user?.ok && user?.status===400){
-          toast.dismiss()
-          toast.error('Something went wrong')
-        }
-        else if(user?.status===402){
-          toast.dismiss()
-          toast.error('User with credentials already exists')
+        try {
+          toast.loading("Sending request...");
+      
+          // Send POST request to the server
+          const response = await fetch('/api/register', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData),
+          });
+      
+          toast.dismiss();
+      
+          // Check response status and act accordingly
+          if (response.ok && response.status === 200) {
+            toast.success('User Registered Successfully');
+          } else if (response.status === 400) {
+            toast.error('Something went wrong');
+          } else if (response.status === 402) {
+            toast.error('User with credentials already exists');
+          } else {
+            toast.error('Unexpected error occurred');
+          }
+        } catch (error) {
+          // Handle network or unexpected errors
+          toast.dismiss();
+          toast.error('Failed to send request. Please try again.');
         }
       }
+      
 
 
       if (variant === 'LOGIN') {

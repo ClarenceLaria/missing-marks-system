@@ -14,7 +14,7 @@ datasource db {
 }
 
 model Staff {
-  id          Int        @id @Unique @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   createdAt   DateTime   @default(now())
   email       String     @unique
   firstName   String
@@ -27,7 +27,7 @@ model Staff {
 }
 
 model Student {
-  id          Int        @id @Unique @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   createdAt   DateTime   @default(now())
   email       String     @unique
   firstName   String
@@ -42,36 +42,36 @@ model Student {
 
 
 model School {
-  id          Int         @id @Unique @default(autoincrement())
+  id          Int         @id @default(autoincrement())
   name        String
   abbreviation String
   departments Department[]
 }
 
 model Department {
-  id         Int      @id @Unique @default(autoincrement())
+  id         Int      @id @default(autoincrement())
   name       String
   school     School   @relation(fields: [schoolId], references: [id])
   schoolId   Int
   students   Student[] 
   staffS      Staff[]
-  courses    Course[]   // A department can have multiple courses
+  courses    Course[]   
 }
 
 model Course {
-  id          Int      @id @Unique @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   name        String
   department  Department @relation(fields: [departmentId], references: [id])
   departmentId Int
-  units       Unit[]    // A course can have multiple units
+  units       Unit[]    
 }
 
 model Unit {
-  id            Int      @id @Unique @default(autoincrement())
-  name          String   // UnitName
-  code          String   // UnitCode
-  yearOfStudy   Int      // Year of Study (e.g., 1, 2, 3, etc.)
-  academicYear  String    // Academic Year (e.g., "2024/2025")
+  id            Int      @id @default(autoincrement())
+  name          String   
+  code          String   
+  yearOfStudy   Int      
+  academicYear  String    
   semester      String
   course        Course   @relation(fields: [courseId], references: [id])
   courseId      Int
@@ -79,7 +79,7 @@ model Unit {
 
 
 model MissingMarksReport {
-  id           Int      @id @Unique @default(autoincrement())
+  id           Int      @id @default(autoincrement())
   unitName     String
   unitCode     String
   lecturerName String
@@ -97,4 +97,15 @@ enum UserType {
   COD
   LECTURER
   STUDENT
+}
+
+enum ExamType{
+  MAIN
+  SPECIAL
+  SUPPLIMENTARY
+}
+
+enum Semester{
+  SEMESTER1
+  SEMESTER2
 }
