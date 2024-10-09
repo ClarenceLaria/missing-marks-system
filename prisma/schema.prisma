@@ -24,6 +24,8 @@ model Staff {
   userType    UserType   @default(LECTURER)
   department  Department @relation(fields: [departmentId], references: [id])
   departmentId Int 
+  units       Unit   @relation(fields: [unitId], references: [id])
+  unitId      Int
 }
 
 model Student {
@@ -75,6 +77,7 @@ model Unit {
   semester      String
   course        Course   @relation(fields: [courseId], references: [id])
   courseId      Int
+  lecturer      Staff[]
 }
 
 
@@ -93,6 +96,7 @@ model MissingMarksReport {
 
 enum UserType {
   SUPERADMIN
+  ADMIN
   DEAN
   COD
   LECTURER
@@ -108,4 +112,5 @@ enum ExamType{
 enum Semester{
   SEMESTER1
   SEMESTER2
+  SEMESTER3
 }
