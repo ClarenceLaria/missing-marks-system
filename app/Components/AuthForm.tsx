@@ -3,14 +3,18 @@ import React, { useCallback, useEffect, useState } from 'react';
 import Input from './Input';
 import Button from './Button';
 import { signIn, useSession } from 'next-auth/react';
+import { Session } from 'next-auth';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import clsx from 'clsx'
-// import { getServerSession } from 'next-auth';
-// import { authOptions } from '@/utils/authUptions';
 
 
 type Variant = 'REGISTER' | 'LOGIN';
+declare module 'next-auth' {
+  interface Session {
+    userType?: string;
+  }
+}
 
 export default function AuthForm() {
   const [variant, setVariant] = useState<Variant>('LOGIN');
@@ -23,7 +27,7 @@ export default function AuthForm() {
     email: '',
     password: '',
     registrationNumber: '',
-    userType:'STUDENT'
+    // userType:'STUDENT'
   });
 
   const toggleLoading = () => {
@@ -38,21 +42,22 @@ export default function AuthForm() {
 
   const router = useRouter();
 
-  // useEffect(() => {
-  //   if (session?.status === 'authenticated') {
+  useEffect(() => {
+    if (session?.status === 'authenticated') {
   //     if (session.data.userType === 'Lecturer') {
   //       router.push('/Lecturer');
-  //     } else if(session.data.userType === 'STUDENT') {
-  //       router.push('/Student/home');
-  //     }
+  //     } else 
+      if(session.data.userType === 'STUDENT') {
+        router.push('/Student/home');
+      }
   //      else if(session.data.userType === 'ADMIN') {
   //       router.push('/Admin');
   //     }else{
   //       router.push('/SuperAdmin/Dashboard')
   //     }
 
-  //   }
-  // });
+    }
+  });
 
   const handleSubmit = async () => {
     const event = window.event;
@@ -67,13 +72,13 @@ export default function AuthForm() {
       if(formData.email === ''|| formData.email===null || formData.password === ''|| formData.password===null){
         toggleLoading();
         toast.error('Please fill all the fields')
-        throw new Error('Missing fields')
+        // throw new Error('Missing fields')
       }
     }else{
       if(formData.firstName === ''|| formData.firstName===null || formData.secondName === ''|| formData.secondName===null || formData.email === ''|| formData.email===null || formData.password === ''|| formData.password===null || formData.registrationNumber === ''|| formData.registrationNumber===null){
         toggleLoading();
         toast.error('Please fill all the fields')
-        throw new Error('Missing fields')
+        // throw new Error('Missing fields')
       }
     }
 
@@ -88,7 +93,7 @@ export default function AuthForm() {
           toast.loading("Sending request...");
       
           // Send POST request to the server
-          const response = await fetch('/api/register', {
+          const response = await fetch('/api/registerUser', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -97,14 +102,14 @@ export default function AuthForm() {
           });
       
           toast.dismiss();
-      
+
           // Check response status and act accordingly
-          if (response.ok && response.status === 200) {
+          if (response.ok && response.status === 200 || response.status === 201) {
             toast.success('User Registered Successfully');
           } else if (response.status === 400) {
             toast.error('Something went wrong');
-          } else if (response.status === 402) {
-            toast.error('User with credentials already exists');
+          } else if (response.status === 409) {
+            toast.error('User with these credentials already exists');
           } else {
             toast.error('Unexpected error occurred');
           }
