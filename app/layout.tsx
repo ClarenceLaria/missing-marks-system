@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import AuthContext from './context/AuthContext'
-// import ToasterContext from './context/ToasterContext'
+import ToasterContext from './context/ToasterContext'
 import { usePathname } from 'next/navigation'
 import clsx from 'clsx'
 import NavBar from './Components/NavBar'
@@ -27,7 +27,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <AuthContext>
-          {/* <ToasterContext/> */}
+          <ToasterContext/>
           <div className='w-screen h-screen flex flex-col overflow-hidden gap-1'>
             <div className={clsx(`w-full bg-gray-200 shadow-md h-[10vh]`, pathname === '/' && 'hidden')}>
               <NavBar></NavBar>

@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
-export default async function POST(req: Request) {
+export async function POST(req: Request) {
   if (req.method !== 'POST') {
     return new Response(JSON.stringify({ message: 'Method Not Allowed' }), { status: 405 });
   }
@@ -26,7 +26,7 @@ export default async function POST(req: Request) {
 
     if (existingUser) {
       return new Response(
-        JSON.stringify({ message: 'A user with this email already exists' }),
+        JSON.stringify({ message: 'A user with this credentials already exists' }),
         { status: 409 }
       );
     }
@@ -91,6 +91,7 @@ export default async function POST(req: Request) {
     );
   } catch (error) {
     console.error('Error in user registration:', error);
-    return new Response(JSON.stringify({ message: 'Internal Server Error' }), { status: 500 });
+    return new Response(JSON.stringify(
+      JSON.stringify({ message: 'Internal Server Error' })), { status: 500 });
   }
 }

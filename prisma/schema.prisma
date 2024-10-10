@@ -74,7 +74,7 @@ model Unit {
   code          String   
   yearOfStudy   Int      
   academicYear  String    
-  semester      String
+  semester      Semester
   course        Course   @relation(fields: [courseId], references: [id])
   courseId      Int
   lecturer      Staff[]
