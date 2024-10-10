@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
+import { NextResponse } from 'next/server';
 
 const prisma = new PrismaClient();
 
@@ -13,10 +14,11 @@ export async function POST(req: Request) {
 
     // Validate that all required fields are provided
     if (!firstName || !secondName || !email || !password || !registrationNumber) {
-      return new Response(
-        JSON.stringify({ message: 'All fields are required: firstName, secondName, email, password, registrationNumber' }),
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Please fill all the fields' }, { status: 400 });
+      // return new Response(
+      //   JSON.stringify({ message: 'All fields are required: firstName, secondName, email, password, registrationNumber' }),
+      //   { status: 400 }
+      // );
     }
 
     // Check if a user with the given email already exists
@@ -50,13 +52,14 @@ export async function POST(req: Request) {
     const prefix = registrationNumber.substring(0, 3).toUpperCase();
     if (prefix === 'SIT' || prefix === 'SIK') {
       departmentName = 'Information Technology';
-    } else {
+    } else if(prefix === 'COM' || prefix === 'ETS'){
       departmentName = 'Computer Science';
     }
 
-    const departmentId = departmentMap[departmentName];
+    const departmentId = departmentName ? departmentMap[departmentName] : undefined;
     if (!departmentId) {
-      return new Response(JSON.stringify({ message: 'Invalid registration number' }), { status: 400 });
+      return NextResponse.json({ error: 'Invalid registration number' }, { status: 400 });
+      // return new Response(JSON.stringify({ message: 'Invalid registration number' }), { status: 400 });
     }
     // Hash the password before saving it to the database
     const hashedPassword = await bcrypt.hash(password, 10);

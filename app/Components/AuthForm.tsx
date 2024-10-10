@@ -107,7 +107,8 @@ export default function AuthForm() {
           if (response.ok && response.status === 200 || response.status === 201) {
             toast.success('User Registered Successfully');
           } else if (response.status === 400) {
-            toast.error('Something went wrong');
+            const errorData = await response.json();
+            toast.error(errorData.error);
           } else if (response.status === 409) {
             toast.error('User with these credentials already exists');
           } else {
