@@ -39,7 +39,7 @@ export default function page() {
                 </select>
             </div>
             <div className='w-[18vw]'>
-                <label>Select Semester</label><br/>
+                <label>Select Exam Type</label><br/>
                 <select className='my-2 w-[18vw] px-2 py-1 rounded' name="cars" id="cars" >
                     <option value="SEMESTER1">MAIN EXAMS</option>
                     <option value="SEMESTER2">SPECIAL EXAMS</option>

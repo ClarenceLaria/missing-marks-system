@@ -24,8 +24,7 @@ model Staff {
   userType    UserType   @default(LECTURER)
   department  Department @relation(fields: [departmentId], references: [id])
   departmentId Int 
-  units       Unit   @relation(fields: [unitId], references: [id])
-  unitId      Int
+  units       Unit[]
 }
 
 model Student {
@@ -65,7 +64,7 @@ model Course {
   name        String
   department  Department @relation(fields: [departmentId], references: [id])
   departmentId Int
-  units       Unit[]    
+  units       UnitCourse[]    
 }
 
 model Unit {
@@ -73,13 +72,20 @@ model Unit {
   name          String   
   code          String   
   yearOfStudy   Int      
-  academicYear  String    
-  semester      Semester
-  course        Course   @relation(fields: [courseId], references: [id])
-  courseId      Int
-  lecturer      Staff[]
+  semester      Semester @default(SEMESTER1)
+  courses        UnitCourse[]
+  lecturer      Staff    @relation(fields: [lecturerId], references: [id])
+  lecturerId    Int
 }
 
+model UnitCourse {
+  unitId   Int
+  courseId Int
+  unit     Unit   @relation(fields: [unitId], references: [id])
+  course   Course @relation(fields: [courseId], references: [id])
+
+  @@id([unitId, courseId]) // Composite primary key
+}
 
 model MissingMarksReport {
   id           Int      @id @default(autoincrement())
@@ -89,7 +95,7 @@ model MissingMarksReport {
   academicYear String
   examPeriod   String
   yearOfStudy  Int
-  semester     Int
+  semester     Semester
   student      Student  @relation(fields: [studentId], references: [id])
   studentId    Int
 }
