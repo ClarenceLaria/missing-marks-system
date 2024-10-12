@@ -7,6 +7,7 @@ import clsx from 'clsx'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useSession } from 'next-auth/react'
+import { signOut } from 'next-auth/react'
 
 export default   function NavBar() { 
   const [visible, setVisible] = useState(false);
@@ -34,6 +35,10 @@ export default   function NavBar() {
   // } else if (session?.user.userType === 'ADMIN') {
   //   profileLink = '/Admin/profile';
   // }
+
+  const handleLogout = () => {
+    signOut({callbackUrl: '/'})
+  };
   return (
     <div className='w-full h-full flex items-center justify-around px-1 sm:px-4 lg:px-8 '>
       <div className='sm:w-1/4  flex justify-start   '>
@@ -49,7 +54,7 @@ export default   function NavBar() {
         <Link href={profileLink}>
         <h1 className='py-3 px-3 hover:bg-gray-100 cursor-pointer border-b-2'>Profile</h1>
         </Link>
-        <h1 className='py-3 px-3 hover:bg-gray-100 cursor-pointer'>Logout</h1>
+        <button className='py-3 px-3 hover:bg-gray-100 cursor-pointer' onClick={handleLogout}>Logout</button>
       </div>
     </div>
   )

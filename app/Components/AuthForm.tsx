@@ -64,6 +64,11 @@ export default function AuthForm() {
     }
   });
 
+  const isValidEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+  
   const handleSubmit = async () => {
     const event = window.event;
     if (!event) {
@@ -72,6 +77,11 @@ export default function AuthForm() {
     event.preventDefault();
 
     toggleLoading();
+    if (!isValidEmail(formData.email)) {
+      toggleLoading();
+      toast.error('Please enter a valid email address');
+      return;
+    }
 
     if (variant === 'LOGIN'){
       if(formData.email === ''|| formData.email===null || formData.password === ''|| formData.password===null){

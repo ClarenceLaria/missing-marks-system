@@ -73,8 +73,7 @@ model Unit {
   name          String   
   code          String   
   yearOfStudy   Int      
-  academicYear  String    
-  semester      Semester
+  semester      Semester @default(SEMESTER1)
   course        Course   @relation(fields: [courseId], references: [id])
   courseId      Int
   lecturer      Staff[]
@@ -89,7 +88,7 @@ model MissingMarksReport {
   academicYear String
   examPeriod   String
   yearOfStudy  Int
-  semester     Int
+  semester     Semester
   student      Student  @relation(fields: [studentId], references: [id])
   studentId    Int
 }
