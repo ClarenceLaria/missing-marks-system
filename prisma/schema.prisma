@@ -71,7 +71,7 @@ model Unit {
   id            Int      @id @default(autoincrement())
   name          String   
   code          String   
-  academicYear  String
+  academicYear  String   
   yearOfStudy   Int      
   semester      Semester @default(SEMESTER1)
   courses       UnitCourse[]
