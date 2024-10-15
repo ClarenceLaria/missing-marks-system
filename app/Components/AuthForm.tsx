@@ -105,6 +105,7 @@ export default function AuthForm() {
 
       if (variant === 'REGISTER') {
         try {
+
           toast.loading("Sending request...");
       
           // Send POST request to the server

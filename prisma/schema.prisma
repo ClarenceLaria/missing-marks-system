@@ -71,9 +71,10 @@ model Unit {
   id            Int      @id @default(autoincrement())
   name          String   
   code          String   
+  academicYear  String
   yearOfStudy   Int      
   semester      Semester @default(SEMESTER1)
-  courses        UnitCourse[]
+  courses       UnitCourse[]
   lecturer      Staff    @relation(fields: [lecturerId], references: [id])
   lecturerId    Int
 }
@@ -93,7 +94,7 @@ model MissingMarksReport {
   unitCode     String
   lecturerName String
   academicYear String
-  examPeriod   String
+  examType     ExamType
   yearOfStudy  Int
   semester     Semester
   student      Student  @relation(fields: [studentId], references: [id])
@@ -113,6 +114,7 @@ enum ExamType{
   MAIN
   SPECIAL
   SUPPLIMENTARY
+  CAT
 }
 
 enum Semester{
