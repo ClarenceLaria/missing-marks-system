@@ -65,10 +65,15 @@ export default function AuthForm() {
   });
 
   const isValidEmail = (email: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; //This accepts any email eg 123@gmail.com as long as the format is correct
+    const emailRegex = /^[a-z][a-z0-9._%+-]*@[a-z0-9.-]+\.[a-z]{2,}$/; //This rejects emails like 123@gmail.com and accepts emails like example123@gmail.com, all emails must be lowercase
     return emailRegex.test(email);
   };
-  
+  const validateRegistrationNumber = (regNo: string) => {
+    const pattern = /^[A-Z]{3}\/B\/\d{2}-\d{5}\/\d{4}$/;
+    return pattern.test(regNo);
+  };
+
   const handleSubmit = async () => {
     const event = window.event;
     if (!event) {
@@ -104,6 +109,11 @@ export default function AuthForm() {
      
 
       if (variant === 'REGISTER') {
+        if (!validateRegistrationNumber(formData.registrationNumber)) {
+          toggleLoading();
+          toast.error('Please enter a valid registration number');
+          return;
+        }
         try {
 
           toast.loading("Sending request...");
