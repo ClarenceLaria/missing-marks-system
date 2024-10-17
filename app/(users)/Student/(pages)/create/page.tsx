@@ -1,6 +1,7 @@
 'use client'
 import Button from '@/app/Components/Button'
 import Input from '@/app/Components/Input'
+import { fetchUnits } from '@/app/lib/actions'
 import React, { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
 
@@ -13,7 +14,41 @@ export default function Page() {
     const [unitName, setUnitName] = useState('WEBSYSTEMS AND TECHNOLOGIES II');
     const [lecturerName, setLecturerName] = useState('');
     const [loading, setLoading] = useState(false);
+    interface Unit {
+        id: number;
+        name: string;
+        code: string;
+        academicYear: string;
+        yearOfStudy: number;
+        semester: string; // Assuming Semester is a string, adjust if it's an enum or other type
+        lecturerId: number;
+    }
 
+    const [units, setUnits] = useState<Unit[]>([]);
+
+    const handleFetchUnits = async () => {  
+        try{
+            const year = parseInt(yearOfStudy);
+            toggleLoading();
+            const fetchedUnits = await fetchUnits(academicYear, year, semester);
+            setUnits(fetchedUnits);
+            toast.success('Units fetched successfully')
+            
+        }
+        catch(error){
+            console.error('Error fetching units:', error)
+            toast.error('Failed to fetch units')
+        }
+        finally{
+            toggleLoading();
+        }
+    }
+    console.log(units)
+    useEffect(() => {
+        if(academicYear && yearOfStudy && semester){
+            handleFetchUnits();
+        }
+    }, [academicYear, yearOfStudy, semester])
     const toggleLoading = () => {
         setLoading((prevLoading) => !prevLoading);
       };
