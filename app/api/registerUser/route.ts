@@ -50,7 +50,7 @@ export async function POST(req: Request) {
     // Determine department based on regNo
     let departmentName;
     const prefix = registrationNumber.substring(0, 3).toUpperCase();
-    if (prefix === 'SIT' || prefix === 'SIK') {
+    if (prefix === 'SIT') {
       departmentName = 'Information Technology';
     } else if(prefix === 'COM' || prefix === 'ETS'){
       departmentName = 'Computer Science';
@@ -61,6 +61,36 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid registration number' }, { status: 400 });
       // return new Response(JSON.stringify({ message: 'Invalid registration number' }), { status: 400 });
     }
+
+    // Fetch all courses from the database with their names and ids
+    const courses = await prisma.course.findMany({
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+
+    // Create a map of course names to course ids
+    const courseMap = courses.reduce((map: { [key: string]: number }, course) => {
+      map[course.name] = course.id;
+      return map;
+    }, {});
+
+    // Determine course based on regNo prefix
+    let courseName;
+    if (prefix === 'SIT') {
+      courseName = 'Bachelor of Science in (Information Technology)';
+    } else if (prefix === 'COM') {
+      courseName = 'Bachelor of Science (Computer Science)';
+    }
+
+    const courseId = courseName ? courseMap[courseName] : undefined;
+    if (!courseId) {
+      return NextResponse.json({ error: 'Invalid registration number' }, { status: 400 });
+    }
+
+
+
     // Hash the password before saving it to the database
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -74,6 +104,9 @@ export async function POST(req: Request) {
         regNo: registrationNumber,
         department: {
           connect: { id: departmentId },
+        },
+        course: {
+          connect: { id: courseId },
         },
       },
     });
