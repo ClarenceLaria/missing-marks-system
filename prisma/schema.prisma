@@ -37,6 +37,8 @@ model Student {
   regNo       String     @unique
   department  Department @relation(fields: [departmentId], references: [id])
   departmentId Int
+  course      Course @relation(fields: [courseId], references: [id])
+  courseId    Int 
   reports     MissingMarksReport[]
   userType    UserType @default(STUDENT)
 }
@@ -64,6 +66,7 @@ model Course {
   name        String
   department  Department @relation(fields: [departmentId], references: [id])
   departmentId Int
+  students    Student[] 
   units       UnitCourse[]    
 }
 
