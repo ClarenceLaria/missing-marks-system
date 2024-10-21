@@ -11,8 +11,8 @@ export default function Page() {
     const [yearOfStudy, setYearOfStudy] = useState('1');
     const [semester, setSemester] = useState('SEMESTER1');
     const [examType, setExamType] = useState('MAIN');
-    const [unitCode, setUnitCode] = useState('BIT 313');
-    const [unitName, setUnitName] = useState('WEBSYSTEMS AND TECHNOLOGIES II');
+    const [selectedUnitCode, setSelectedUnitCode] = useState('');
+    const [selectedUnitName, setSelectedUnitName] = useState('');
     const [lecturerName, setLecturerName] = useState('');
     const [loading, setLoading] = useState(false);
     interface Unit {
@@ -61,8 +61,8 @@ export default function Page() {
           yearOfStudy,
           semester,
           examType,
-          unitCode,
-          unitName,
+          unitCode: selectedUnitCode,
+          unitName: selectedUnitName,
           lecturerName,
         }
 
@@ -91,6 +91,25 @@ export default function Page() {
       console.log(reportData)
 
       }
+
+
+    useEffect(() => {
+        const selectedUnit = units.find(unit => unit.code === selectedUnitCode);
+        if (selectedUnit) {
+            setSelectedUnitName(selectedUnit.name);
+        } else {
+            setSelectedUnitName('');
+        }
+    }, [selectedUnitCode, units]);
+    useEffect(() => {
+        const selectedUnit = units.find(unit => unit.name === selectedUnitName);
+        if(selectedUnit){
+            setSelectedUnitCode(selectedUnit.code);
+        } else {
+            setSelectedUnitCode("")
+        }
+    }, [selectedUnitName, units])
+
   return (
     <div className='w-full h-full mx-10 my-5'>
         <h1 className='font-semibold text-2xl flex justify-center'>Make a Report over your missing mark</h1>
@@ -149,30 +168,26 @@ export default function Page() {
                 <label>Select Unit Code</label><br/>
                 <select 
                     className='my-2 w-[18vw] px-2 py-1 rounded' name="UnitCode" id="UnitCode" 
-                    onChange={(e) => setUnitCode(e.target.value)}
+                    value={selectedUnitCode}
+                    onChange={(e) => setSelectedUnitCode(e.target.value)}
                 >
-                    <option value="BIT 313">BIT 313</option>
-                    <option value="BIT 314">BIT 314</option>
-                    <option value="BIT 316">BIT 316</option>
-                    <option value="BIT 333">BIT 333</option>
-                    <option value="BIT 317">BIT 317</option>
-                    <option value="BIT 323">BIT 323</option>
-                    <option value="BIT 311">BIT 311</option>
+                    <option value="">-- Select Unit Code --</option>
+                    {units.map((unit) => (
+                        <option key={unit.id} value={unit.code}>{unit.code}</option>
+                    ))}
                 </select>
             </div>
             <div className='w-[18vw]'>
                 <label>Select Course Title</label><br/>
                 <select 
                 className='my-2 w-[18vw] px-2 py-1 rounded' name="UnitName" id="UnitName" 
-                onChange={(e) => setUnitName(e.target.value)}
+                value={selectedUnitName}
+                onChange={(e) => setSelectedUnitName(e.target.value)}
                 >
-                    <option value="WEBSYSTEMS AND TECHNOLOGIES II">WEBSYSTEMS AND TECHNOLOGIES II</option>
-                    <option value="SOFTWARE ENGINEERING">SOFTWARE ENGINEERING</option>
-                    <option value="OPERATIONS RESEARCH">OPERATIONS RESEARCH</option>
-                    <option value="INFORMATION ASSSURANCE AND SECURITY I">INFORMATION ASSSURANCE AND SECURITY I</option>
-                    <option value="INFORMATION MANAGEMENT">INFORMATION MANAGEMENT</option>
-                    <option value="DATABASE MANAGEMENT">DATABASE MANAGEMENT</option>
-                    <option value="NETWORK ADMIN AND MANAGEMENT">NETWORK ADMIN AND MANAGEMENT</option>
+                    <option value="">-- Select Course Title --</option>
+                    {units.map((unit) => (
+                        <option key={unit.id} value={unit.name}>{unit.name}</option>
+                    ))}
                 </select>
             </div>
             <div className='w-[18vw]'> 
