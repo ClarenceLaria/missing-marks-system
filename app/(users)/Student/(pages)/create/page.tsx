@@ -2,6 +2,7 @@
 import Button from '@/app/Components/Button'
 import Input from '@/app/Components/Input'
 import { fetchUnits } from '@/app/lib/actions'
+import { useSession } from 'next-auth/react'
 import React, { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
 
@@ -26,11 +27,13 @@ export default function Page() {
 
     const [units, setUnits] = useState<Unit[]>([]);
 
+    const session = useSession();
+    const email = session.data?.user?.email!; 
     const handleFetchUnits = async () => {  
         try{
             const year = parseInt(yearOfStudy);
             toggleLoading();
-            const fetchedUnits = await fetchUnits(academicYear, year, semester);
+            const fetchedUnits = await fetchUnits(email, academicYear, year, semester);
             setUnits(fetchedUnits);
             toast.success('Units fetched successfully')
             
