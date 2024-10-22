@@ -21,7 +21,7 @@ interface StudentProfile {
     userType: UserType;
 }
 
-export default function page() {
+export default function Page() {
     const [student, setStudent] = useState<StudentProfile | null>(null);
     const [loading, setLoading] = useState(true);
 
