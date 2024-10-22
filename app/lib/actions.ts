@@ -48,3 +48,17 @@ export async function fetchUnits(email: string, academicYear: string, yearOfStud
         throw new Error('Could not fetch units')
     }
 };
+
+export async function fetchStudentProfile(email: string){
+    try{
+        const user = await prisma.student.findUnique({
+            where: {
+                email: email,
+            }
+        })
+        return user;
+    } catch (error){
+        console.error('Error fetching user profile:', error)
+        throw new Error('Could not fetch user profile')
+    }
+}

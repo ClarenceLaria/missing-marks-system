@@ -1,10 +1,46 @@
+'use client'
 import Image from 'next/image'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import dp from '@/public/images/ProfilePic.jpeg'
 import Input from '@/app/Components/Input'
 import Button from '@/app/Components/Button'
+import { useSession } from 'next-auth/react'
+import { fetchStudentProfile } from '@/app/lib/actions'
+import { UserType } from '@prisma/client'
+
+interface StudentProfile {
+    id: number;
+    courseId: number;
+    createdAt: Date;
+    email: string;
+    firstName: string;
+    secondName: string;
+    password: string;
+    regNo: string;
+    departmentId: number;
+    userType: UserType;
+}
 
 export default function page() {
+    const [student, setStudent] = useState<StudentProfile | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    const session = useSession();
+    const email = session.data?.user?.email!;
+    
+    useEffect(() => {
+        async function fetchProfile(){
+            try{
+                const studentProfile = await fetchStudentProfile(email);
+                setStudent(studentProfile);
+            }catch(error){
+                console.error('Error fetching student profile:', error)
+            } finally{
+                setLoading(false);
+            }
+        }
+        fetchProfile();
+    },[email])
   return (
     <div className='w-full h-full items-center mx-auto'>
         <div className='my-10 bg-gray-50 rounded-lg w-1/3 h-3/4 mx-auto border-black'>
@@ -18,10 +54,9 @@ export default function page() {
                     label='First Name'
                     required
                     type='text'
-                    placeholder='Clarence'
+                    placeholder={student?.firstName || ''}
                     disabled={false}
                     value={''}
-                    // onChange={()=>{}}
                 />  
             </div>
             <div className='w-[18vw] mx-auto'>
@@ -31,10 +66,9 @@ export default function page() {
                     label='Second Name'
                     required
                     type='text'
-                    placeholder='Laria'
+                    placeholder={student?.secondName || ''}
                     disabled={false}
                     value={''}
-                    // onChange={()=>{}}
                 />  
             </div>
             <div className='w-[18vw] mx-auto'>
@@ -44,10 +78,9 @@ export default function page() {
                     label='Registration Number'
                     required
                     type='text'
-                    placeholder='SIT/B/01-02287/2021'
+                    placeholder={student?.regNo || ''}
                     disabled={false}
                     value={''}
-                    // onChange={()=>{}}
                 />  
             </div>
             <div className='w-[18vw] mx-auto'>
@@ -57,10 +90,9 @@ export default function page() {
                     label='Email'
                     required
                     type='text'
-                    placeholder='clarence@gmail.com'
+                    placeholder={student?.email || ''}
                     disabled={false}
                     value={''}
-                    // onChange={()=>{}}
                 />  
             </div>
             <div className='w-[18vw] mx-auto'>
@@ -70,10 +102,9 @@ export default function page() {
                     label='Password'
                     required
                     type='text'
-                    placeholder='********'
+                    placeholder='****************'
                     disabled={false}
                     value={''}
-                    // onChange={()=>{}}
                 />  
             </div>
         </div>
