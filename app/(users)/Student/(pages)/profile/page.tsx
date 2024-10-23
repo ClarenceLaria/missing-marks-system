@@ -7,6 +7,7 @@ import Button from '@/app/Components/Button'
 import { useSession } from 'next-auth/react'
 import { fetchStudentProfile } from '@/app/lib/actions'
 import { UserType } from '@prisma/client'
+import Loader from '@/app/Components/Loader'
 
 interface StudentProfile {
     id: number;
@@ -41,6 +42,7 @@ export default function Page() {
         }
         fetchProfile();
     },[email])
+    if (loading) return <Loader/>
   return (
     <div className='w-full h-full items-center mx-auto'>
         <div className='my-10 bg-gray-50 rounded-lg w-1/3 h-3/4 mx-auto border-black'>
