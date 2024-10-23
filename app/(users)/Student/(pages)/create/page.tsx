@@ -29,29 +29,29 @@ export default function Page() {
 
     const session = useSession();
     const email = session.data?.user?.email!; 
-    const handleFetchUnits = async () => {  
-        try{
-            const year = parseInt(yearOfStudy);
-            toggleLoading();
-            const fetchedUnits = await fetchUnits(email, academicYear, year, semester);
-            setUnits(fetchedUnits);
-            toast.success('Units fetched successfully')
-            
-        }
-        catch(error){
-            console.error('Error fetching units:', error)
-            toast.error('Failed to fetch units')
-        }
-        finally{
-            toggleLoading();
-        }
-    }
-    console.log(units)
+    
     useEffect(() => {
+        const handleFetchUnits = async () => {  
+            try{
+                const year = parseInt(yearOfStudy);
+                toggleLoading();
+                const fetchedUnits = await fetchUnits(email, academicYear, year, semester);
+                setUnits(fetchedUnits);
+                toast.success('Units fetched ')
+                
+            }
+            catch(error){
+                console.error('Error fetching units:', error)
+                toast.error('Failed to fetch units')
+            }
+            finally{
+                toggleLoading();
+            }
+        }
         if(academicYear && yearOfStudy && semester){
             handleFetchUnits();
         }
-    }, [handleFetchUnits, academicYear, yearOfStudy, semester])
+    }, [academicYear, yearOfStudy, semester])
     const toggleLoading = () => {
         setLoading((prevLoading) => !prevLoading);
       };
@@ -109,6 +109,7 @@ export default function Page() {
             setSelectedUnitCode("")
         }
     }, [selectedUnitName, units])
+    console.log(units)
 
   return (
     <div className='w-full h-full mx-10 my-5'>
