@@ -98,6 +98,7 @@ model MissingMarksReport {
   lecturerName String
   academicYear String
   examType     ExamType
+  reportStatus ReportStatus @default(PENDING)
   yearOfStudy  Int
   semester     Semester
   student      Student  @relation(fields: [studentId], references: [id])
@@ -124,4 +125,11 @@ enum Semester{
   SEMESTER1
   SEMESTER2
   SEMESTER3
+}
+
+enum ReportStatus{
+  PENDING
+  MARK_FOUND
+  MARK_NOT_FOUND
+  FOR_FURTHER_INVESTIGATION
 }
