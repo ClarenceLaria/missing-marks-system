@@ -86,3 +86,48 @@ export async function fetchMissingReports(email: string){
         throw new Error ("Failed to fetch missing mark reports")
     }
 }
+
+export async function fetchReportNumbers(email: string){
+    const student = await prisma.student.findUnique({
+        where:{
+            email: email
+        }
+    })
+    const id = student?.id;
+    
+    try{
+        const TotalReports = await prisma.missingMarksReport.count({
+            where:{
+                studentId: id,
+            }
+        })
+        const pendingTotals = await prisma.missingMarksReport.count({
+            where:{
+                studentId: id,
+                reportStatus: "PENDING"
+            }
+        })
+        const markFoundTotals = await prisma.missingMarksReport.count({
+            where:{
+                studentId: id,
+                reportStatus: "MARK_FOUND"
+            }
+        })
+        const markNotFoundTotals = await prisma.missingMarksReport.count({
+            where:{
+                studentId: id,
+                reportStatus: "MARK_NOT_FOUND"
+            }
+        })
+        const forInvestigationTotals = await prisma.missingMarksReport.count({
+            where:{
+                studentId: id,
+                reportStatus: "FOR_FURTHER_INVESTIGATION"
+            }
+        })
+        return {TotalReports, pendingTotals, markFoundTotals, markNotFoundTotals, forInvestigationTotals} 
+    }catch(error){
+        console.error("Error counting totals:", error)
+        throw new Error("Could not count Reports")
+    }
+}
