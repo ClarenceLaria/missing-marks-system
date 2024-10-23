@@ -62,3 +62,27 @@ export async function fetchStudentProfile(email: string){
         throw new Error('Could not fetch user profile')
     }
 }
+
+
+export async function fetchMissingReports(email: string){
+    const student = await prisma.student.findUnique({
+        where:{
+            email: email,
+        } 
+    })
+    if (!student) {
+        throw new Error(`No student found with email: ${email}`);
+      }
+    const id = student?.id;
+    try{
+        const reports = await prisma.missingMarksReport.findMany({
+            where: {
+                studentId: id,
+            }
+        })
+        return reports;
+    }catch(error){
+        console.error('Error fetching user missing mark reports:', error)
+        throw new Error ("Failed to fetch missing mark reports")
+    }
+}
