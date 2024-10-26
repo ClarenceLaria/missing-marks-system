@@ -10,7 +10,8 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { TableVirtuoso, TableComponents } from 'react-virtuoso';
 
-interface Data {
+
+interface Report {
   title: string;
   unitCode: string;
   date: Date;
@@ -18,26 +19,30 @@ interface Data {
   button?: string;
 }
 
-function createData(
-  title: string,
-  unitCode: string,
-  date: Date,
-  status: string,
-  button?: string
-) {
-  return { title, unitCode, date, status, button };
-}
+// function createData(
+//   title: string,
+//   unitCode: string,
+//   date: Date,
+//   status: string,
+//   button?: string
+// ) {
+//   return { title, unitCode, date, status, button };
+// }
 
 interface ColumnData {
-  dataKey: keyof Data;
+  dataKey: keyof Report;
   label: string;
   numeric?: boolean;
   width: number;
   button?: string;
 }
 
-const date = new Date();
-const sample = [createData('Introduction to programming', 'BCS 110', date, 'Pending')];
+interface TableProps {
+  reports: Report[];
+}
+
+// const date = new Date();
+// const sample = [createData('Introduction to programming', 'BCS 110', date, 'Pending')];
 
 const columns: ColumnData[] = [
   {
@@ -71,13 +76,7 @@ const columns: ColumnData[] = [
   },
 ];
 
-// Generate rows
-const rows: Data[] = Array.from({ length: 20 }, () => {
-  const randomSelection = sample[Math.floor(Math.random() * sample.length)];
-  return createData(randomSelection.title, randomSelection.unitCode, randomSelection.date, randomSelection.status);
-});
-
-const VirtuosoTableComponents: TableComponents<Data> = {
+const VirtuosoTableComponents: TableComponents<Report> = {
   Scroller: React.forwardRef<HTMLDivElement>((props, ref) => (
     <TableContainer component={Paper} {...props} ref={ref} />
   )),
@@ -121,7 +120,7 @@ function fixedHeaderContent() {
   );
 }
 
-function rowContent(_index: number, row: Data) {
+function rowContent(_index: number, row: Report) {
   return (
     <>
       {columns.map((column) => (
@@ -137,11 +136,11 @@ function rowContent(_index: number, row: Data) {
   );
 }
 
-export default function ReactVirtualizedTable() {
+export default function ReactVirtualizedTable({reports}: TableProps) {
   return (
     <Paper style={{ height: 550, width: '100%' }} className="mt-6">
       <TableVirtuoso
-        data={rows}
+        data={reports}
         components={VirtuosoTableComponents}
         fixedHeaderContent={fixedHeaderContent}
         itemContent={rowContent}
