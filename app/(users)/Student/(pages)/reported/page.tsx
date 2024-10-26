@@ -49,12 +49,12 @@ export default function Page() {
     }
     handleFetchReports();
   }, [email])
-  // console.log(reports)
   if (loading) return <Loader/>
   const transformedReports = reports.map(report => ({
+    id: report.id,
     title: report.unitName,
     unitCode: report.unitCode,
-    date: report.createdAt, // or the appropriate date property
+    date: report.createdAt,
     status: report.reportStatus,
   }));
   

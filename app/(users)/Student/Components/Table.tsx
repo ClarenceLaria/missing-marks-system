@@ -9,25 +9,17 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { TableVirtuoso, TableComponents } from 'react-virtuoso';
+import Link from 'next/link';
 
 
 interface Report {
+  id: number;
   title: string;
   unitCode: string;
   date: Date;
   status: string;
   button?: string;
 }
-
-// function createData(
-//   title: string,
-//   unitCode: string,
-//   date: Date,
-//   status: string,
-//   button?: string
-// ) {
-//   return { title, unitCode, date, status, button };
-// }
 
 interface ColumnData {
   dataKey: keyof Report;
@@ -40,9 +32,6 @@ interface ColumnData {
 interface TableProps {
   reports: Report[];
 }
-
-// const date = new Date();
-// const sample = [createData('Introduction to programming', 'BCS 110', date, 'Pending')];
 
 const columns: ColumnData[] = [
   {
@@ -127,9 +116,11 @@ function rowContent(_index: number, row: Report) {
         <TableCell key={column.dataKey} align={column.numeric ? 'right' : 'left'}>
           {column.dataKey === 'date' ? (row.date as Date).toLocaleDateString() : row[column.dataKey]}
           {column.dataKey === 'button' ? 
+           <Link href={`/Student/reported/${row.id}`} passHref>
            <button className='bg-sky-300 rounded-full p-1 lg:rounded-md'>
                     <h1 className='px-2 hidden lg:block'>View</h1>
-             </button> : ''}
+             </button>
+            </Link> : ''}
         </TableCell>
       ))}
     </>
@@ -137,6 +128,7 @@ function rowContent(_index: number, row: Report) {
 }
 
 export default function ReactVirtualizedTable({reports}: TableProps) {
+  console.log(reports)
   return (
     <Paper style={{ height: 550, width: '100%' }} className="mt-6">
       <TableVirtuoso
