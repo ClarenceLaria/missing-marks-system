@@ -93,6 +93,7 @@ model UnitCourse {
 
 model MissingMarksReport {
   id           Int      @id @default(autoincrement())
+  createdAt    DateTime @default(now())
   unitName     String
   unitCode     String
   lecturerName String

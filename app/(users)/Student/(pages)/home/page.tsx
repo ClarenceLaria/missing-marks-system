@@ -1,29 +1,11 @@
 'use client'
 import Loader from '@/app/Components/Loader';
-import { fetchMissingReports, fetchReportNumbers } from '@/app/lib/actions';
-import { ExamType, ReportStatus, Semester } from '@prisma/client';
+import { fetchReportNumbers } from '@/app/lib/actions';
 import { useSession } from 'next-auth/react'
-import { report } from 'process';
 import React, { useEffect, useState } from 'react'
-import toast from 'react-hot-toast';
 
-
-interface missingReport {
-    academicYear: string;
-    yearOfStudy: number;
-    semester: Semester;
-    examType: ExamType;
-    lecturerName: string;
-    id: number;
-    unitName: string;
-    unitCode: string;
-    reportStatus: ReportStatus;
-    studentId: number;
-}
 export default function Page() {
-    const [reports, setReports] = useState<missingReport[]>([]);
     const [loading,setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
     const [totals, setTotals] = useState(Number)
     const [pendingTotals, setPendingTotals] = useState(Number)
     const [markFoundTotals, setMarkFoundTotals] = useState(Number)
@@ -36,35 +18,19 @@ export default function Page() {
 
     useEffect(() => {
         const handleReportTotals = async () => {
+            setLoading(true)
             const totals = await fetchReportNumbers(email);
             setTotals(totals.TotalReports)
             setPendingTotals(totals.pendingTotals)
             setMarkFoundTotals(totals.markFoundTotals)
             setNotFoundTotals(totals.markNotFoundTotals)
             setInvestigationTotals(totals.forInvestigationTotals)
+            setLoading(false)
         }
         handleReportTotals()
     },[email])
     
-    useEffect(() => {
-        const handleFetchReports = async () => {
-            if (!email) {
-                setError('Email is required');
-                return;
-              }
-            try{
-                setLoading(true)
-                const fetchedReports = await fetchMissingReports(email);
-                setReports(fetchedReports);
-                setLoading(false)
-                toast.success('Missing Marks Reports Fetched Successfully')
-            }catch{
-                console.error('Error fetching missing marks report:', error)
-                toast.error('Failed to fetch missing marks reports')
-            }
-        }
-        handleFetchReports();
-    }, [email])
+    
     if (loading) return <Loader/>
   return (
     <div className='w-full h-full'>
