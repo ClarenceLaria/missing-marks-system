@@ -23,7 +23,7 @@ interface missingReport {
   createdAt: Date;
 }
 const Loading = () => <div>Loading...</div>;
-export default function page() {
+export default function Page() {
   const [reports, setReports] = useState<missingReport[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading,setLoading] = useState(true);
@@ -42,7 +42,7 @@ export default function page() {
             setReports(fetchedReports);
             setLoading(false)
             toast.success('Missing Marks Reports Fetched Successfully')
-        }catch{
+        }catch(error){
             console.error('Error fetching missing marks report:', error)
             toast.error('Failed to fetch missing marks reports')
         }

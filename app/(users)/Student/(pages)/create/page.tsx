@@ -51,7 +51,7 @@ export default function Page() {
         if(academicYear && yearOfStudy && semester){
             handleFetchUnits();
         }
-    }, [academicYear, yearOfStudy, semester])
+    }, [email, academicYear, yearOfStudy, semester])
     const toggleLoading = () => {
         setLoading((prevLoading) => !prevLoading);
       };
