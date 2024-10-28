@@ -1,7 +1,63 @@
+'use client'
 import Input from '@/app/Components/Input'
-import React, { useState } from 'react'
+import { fetchSingleReport } from '@/app/lib/actions';
+import { ExamType, ReportStatus, Semester } from '@prisma/client';
+import { useSession } from 'next-auth/react';
+import React, { useEffect, useState } from 'react'
+import toast from 'react-hot-toast';
 
-export default function page({ params }: { params: { id: string } }) {
+interface missingReport {
+  academicYear: string;
+  yearOfStudy: number;
+  semester: Semester;
+  examType: ExamType;
+  lecturerName: string;
+  id: number;
+  unitName: string;
+  unitCode: string;
+  reportStatus: ReportStatus;
+  studentId: number;
+  createdAt: Date;
+}
+
+interface department {
+  id: number;
+  name: string;
+  schoolId: number;
+};
+export default function Page({ params }: { params: { id: string } }) {
+  const [loading, setLoading] = useState(true);
+  const [report, setReport] = useState<missingReport | null>(null);
+  const [dept, setDept] = useState<department | null>(null);
+  const [school, setSchool] = useState(null);
+  const [student, setStudent] = useState(null);
+
+  const id = parseInt(params.id);
+  const session = useSession();
+  const email = session.data?.user?.email!;
+console.log(email)
+  useEffect(() => {
+    const handleSingleReport = async () => {
+      if (!email) {
+        return console.error('Email is required');
+      }
+      try{
+        setLoading(true)
+        const singleReport = await fetchSingleReport(email, id);
+        setReport(singleReport.report);
+        // setDept(singleReport.dept)
+        // setSchool(singleReport.school)
+        // setStudent(singleReport.student);
+        setLoading(false)
+        toast.success('Report fetched successfully')
+      }catch(error){
+        console.error('Error fetching single report:', error)
+        toast.error('Failed to fetch report')
+      }
+    }
+    handleSingleReport();
+  }, [id, email])
+  console.log(report?.id)
   return (
     <div className='w-full h-full my-5'>
         <div className='w-1/2 mx-auto bg-white rounded-md'>

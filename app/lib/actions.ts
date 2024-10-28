@@ -131,3 +131,40 @@ export async function fetchReportNumbers(email: string){
         throw new Error("Could not count Reports")
     }
 }
+
+
+export async function fetchSingleReport(email: string, reportId: number){
+    try{
+        const student = await prisma.student.findUnique({
+            where:{
+                email: email
+            },
+            include:{
+                department: true,
+            }
+        })
+        const dept = student?.department?.name;
+        const dptid = student?.department?.id;
+        const id = student?.id;
+
+        const school = await prisma.department.findUnique({
+            where:{
+                id: dptid
+            },
+            include: {
+                school: true,
+            }
+        })
+        
+        const report = await prisma.missingMarksReport.findUnique({
+            where:{
+                id: reportId,
+                studentId: id,
+            }
+        })
+        return {student, report, dept, school};
+    }catch(error){
+        console.error("Error fetching report details:", error)
+        throw new Error("Could not fetch report details")
+    }
+}
