@@ -60,24 +60,12 @@ export const authOptions: AuthOptions = {
           },
         });
 
-        // if (!student) {
-        //   throw new Error('User not found');
-        // }
-
-        // if (!credentials?.password) {
-        //   throw new Error('Password is required');
-        // }
-
         if(student){
         const isStudentPassworValid = await bcrypt.compare(credentials.password, student.password);
 
         if(!isStudentPassworValid){
           throw new Error('Incorrect email or password');
         }
-
-        // if (!credentials.email && !isStudentPassworValid) {
-        //   throw new Error('Incorrect email or password');
-        // }
 
         return {
           id: `${student.id}`,
