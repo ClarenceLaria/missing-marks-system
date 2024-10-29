@@ -22,7 +22,7 @@ type Staff = {
     firstName: string;
     secondName: string;
     email: string;
-    phoneNumber: number;
+    phoneNumber: string;
     password: string;
     userType: UserType;
     createdAt: Date;
