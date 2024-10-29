@@ -38,7 +38,6 @@ export default function StaffAuthForm() {
   const {data:session, status} = useSession();
 
   const router = useRouter();
-  console.log(session?.userType)
   useEffect(() => {
     if (status === 'authenticated') {
       const userType = session.userType as UserType
@@ -49,8 +48,8 @@ export default function StaffAuthForm() {
         router.push('/Admin');
       }else if(userType === 'SUPERADMIN'){
         router.push('/SuperAdmin/Dashboard')
-      }else{
-        toast.error('Unauthorised Access')
+      }else if(userType === 'STUDENT'){
+        router.push('/Student/home')
       }
     }
   });

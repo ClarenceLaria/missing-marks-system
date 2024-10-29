@@ -8,7 +8,7 @@ import { Session } from 'next-auth';
 // Extend the Session type to include userType
 declare module 'next-auth' {
   interface Session {
-    userType?: 'Lecturer' | 'STUDENT' | 'ADMIN' | 'SuperAdmin';
+    userType?: UserType;
   }
 }
 import { useRouter } from 'next/navigation';
@@ -18,6 +18,8 @@ import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 
 
 type Variant = 'REGISTER' | 'LOGIN';
+
+type UserType = 'LECTURER' | 'ADMIN' | 'SUPERADMIN' | 'STUDENT' | 'COD' | 'DEAN';
 
 export default function AuthForm() {
   const [variant, setVariant] = useState<Variant>('LOGIN');
@@ -42,14 +44,22 @@ export default function AuthForm() {
     setVariant((prevVariant) => (prevVariant === 'LOGIN' ? 'REGISTER' : 'LOGIN'));
   }, []);
 
-  const session = useSession();
-
   const router = useRouter();
+  const {data:session, status} = useSession();
 
   useEffect(() => {
-    if (session?.status === 'authenticated') {
-      router.push('/Student/home');
-
+    if (status === 'authenticated') {
+      const userType = session.userType as UserType
+      if(userType === 'STUDENT'){
+        router.push('/Student/home');
+      }else if (userType === 'LECTURER') {
+        router.push('/Lecturer');
+      }
+       else if(userType === 'ADMIN' || userType === 'COD' || userType === 'DEAN') {
+        router.push('/Admin');
+      }else if(userType === 'SUPERADMIN'){
+        router.push('/SuperAdmin/Dashboard')
+      }
     }
   });
 
