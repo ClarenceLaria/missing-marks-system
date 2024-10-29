@@ -4,20 +4,14 @@ import Input from './Input';
 import Button from './Button';
 import { signIn, useSession } from 'next-auth/react';
 import { Session } from 'next-auth';
-
-// Extend the Session type to include userType
-declare module 'next-auth' {
-  interface Session {
-    userType?: 'Lecturer' | 'STUDENT' | 'ADMIN' | 'SuperAdmin';
-  }
-}
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import clsx from 'clsx'
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 
-
 type Variant = 'REGISTER' | 'LOGIN';
+
+type UserType = 'LECTURER' | 'ADMIN' | 'SUPERADMIN' | 'STUDENT' | 'COD' | 'DEAN';
 
 export default function StaffAuthForm() {
   const [variant, setVariant] = useState<Variant>('LOGIN');
@@ -41,29 +35,29 @@ export default function StaffAuthForm() {
     setVariant((prevVariant) => (prevVariant === 'LOGIN' ? 'REGISTER' : 'LOGIN'));
   }, []);
 
-  const session = useSession();
+  const {data:session, status} = useSession();
 
   const router = useRouter();
-
+  console.log(session?.userType)
   useEffect(() => {
-    if (session?.status === 'authenticated') {
-      if (session.data.userType === 'Lecturer') {
+    if (status === 'authenticated') {
+      const userType = session.userType as UserType
+      if (userType === 'LECTURER') {
         router.push('/Lecturer');
-    //   } else 
-    //   if(session.data.userType === 'STUDENT') {
-    //     router.push('/Student/home');
       }
-       else if(session.data.userType === 'ADMIN') {
+       else if(userType === 'ADMIN' || userType === 'COD' || userType === 'DEAN') {
         router.push('/Admin');
-      }else{
+      }else if(userType === 'SUPERADMIN'){
         router.push('/SuperAdmin/Dashboard')
+      }else{
+        toast.error('Unauthorised Access')
       }
     }
   });
 
-  const isValidEmail = (email: string) => {
+  const isValidEmail = (phoneNumber: string) => {
     const emailRegex = /^[a-z][a-z0-9._%+-]*@[a-z0-9.-]+\.[a-z]{2,}$/; //This rejects emails like 123@gmail.com and accepts emails like example123@gmail.com, all emails must be lowercase
-    return emailRegex.test(email);
+    return emailRegex.test(phoneNumber);
   };
   const validatePhoneNumber = (regNo: string) => {
     const pattern = /^[A-Z]{3}\/B\/\d{2}-\d{5}\/\d{4}$/;

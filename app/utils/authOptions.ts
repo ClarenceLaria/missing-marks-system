@@ -60,20 +60,24 @@ export const authOptions: AuthOptions = {
           },
         });
 
-        if (!student) {
-          throw new Error('User not found');
-        }
+        // if (!student) {
+        //   throw new Error('User not found');
+        // }
 
-        if (!credentials?.password) {
-          throw new Error('Password is required');
-        }
+        // if (!credentials?.password) {
+        //   throw new Error('Password is required');
+        // }
 
         if(student){
         const isStudentPassworValid = await bcrypt.compare(credentials.password, student.password);
 
-        if (!credentials.email && !isStudentPassworValid) {
+        if(!isStudentPassworValid){
           throw new Error('Incorrect email or password');
         }
+
+        // if (!credentials.email && !isStudentPassworValid) {
+        //   throw new Error('Incorrect email or password');
+        // }
 
         return {
           id: `${student.id}`,
@@ -105,7 +109,7 @@ export const authOptions: AuthOptions = {
 
         if (staff && staff.userType !== 'STUDENT') {
           const isStaffPasswordValid = await bcrypt.compare(credentials.password, staff.password);
-          if (!credentials.email && !isStaffPasswordValid) {
+          if (!isStaffPasswordValid) {
             throw new Error('Incorrect email or password');
           }
 
@@ -131,33 +135,18 @@ export const authOptions: AuthOptions = {
   callbacks: {
     async jwt({ token, user }: { token: any, user?: any }) {
       if(user){
-      if (user.userType === 'STUDENT') {
         return{
             ...token,
             id: user.id,
             firstName: user.firstName,
             secondName: user.secondName,
             password: user.password,
-            regNo: user.regNo,
             email: user.email,
             userType: user.userType,
             createdAt: user.createdAt,
-        }
-      } else {
-        return{
-            ...token,
-            id: user.id,
-            firstName: user.firstName,
-            secondName: user.secondName,
-            email: user.email,
-            phoneNumber: user.phoneNumber,
-            userType: user.userType,
-            password: user.password,
-            createdAt: user.createdAt,
-            departmentId: user.departmentId,
+            ...(user.userType === 'STUDENT' ? {regNo: user.regNo} : {phoneNumber: user.phoneNumber}),
         };
-      }
-    }
+      } 
       return token;
     },
     async session({ session, token }: { session: any, token: any }) {
@@ -169,8 +158,8 @@ export const authOptions: AuthOptions = {
         email: token.email,
         userType: token.userType,
         createdAt: token.createdAt,
-        ...(token.userType === 'STUDENT' ? { regNo: token.regNo } : { phoneNumber: token.phoneNumber, departmentId: token.departmentId }),
-      }
+        ...(token.userType === 'STUDENT' ? { regNo: token.regNo } : { phoneNumber: token.phoneNumber}),
+      };
     },
   },
   secret: process.env.NEXTAUTH_SECRET, 
