@@ -16,6 +16,17 @@ type Student = {
     userType: UserType;
     createdAt: Date;
 }
+
+type Staff = {
+    id: string;
+    firstName: string;
+    secondName: string;
+    email: string;
+    phoneNumber: string;
+    password: string;
+    userType: UserType;
+    createdAt: Date;
+}
 export const authOptions: AuthOptions = {
   session: {
     strategy: 'jwt', 
@@ -28,7 +39,11 @@ export const authOptions: AuthOptions = {
         email: { label: 'Email', type: 'email'},
         password: { label: 'Password', type: 'password' },
       },
-      async authorize(credentials: Record<'email' | 'password', string> | undefined): Promise<Student | null>  {
+      async authorize(credentials: Record<'email' | 'password', string> | undefined): Promise<Student | Staff | null>  {
+        if (!credentials) {
+          return null;
+        } 
+
         const student = await prisma.student.findUnique ({
           where: { 
             email: credentials?.email, 
@@ -52,9 +67,11 @@ export const authOptions: AuthOptions = {
         if (!credentials?.password) {
           throw new Error('Password is required');
         }
-        const isValid = await bcrypt.compare(credentials.password, student.password);
 
-        if (!credentials.email && !isValid) {
+        if(student){
+        const isStudentPassworValid = await bcrypt.compare(credentials.password, student.password);
+
+        if (!credentials.email && !isStudentPassworValid) {
           throw new Error('Incorrect email or password');
         }
 
@@ -68,6 +85,42 @@ export const authOptions: AuthOptions = {
           userType: student.userType,
           createdAt: student.createdAt,
         };
+        }
+
+        const staff = await prisma.staff.findUnique({
+          where: {
+            email: credentials.email,
+          },
+          select: {
+            id: true,
+            firstName: true,
+            secondName: true,
+            email: true,
+            phoneNumber: true,
+            userType: true,
+            password: true,
+            createdAt: true,
+          },
+        });
+
+        if (staff && staff.userType !== 'STUDENT') {
+          const isStaffPasswordValid = await bcrypt.compare(credentials.password, staff.password);
+          if (!credentials.email && !isStaffPasswordValid) {
+            throw new Error('Incorrect email or password');
+          }
+
+          return {
+            id: `${staff.id}`,
+            firstName: staff.firstName,
+            secondName: staff.secondName,
+            email: staff.email,
+            phoneNumber: staff.phoneNumber,
+            userType: staff.userType,
+            password: staff.password,
+            createdAt: staff.createdAt,
+          };
+        }
+        throw new Error ('User not found or Unauthorized')
       },
     }),
   ],
@@ -76,26 +129,47 @@ export const authOptions: AuthOptions = {
 //     error: '/auth/error',   
 //   },
   callbacks: {
-    async jwt({ token, student }: { token: any, student?: any }) {
-      if (student) {
+    async jwt({ token, user }: { token: any, user?: any }) {
+      if(user){
+      if (user.userType === 'STUDENT') {
         return{
             ...token,
-            id: student.id,
-            firstName: student.firstName,
-            secondName: student.secondName,
-            password: student.password,
-            regNo: student.regNo,
-            email: student.email,
-            userType: student.userType,
-            createdAt: student.createdAt,
+            id: user.id,
+            firstName: user.firstName,
+            secondName: user.secondName,
+            password: user.password,
+            regNo: user.regNo,
+            email: user.email,
+            userType: user.userType,
+            createdAt: user.createdAt,
         }
+      } else {
+        return{
+            ...token,
+            id: user.id,
+            firstName: user.firstName,
+            secondName: user.secondName,
+            email: user.email,
+            phoneNumber: user.phoneNumber,
+            userType: user.userType,
+            password: user.password,
+            createdAt: user.createdAt,
+            departmentId: user.departmentId,
+        };
       }
+    }
       return token;
     },
     async session({ session, token }: { session: any, token: any }) {
       return{
         ...session,
-        student: token,
+        id: token.id,
+        firstName: token.firstName,
+        secondName: token.secondName,
+        email: token.email,
+        userType: token.userType,
+        createdAt: token.createdAt,
+        ...(token.userType === 'STUDENT' ? { regNo: token.regNo } : { phoneNumber: token.phoneNumber, departmentId: token.departmentId }),
       }
     },
   },

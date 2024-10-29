@@ -48,17 +48,6 @@ export default function AuthForm() {
 
   useEffect(() => {
     if (session?.status === 'authenticated') {
-      // if (session.data.userType === 'Lecturer') {
-      //   router.push('/Lecturer');
-      // } else 
-      // if(session.data.userType === 'STUDENT') {
-      //   router.push('/Student/home');
-      // }
-      //  else if(session.data.userType === 'ADMIN') {
-      //   router.push('/Admin');
-      // }else{
-      //   // router.push('/SuperAdmin/Dashboard')
-      // }
       router.push('/Student/home');
 
     }

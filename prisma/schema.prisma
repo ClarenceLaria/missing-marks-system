@@ -19,7 +19,7 @@ model Staff {
   email       String     @unique
   firstName   String
   secondName  String
-  phoneNumber String?    @unique 
+  phoneNumber String     @unique @default("1")
   password    String
   userType    UserType   @default(LECTURER)
   department  Department @relation(fields: [departmentId], references: [id])
