@@ -15,10 +15,6 @@ export async function POST(req: Request) {
     // Validate that all required fields are provided
     if (!firstName || !secondName || !email || !password || !registrationNumber) {
       return NextResponse.json({ error: 'Please fill all the fields' }, { status: 400 });
-      // return new Response(
-      //   JSON.stringify({ message: 'All fields are required: firstName, secondName, email, password, registrationNumber' }),
-      //   { status: 400 }
-      // );
     }
 
     // Check if a user with the given email already exists

@@ -30,8 +30,7 @@ export default function StaffAuthForm() {
     secondName: '',
     email: '',
     password: '',
-    registrationNumber: '',
-    userType:''
+    phoneNumber: '',
   });
 
   const toggleLoading = () => {
@@ -63,11 +62,10 @@ export default function StaffAuthForm() {
   });
 
   const isValidEmail = (email: string) => {
-    // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; //This accepts any email eg 123@gmail.com as long as the format is correct
     const emailRegex = /^[a-z][a-z0-9._%+-]*@[a-z0-9.-]+\.[a-z]{2,}$/; //This rejects emails like 123@gmail.com and accepts emails like example123@gmail.com, all emails must be lowercase
     return emailRegex.test(email);
   };
-  const validateRegistrationNumber = (regNo: string) => {
+  const validatePhoneNumber = (regNo: string) => {
     const pattern = /^[A-Z]{3}\/B\/\d{2}-\d{5}\/\d{4}$/;
     return pattern.test(regNo);
   };
@@ -90,18 +88,16 @@ export default function StaffAuthForm() {
       if(formData.email === ''|| formData.email===null || formData.password === ''|| formData.password===null){
         toggleLoading();
         toast.error('Please fill all the fields')
-        // throw new Error('Missing fields')
       }
     }else{
-      if(formData.firstName === ''|| formData.firstName===null || formData.secondName === ''|| formData.secondName===null || formData.email === ''|| formData.email===null || formData.password === ''|| formData.password===null || formData.registrationNumber === ''|| formData.registrationNumber===null){
+      if(formData.firstName === ''|| formData.firstName===null || formData.secondName === ''|| formData.secondName===null || formData.email === ''|| formData.email===null || formData.password === ''|| formData.password===null || formData.phoneNumber === ''|| formData.phoneNumber===null){
         toggleLoading();
         toast.error('Please fill all the fields')
-        // throw new Error('Missing fields')
       }
     }
 
     
-
+console.log(formData)
     try {
 
      
@@ -112,7 +108,7 @@ export default function StaffAuthForm() {
           toast.loading("Sending request...");
       
           // Send POST request to the server
-          const response = await fetch('/api/registerUser', {
+          const response = await fetch('/api/registerStaff', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -154,7 +150,7 @@ export default function StaffAuthForm() {
 
         if (callback?.status === 401) {
           toast.dismiss();
-          toast.error('Unauthorized');
+          toast.error('Unauthorized acccess');
         } else if (callback?.ok && !callback?.error) {
           toast.dismiss();
           toast.success('Logged In');
@@ -212,6 +208,17 @@ export default function StaffAuthForm() {
                placeholder='Enter Second Name'
                disabled={disabled}
                value={formData.secondName}
+               onChange={handleChange}
+             />
+             <Input
+               id='phoneNumber'
+               name='phoneNumber'
+               label='Phone Number'
+               required
+               type='text'
+               placeholder='Enter Phone Number'
+               disabled={disabled}
+               value={formData.phoneNumber}
                onChange={handleChange}
              />
            </>
