@@ -18,6 +18,7 @@ export async function POST(req: NextRequest) {
       examType,
       yearOfStudy,
       semester,
+      unitId,
     } = body;
 
     const validSemester = ['SEMESTER1', 'SEMESTER2', 'SEMESTER3'].includes(semester) ? semester : null;
@@ -49,7 +50,7 @@ export async function POST(req: NextRequest) {
     const studentId = student.id;
 
     // Basic validation
-    if (!unitName || !unitCode || !lecturerName || !academicYear || !examType || !yearOfStudy || !semester) {
+    if (!unitName || !unitCode || !lecturerName || !academicYear || !examType || !yearOfStudy || !semester || !unitId) {
       return NextResponse.json({ error: 'All fields are required' }, { status: 400 });
     }
 
@@ -64,6 +65,7 @@ export async function POST(req: NextRequest) {
         yearOfStudy: parseInt(yearOfStudy),
         semester: validSemester as Semester, // Ensure the semester matches the enum type
         studentId,
+        unitId: parseInt(unitId),
       },
     });
 
