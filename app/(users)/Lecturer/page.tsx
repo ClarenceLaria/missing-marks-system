@@ -3,7 +3,7 @@ import { fetchLecturerMissingMarksTotals } from '@/app/lib/actions';
 import { useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react'
 
-export default function page() {
+export default function Page() {
   const [totals, setTotals] = useState(Number);
   const [pendingTotals, setPendingTotals] = useState(Number);
   const [markFoundTotals, setMarkFoundTotals] = useState(Number);
