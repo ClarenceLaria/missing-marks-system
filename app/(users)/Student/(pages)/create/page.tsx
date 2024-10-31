@@ -15,6 +15,7 @@ export default function Page() {
     const [selectedUnitName, setSelectedUnitName] = useState('');
     const [lecturerName, setLecturerName] = useState('');
     const [loading, setLoading] = useState(false);
+    const [unitId, setUnitId] = useState<number | null>(null);
     interface Unit {
         id: number;
         name: string;
@@ -64,6 +65,7 @@ export default function Page() {
           unitCode: selectedUnitCode,
           unitName: selectedUnitName,
           lecturerName,
+          unitId,
         }
 
         if(reportData.academicYear === ''|| reportData.academicYear===null || reportData.yearOfStudy === ''|| reportData.yearOfStudy===null || reportData.semester === ''|| reportData.semester===null || reportData.examType === ''|| reportData.examType===null || reportData.unitCode === ''|| reportData.unitCode===null || reportData.unitName===''|| reportData.unitName===null || reportData.lecturerName===''|| reportData.lecturerName===null){
@@ -97,19 +99,22 @@ export default function Page() {
         const selectedUnit = units.find(unit => unit.code === selectedUnitCode);
         if (selectedUnit) {
             setSelectedUnitName(selectedUnit.name);
+            setUnitId(selectedUnit.id);
         } else {
             setSelectedUnitName('');
+            setUnitId(null);
         }
     }, [selectedUnitCode, units]);
     useEffect(() => {
         const selectedUnit = units.find(unit => unit.name === selectedUnitName);
         if(selectedUnit){
             setSelectedUnitCode(selectedUnit.code);
+            setUnitId(selectedUnit.id);
         } else {
             setSelectedUnitCode("")
+            setUnitId(null);
         }
     }, [selectedUnitName, units])
-    console.log(units)
 
   return (
     <div className='w-full h-full mx-10 my-5'>

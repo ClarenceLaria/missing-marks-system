@@ -14,7 +14,6 @@ export default function Page() {
 
     const session = useSession();
     const email = session.data?.user?.email!;
-    console.log(email)
 
     useEffect(() => {
         const handleReportTotals = async () => {

@@ -80,6 +80,7 @@ model Unit {
   courses       UnitCourse[]
   lecturer      Staff    @relation(fields: [lecturerId], references: [id])
   lecturerId    Int
+  missingMarks  MissingMarksReport[]
 }
 
 model UnitCourse {
@@ -104,6 +105,8 @@ model MissingMarksReport {
   semester     Semester
   student      Student  @relation(fields: [studentId], references: [id])
   studentId    Int
+  unit         Unit     @relation(fields: [unitId], references: [id]) 
+  unitId       Int      
 }
 
 enum UserType {
