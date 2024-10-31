@@ -168,3 +168,66 @@ export async function fetchSingleReport(email: string, reportId: number){
         throw new Error("Could not fetch report details")
     }
 }
+
+export async function fetchLecturerMissingMarksTotals(email:string){
+    try{
+        const lecturer = await prisma.staff.findUnique({
+            where:{
+                email: email
+            }
+        })
+        const id = lecturer?.id;
+        const units = await prisma.unit.findMany({
+            where:{
+                lecturerId: id,
+            }
+        })
+        const unitIds = units.map(unit => unit.id);
+
+        const totalLecsMissingMarks = await prisma.missingMarksReport.count({
+            where:{
+                unitId: {
+                    in: unitIds
+                }
+            }
+        });
+        const pendingTotals = await prisma.missingMarksReport.count({
+            where:{
+                unitId: {
+                    in: unitIds
+                },
+                reportStatus: "PENDING"
+            }
+        })
+        const markFoundTotals = await prisma.missingMarksReport.count({
+            where:{
+                unitId: {
+                    in: unitIds
+                },
+                reportStatus: "MARK_FOUND"
+            }
+        })
+        const markNotFoundTotals = await prisma.missingMarksReport.count({
+            where:{
+                unitId: {
+                    in: unitIds
+                },
+                reportStatus: "MARK_NOT_FOUND"
+            }
+        })
+        const totalCleared = markFoundTotals + markNotFoundTotals;
+        const forInvestigationTotals = await prisma.missingMarksReport.count({
+            where:{
+                unitId: {
+                    in: unitIds
+                },
+                reportStatus: "FOR_FURTHER_INVESTIGATION"
+            }
+        })
+        return {totalLecsMissingMarks, forInvestigationTotals, markFoundTotals, markNotFoundTotals, pendingTotals, totalCleared};
+    }catch(error){
+        console.error("Error fetching missing marks:", error)
+        throw new Error("Could not fetch missing marks")
+    }
+
+}
