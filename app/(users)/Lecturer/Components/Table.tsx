@@ -9,6 +9,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { TableVirtuoso, TableComponents } from 'react-virtuoso';
+import Link from 'next/link';
 
 type Report = {
   id: number;
@@ -114,9 +115,11 @@ function rowContent(_index: number, row: Report) {
         <TableCell key={column.dataKey} align={column.numeric ? 'right' : 'left'}>
           {column.dataKey === 'date' ? (row.date as Date).toLocaleDateString() : row[column.dataKey]}
           {column.dataKey === 'button' ? 
-           <button className='bg-sky-300 rounded-full p-1 lg:rounded-md'>
-                    <h1 className='px-2 hidden lg:block'>View</h1>
-             </button> : ''}
+           <Link href={`/Lecturer/submissions/${row.id}`} >
+              <button className='bg-sky-300 rounded-full p-1 lg:rounded-md'>
+                <h1 className='px-2 hidden lg:block'>View</h1>
+              </button></Link> : ''}
+            
         </TableCell>
       ))}
     </>

@@ -261,3 +261,41 @@ export async function fetchLecturerMissingMarks(email: string){
         throw new Error("Could not fetch missing marks")
     }
 }
+
+export async function fetchSingleUnclearedReport(email: string, reportId:number){
+    try{
+        const lecturer = await prisma.staff.findUnique({
+            where:{
+                email: email,
+            }
+        })
+        const lecturerId = lecturer?.id;
+        const report = await prisma.missingMarksReport.findFirst({
+            where:{
+                id: reportId,
+                unit:{
+                    lecturerId: lecturerId,
+                },
+            },
+            include:{
+                student: true,
+                unit:true,
+            },
+        });
+        const student = report?.student;
+        const dept = await prisma.department.findUnique({
+            where:{
+                id: student?.departmentId,
+            },
+        });
+        const school = await prisma.school.findUnique({
+            where:{
+                id: dept?.schoolId,
+            },
+        });
+        return {report, student, dept, school};
+    }catch(error){
+        console.log('Error fetching single report:', error);
+        throw new Error('Could not fetch Single Report');
+    }
+}
