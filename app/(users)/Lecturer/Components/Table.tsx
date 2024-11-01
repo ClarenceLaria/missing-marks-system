@@ -30,6 +30,7 @@ interface ColumnData {
 
 interface TableProps {
   reports: Report[];
+  pageType: 'submissions' | 'cleared' | 'forwarded';
 }
 
 const columns: ColumnData[] = [
@@ -108,14 +109,14 @@ function fixedHeaderContent() {
   );
 }
 
-function rowContent(_index: number, row: Report) {
-  return (
+function rowContent(pageType: 'submissions' | 'cleared' | 'forwarded') {
+  const content = (_index: number, row: Report) => (
     <>
       {columns.map((column) => (
         <TableCell key={column.dataKey} align={column.numeric ? 'right' : 'left'}>
           {column.dataKey === 'date' ? (row.date as Date).toLocaleDateString() : row[column.dataKey]}
           {column.dataKey === 'button' ? 
-           <Link href={`/Lecturer/submissions/${row.id}`} >
+           <Link href={`/Lecturer/${pageType}/${row.id}`} >
               <button className='bg-sky-300 rounded-full p-1 lg:rounded-md'>
                 <h1 className='px-2 hidden lg:block'>View</h1>
               </button></Link> : ''}
@@ -124,17 +125,34 @@ function rowContent(_index: number, row: Report) {
       ))}
     </>
   );
+  content.displayName = "RowContent";
+  return content;
 }
 
-export default function ReactVirtualizedTable({reports}: TableProps) {
+export default function ReactVirtualizedTable({reports, pageType}: TableProps) {
   return (
     <Paper style={{ height: 550, width: '100%' }} className="mt-6">
       <TableVirtuoso
         data={reports}
         components={VirtuosoTableComponents}
         fixedHeaderContent={fixedHeaderContent}
-        itemContent={rowContent}
-      />
+        itemContent={(_index, row) => (
+        <>
+          {columns.map((column) => (
+            <TableCell key={column.dataKey} align={column.numeric ? 'right' : 'left'}>
+              {column.dataKey === 'date' ? (row.date as Date).toLocaleDateString() : row[column.dataKey]}
+              {column.dataKey === 'button' ? 
+                <Link href={`/Lecturer/${pageType}/${row.id}`}>
+                  <button className='bg-sky-300 rounded-full p-1 lg:rounded-md'>
+                    <h1 className='px-2 hidden lg:block'>View</h1>
+                  </button>
+                </Link> : ''}
+            </TableCell>
+          ))}
+        </>
+  )}
+/>
+
     </Paper>
   );
 }
