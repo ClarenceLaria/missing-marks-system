@@ -299,3 +299,23 @@ export async function fetchSingleUnclearedReport(email: string, reportId:number)
         throw new Error('Could not fetch Single Report');
     }
 }
+
+export async function fetchClearedReports(email:string){
+    try{
+        const lecturer = await prisma.staff.findUnique({
+            where:{
+                email: email,
+            }
+        })
+        const lecturerId = lecturer?.id;
+        const reports = await prisma.missingMarksReport.findMany({
+            where:{
+                unit:{
+                    lecturerId: lecturerId,
+                },
+                reportStatus: {in: ["MARK_FOUND", "MARK_NOT_FOUND"]},
+            },
+        });
+        return reports;
+    }catch(error){}
+}
