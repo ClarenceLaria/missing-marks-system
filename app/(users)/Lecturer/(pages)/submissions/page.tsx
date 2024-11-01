@@ -59,7 +59,7 @@ export default function Page() {
               <Search placeholder='Search for a Reported Missing mark...'></Search>
             </Suspense>
             <Suspense fallback={<Loading/>}>
-              <Table reports={transformedReports}></Table>
+              <Table pageType='submissions' reports={transformedReports}></Table>
             </Suspense>
         </div>
     </div>
