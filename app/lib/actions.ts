@@ -231,3 +231,33 @@ export async function fetchLecturerMissingMarksTotals(email:string){
     }
 
 }
+
+export async function fetchLecturerMissingMarks(email: string){
+    try{
+        const lecturer = await prisma.staff.findUnique({
+            where:{
+                email: email
+            }
+        })
+        const id = lecturer?.id;
+        const units = await prisma.unit.findMany({
+            where:{
+                lecturerId: id,
+            }
+        })
+        const unitIds = units.map(unit => unit.id);
+
+        const reports = await prisma.missingMarksReport.findMany({
+            where:{
+                unitId: {
+                    in: unitIds
+                },
+                reportStatus: { in: ["FOR_FURTHER_INVESTIGATION", "PENDING"] }
+            }
+        })
+        return reports;
+    }catch(error){
+        console.error("Error fetching missing marks:", error)
+        throw new Error("Could not fetch missing marks")
+    }
+}

@@ -12,7 +12,7 @@ export default function page() {
               <Search placeholder='Search for a forwarded Missing mark...'></Search>
             </Suspense>
             <Suspense fallback={<Loading/>}>
-              <Table></Table>
+              {/* <Table></Table> */}
             </Suspense>
         </div>
     </div>
