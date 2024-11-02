@@ -37,7 +37,11 @@ export default   function NavBar() {
   }
 
   const handleLogout = () => {
+    if(session?.userType === 'STUDENT'){
     signOut({callbackUrl: '/'})
+    } else {
+      signOut({callbackUrl: '/login'})
+    }
   };
   return (
     <div className='w-full h-full flex items-center justify-around px-1 sm:px-4 lg:px-8 '>
