@@ -63,6 +63,20 @@ export async function fetchStudentProfile(email: string){
     }
 }
 
+export async function fetchStaffProfile(email: string){
+    try{
+        const user = await prisma.staff.findUnique({
+            where: {
+                email: email,
+            }
+        })
+        return user;
+    } catch (error){
+        console.error('Error fetching user profile:', error)
+        throw new Error('Could not fetch user profile')
+    }
+}
+
 
 export async function fetchMissingReports(email: string){
     const student = await prisma.student.findUnique({
