@@ -27,14 +27,14 @@ export default   function NavBar() {
       document.removeEventListener('click', handleClickOutside);
     };
   }, [visible]);
-  // const { data: session } = useSession();
+  const { data: session } = useSession();
   let profileLink = '/Student/profile'; 
 
-  // if (session?.user.userType === 'LECTURER') {
-  //   profileLink = '/Lecturer/profile';
-  // } else if (session?.user.userType === 'ADMIN') {
-  //   profileLink = '/Admin/profile';
-  // }
+  if (session?.userType === 'LECTURER') {
+    profileLink = '/Lecturer/profile';
+  } else if (session?.userType === 'ADMIN') {
+    profileLink = '/Admin/profile';
+  }
 
   const handleLogout = () => {
     signOut({callbackUrl: '/'})

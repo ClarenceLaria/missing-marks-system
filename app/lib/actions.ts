@@ -317,5 +317,31 @@ export async function fetchClearedReports(email:string){
             },
         });
         return reports;
-    }catch(error){}
+    }catch(error){
+        console.error('Error fetching cleared reports:', error)
+        throw new Error('Could not fetch cleared reports')
+    }
+}
+
+export async function fetchForwardedReport(email:string){
+    try{
+        const lecturer = await prisma.staff.findUnique({
+            where: {
+                email: email,
+            }
+        });
+        const lecturerId = lecturer?.id;
+        const reports = await prisma.missingMarksReport.findMany({
+            where:{
+                unit:{
+                    lecturerId: lecturerId,
+                },
+                reportStatus: "FOR_FURTHER_INVESTIGATION",
+            }
+        });
+        return reports;
+    }catch(error){
+        console.error('Error fetching forwarded reports:', error)
+        throw new Error('Could not fetch forwarded reports')
+    }
 }

@@ -1,4 +1,5 @@
 'use client'
+import Loader from '@/app/Components/Loader';
 import { fetchLecturerMissingMarksTotals } from '@/app/lib/actions';
 import { useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react'
@@ -10,12 +11,14 @@ export default function Page() {
   const [notFoundTotals, setNotFoundTotals] = useState(Number);
   const [investigationTotals, setInvestigationTotals] = useState(Number);
   const [clearedMarks, setClearedMarks] = useState(Number);
+  const [loading, setLoading] = useState(true);
 
   const session = useSession();
   const email = session.data?.user?.email!;
 
   useEffect(() => {
     const handleReportTotals = async () => {
+      setLoading(true);
       const totals = await fetchLecturerMissingMarksTotals(email);
       setTotals(totals.totalLecsMissingMarks);
       setPendingTotals(totals.pendingTotals);
@@ -23,10 +26,13 @@ export default function Page() {
       setNotFoundTotals(totals.markNotFoundTotals);
       setClearedMarks(totals.totalCleared);
       setInvestigationTotals(totals.forInvestigationTotals);
+      setLoading(false);
     }
     handleReportTotals();
   }, [email]);
   console.log(totals)
+
+  if (loading) return <Loader/>;
   return (
     <div className='w-full h-full'>
         <div className='w-full py-5 flex flex-row justify-evenly'>
