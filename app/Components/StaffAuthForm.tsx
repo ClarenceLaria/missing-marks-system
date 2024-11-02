@@ -54,13 +54,13 @@ export default function StaffAuthForm() {
     }
   });
 
-  const isValidEmail = (phoneNumber: string) => {
+  const isValidEmail = (email: string) => {
     const emailRegex = /^[a-z][a-z0-9._%+-]*@[a-z0-9.-]+\.[a-z]{2,}$/; //This rejects emails like 123@gmail.com and accepts emails like example123@gmail.com, all emails must be lowercase
-    return emailRegex.test(phoneNumber);
+    return emailRegex.test(email);
   };
-  const validatePhoneNumber = (regNo: string) => {
-    const pattern = /^[A-Z]{3}\/B\/\d{2}-\d{5}\/\d{4}$/;
-    return pattern.test(regNo);
+  const isValidPhoneNumber = (phoneNumber: string): boolean => {
+    const phoneRegex = /^[0-9]{10}$/;
+    return phoneRegex.test(phoneNumber);
   };
 
   const handleSubmit = async () => {
@@ -76,7 +76,7 @@ export default function StaffAuthForm() {
       toast.error('Please enter a valid email address');
       return;
     }
-
+    
     if (variant === 'LOGIN'){
       if(formData.email === ''|| formData.email===null || formData.password === ''|| formData.password===null){
         toggleLoading();
@@ -97,6 +97,10 @@ console.log(formData)
 
       if (variant === 'REGISTER') {
         try {
+          if(!isValidPhoneNumber(formData.phoneNumber)){
+            toast.error('Please enter a valid phone number');
+            return;
+          }
 
           toast.loading("Sending request...");
       
