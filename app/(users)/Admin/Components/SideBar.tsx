@@ -2,7 +2,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { HomeIcon, UserCircleIcon,  ArrowRightEndOnRectangleIcon, PlusCircleIcon , ClockIcon } from '@heroicons/react/24/outline';
+import { HomeIcon, UserGroupIcon, AcademicCapIcon,  ArrowRightEndOnRectangleIcon, PlusCircleIcon , ClockIcon } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
 
 export default function SideNav() {
@@ -11,7 +11,8 @@ export default function SideNav() {
   const links = [
     
     { name: 'Home', href: '/Admin', icon: HomeIcon },
-    { name: 'Users', href: '/Admin/users', icon: UserCircleIcon },
+    { name: 'Lecturers', href: '/Admin/lecturers', icon: UserGroupIcon },
+    { name: 'Students', href: '/Admin/students', icon: AcademicCapIcon },
     { name: 'Pending', href: '/Admin/pending', icon: ClockIcon },
     { name: 'Add Lecturer', href: '/Admin/addLec', icon: PlusCircleIcon },
     { name: 'Logout', href: '/', icon: ArrowRightEndOnRectangleIcon },
