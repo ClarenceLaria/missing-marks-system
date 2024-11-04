@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import Table from '@/app/(users)/Admin/Components/AddLec';
+import Table from '@/app/(users)/Admin/Components/Table'
 import Search from '@/app/(users)/Student/Components/Search';
 
 // Create a fallback component for loading state
