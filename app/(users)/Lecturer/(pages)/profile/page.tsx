@@ -74,9 +74,9 @@ export default function Page() {
             </div>
             <div className='w-[18vw] mx-auto'>
                 <Input
-                    id='RegNo'
-                    name='RegNo'
-                    label='Registration Number'
+                    id='PhoneNo'
+                    name='PhoneNo'
+                    label='Phone Number'
                     required
                     type='text'
                     placeholder={staff?.phoneNumber || ''}

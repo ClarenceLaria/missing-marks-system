@@ -30,7 +30,6 @@ export default function Page() {
     }
     handleReportTotals();
   }, [email]);
-  console.log(totals)
 
   if (loading) return <Loader/>;
   return (
