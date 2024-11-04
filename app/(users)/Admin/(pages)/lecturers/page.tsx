@@ -1,5 +1,5 @@
 import React, {Suspense} from 'react'
-import Table from '@/app/(users)/Admin/Components/UserTable'
+import Table from '@/app/(users)/Admin/Components/LecturersTable';
 import Search from '@/app/(users)/Student/Components/Search'
 
 const Loading = () => <div>Loading...</div>;

@@ -13,19 +13,17 @@ import { TableVirtuoso, TableComponents } from 'react-virtuoso';
 interface Data {
   name: string;
   email: String;
-  regNo: string;
+  phoneNo: string;
   role: string;
-  button?: string;
 }
 
 function createData(
   name: string,
   email: String,
-  regNo: string,
+  phoneNo: string,
   role: string,
-  button?: string,
 ) {
-  return { name, email, regNo, role, button};
+  return { name, email, phoneNo, role};
 }
 
 interface ColumnData {
@@ -36,13 +34,13 @@ interface ColumnData {
   button?: string;
 }
 
-const data = 'Student'
-const sample = [createData('Byrone Kingsly', 'byronekingsly@gmail.com', 'MMUST/22807/2011', 'Student')];
+const data = 'Lecturer'
+const sample = [createData('Clarence Laria', 'clarencelaria@gmail.com', '0700000000', 'Lecturer')];
 
 const columns: ColumnData[] = [
   {
     width: 200,
-    label: 'User Name',
+    label: "Lecturer's Name",
     dataKey: 'name',
   },
   {
@@ -52,21 +50,15 @@ const columns: ColumnData[] = [
     numeric: true,
   },
   {
-    width: 120,
-    label: 'Reg Number',
-    dataKey: 'regNo',
-    numeric: true,
-  },
-  {
-    width: 120,
-    label: 'user Role',
-    dataKey: 'role',
+    width: 150,
+    label: 'Phone Number',
+    dataKey: 'phoneNo',
     numeric: true,
   },
   {
     width: 150,
-    label: 'Action',
-    dataKey: 'button',
+    label: 'user Role',
+    dataKey: 'role',
     numeric: true,
   },
 ];
@@ -74,7 +66,7 @@ const columns: ColumnData[] = [
 // Generate rows
 const rows: Data[] = Array.from({ length: 20 }, () => {
   const randomSelection = sample[Math.floor(Math.random() * sample.length)];
-  return createData(randomSelection.name, randomSelection.email, randomSelection.regNo, randomSelection.role);
+  return createData(randomSelection.name, randomSelection.email, randomSelection.phoneNo, randomSelection.role);
 });
 
 const VirtuosoTableComponents: TableComponents<Data> = {
@@ -127,10 +119,6 @@ function rowContent(_index: number, row: Data) {
       {columns.map((column) => (
         <TableCell key={column.dataKey} align={column.numeric ? 'right' : 'left'}>
           {row[column.dataKey]}
-          {column.dataKey === 'button' ? 
-           <button className='bg-sky-300 rounded-full p-1 lg:rounded-md'>
-                    <h1 className='px-2 hidden lg:block'>Add</h1>
-             </button> : ''}
         </TableCell>
       ))}
     </>
