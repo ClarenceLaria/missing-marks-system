@@ -32,7 +32,7 @@ export default   function NavBar() {
 
   if (session?.userType === 'LECTURER') {
     profileLink = '/Lecturer/profile';
-  } else if (session?.userType === 'ADMIN') {
+  } else if (session?.userType === 'ADMIN' || session?.userType === 'COD' || session?.userType === '') {
     profileLink = '/Admin/profile';
   }
 
