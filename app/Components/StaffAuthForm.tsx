@@ -43,8 +43,11 @@ export default function StaffAuthForm() {
       const userType = session.userType as UserType
       if (userType === 'LECTURER') {
         router.push('/Lecturer');
-      }
-       else if(userType === 'ADMIN' || userType === 'COD' || userType === 'DEAN') {
+      }else if (userType === 'COD'){
+        router.push('/cod');
+      }else if (userType === 'DEAN'){
+        router.push('/dean');
+      }else if(userType === 'ADMIN') {
         router.push('/Admin');
       }else if(userType === 'SUPERADMIN'){
         router.push('/SuperAdmin/Dashboard')
