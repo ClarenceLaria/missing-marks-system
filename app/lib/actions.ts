@@ -418,6 +418,32 @@ export async function fetchDepartmentTotals(email: string) {
         return {totalReports, pendingTotals, clearedTotals, markFoundTotals, notFoundTotals, forwardedTotals};
     }catch(error){
         console.error('Error fetching department totals:', error)
-        throw new Error("Could not fetch Totals")
+        throw new Error("Could not fetch missing mark Totals")
+    }
+}
+
+export async function fetchDepartmentUserTotals(email: string) {
+    try{
+        const cod = await prisma.staff.findUnique({
+            where:{
+                email: email,
+            }
+        })
+        const codDeptId = cod?.departmentId;
+        const lecturers = await prisma.staff.count({
+            where:{
+                departmentId: codDeptId,
+            }
+        })
+        const students = await prisma.student.count({
+            where:{
+                departmentId: codDeptId,
+            }
+        })
+        const totalUsers = lecturers + students;
+        return {lecturers, students, totalUsers}
+    }catch(error){
+        console.error("Error fetching user totals", error)
+        throw new Error("Could not fetch User Totals")
     }
 }

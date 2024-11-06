@@ -1,6 +1,6 @@
 'use client'
 import Loader from '@/app/Components/Loader';
-import { fetchDepartmentTotals } from '@/app/lib/actions';
+import { fetchDepartmentTotals, fetchDepartmentUserTotals } from '@/app/lib/actions';
 import { useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react'
 import toast from 'react-hot-toast';
@@ -13,6 +13,9 @@ export default function Page() {
     const [clearedTotals, setClearedTotals] = useState(Number);
     const [forwardedTotals, setForwardedTotals] = useState(Number);
     const [loading, setLoading] = useState(true);
+    const [totalLecturers, setTotalLecturers] = useState<number>();
+    const [totalStudents, setTotalStudents] = useState<number>()
+    const [totalUsers, setTotalUsers] = useState<number>();
 
     const session= useSession();
     const email = session.data?.user?.email!;
@@ -34,9 +37,18 @@ export default function Page() {
         };
         handleFetchTotals();
     }, [email])
+        
+    useEffect(() => {
+        const handleUserTotals = async() =>{
+            setLoading(true)
+            const userTotals = await fetchDepartmentUserTotals(email);
+            setTotalLecturers(userTotals.lecturers);
+            setTotalStudents(userTotals.students);
+            setTotalUsers(userTotals.totalUsers);
+        }
+        handleUserTotals();
+    }, [email])
     if (loading) return <Loader/>;
-    console.log(pendingTotals)
-    console.log(email)
   return (
     <div className='w-full h-full'>
         <div>
@@ -73,15 +85,15 @@ export default function Page() {
             <div className='w-full py-5 flex flex-row justify-evenly'>
                 <div className='w-44 h-44 rounded-lg text-center shadow-lg flex flex-col justify-center items-center'>
                     <h1>Total Users</h1>
-                    <h1>3</h1>
+                    <h1>{totalUsers}</h1>
                 </div>
                 <div className='w-44 h-44 rounded-lg  text-center shadow-lg flex flex-col justify-center items-center'>
                 <h1>Total Students</h1>
-                <h1>3</h1>
+                <h1>{totalStudents}</h1>
                 </div>
                 <div className='w-44 h-44 rounded-lg text-center shadow-lg flex flex-col justify-center items-center'>
                     <h1>Total Lecturers</h1>
-                    <h1>3</h1>
+                    <h1>{totalLecturers}</h1>
                 </div>
             </div>
         </div>
