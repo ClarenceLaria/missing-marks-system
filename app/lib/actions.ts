@@ -359,3 +359,65 @@ export async function fetchForwardedReport(email:string){
         throw new Error('Could not fetch forwarded reports')
     }
 }
+
+export async function fetchDepartmentTotals(email: string) {
+    try{
+        const cod = await prisma.staff.findUnique({
+            where:{
+                email: email,
+            }
+        });
+        const codDeptId = cod?.departmentId
+        const totalReports = await prisma.missingMarksReport.count({
+            where:{
+                student:{
+                    departmentId: codDeptId,
+                }
+            }
+        })
+        const pendingTotals = await prisma.missingMarksReport.count({
+            where:{
+                student:{
+                    departmentId: codDeptId,
+                },
+                reportStatus: "PENDING"
+            }
+        })
+        const markFoundTotals = await prisma.missingMarksReport.count({
+            where:{
+                student:{
+                    departmentId: codDeptId,
+                },
+                reportStatus: "MARK_FOUND"
+            }
+        })
+        const notFoundTotals = await prisma.missingMarksReport.count({
+            where:{
+                student:{
+                    departmentId: codDeptId,
+                },
+                reportStatus: "MARK_FOUND"
+            }
+        })
+        const forwardedTotals = await prisma.missingMarksReport.count({
+            where:{
+                student:{
+                    departmentId: codDeptId,
+                },
+                reportStatus: "FOR_FURTHER_INVESTIGATION"
+            }
+        })
+        const clearedTotals = await prisma.missingMarksReport.count({
+            where:{
+                student:{
+                    departmentId: codDeptId,
+                },
+                reportStatus: { in: ["MARK_FOUND", "MARK_NOT_FOUND"]}
+            }
+        })
+        return {totalReports, pendingTotals, clearedTotals, markFoundTotals, notFoundTotals, forwardedTotals};
+    }catch(error){
+        console.error('Error fetching department totals:', error)
+        throw new Error("Could not fetch Totals")
+    }
+}
