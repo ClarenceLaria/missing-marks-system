@@ -122,7 +122,7 @@ export default function ReactVirtualizedTable({reports, pageType}: TableProps) {
             <TableCell key={column.dataKey} align={column.numeric ? 'right' : 'left'}>
               {column.dataKey === 'date' ? (row.date as Date).toLocaleDateString() : row[column.dataKey]}
               {column.dataKey === 'button' ? 
-                <Link href={`/Lecturer/${pageType}/${row.id}`}>
+                <Link href={`/cod/${pageType}/${row.id}`}>
                   <button className='bg-sky-300 rounded-full p-1 lg:rounded-md'>
                     <h1 className='px-2 hidden lg:block'>View</h1>
                   </button>

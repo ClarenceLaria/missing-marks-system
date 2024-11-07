@@ -511,3 +511,31 @@ export async function fetchDepartmentReports(email: string){
         console.error("Error fetching Department Missing Marks:", error);
     }
 }
+
+export async function fetchDepartmentSingleReport(reportId: number){
+    try{
+        const report = await prisma.missingMarksReport.findFirst({
+            where:{
+                id: reportId,
+            },
+            include:{
+                student: true,
+                unit:true,
+            },
+        });
+        const student = report?.student;
+        const dept = await prisma.department.findUnique({
+            where:{
+                id: student?.departmentId,
+            },
+        });
+        const school = await prisma.school.findUnique({
+            where:{
+                id: dept?.schoolId,
+            },
+        });
+        return {report, student, dept, school};
+    }catch(error){
+        console.error("Error fetching Report: ", error);
+    }
+}
