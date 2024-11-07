@@ -472,3 +472,34 @@ export async function fetchDepartmentUsers(email:string){
         throw new Error("Could not fetch Department Users")
     }
 }
+
+export async function fetchDepartmentReports(email: string){
+    try{
+        const cod = await prisma.staff.findUnique({
+            where:{
+                email: email,
+            }
+        })
+        const codDeptId = cod?.departmentId;
+
+        const pendingReports = await prisma.missingMarksReport.findMany({
+            where:{
+                student: {
+                    departmentId: codDeptId,
+                },
+                reportStatus: "PENDING",
+            }
+        })
+        const forwardedReports = await prisma.missingMarksReport.findMany({
+            where:{
+                student: {
+                    departmentId: codDeptId,
+                },
+                reportStatus: "FOR_FURTHER_INVESTIGATION",
+            }
+        })
+        return {pendingReports, forwardedReports};
+    }catch(error){
+        console.error("Error fetching Department Missing Marks:", error);
+    }
+}

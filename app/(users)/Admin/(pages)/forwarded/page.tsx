@@ -13,7 +13,7 @@ export default function Page() {
           <Search placeholder="Search for a User..." />
         </Suspense>
         <Suspense fallback={<Loading />}>
-          <Table />
+          {/* <Table /> */}
         </Suspense>
       </div>
     </div>
