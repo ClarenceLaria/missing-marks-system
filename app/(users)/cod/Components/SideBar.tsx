@@ -2,7 +2,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { HomeIcon, UserGroupIcon, AcademicCapIcon,  ArrowRightEndOnRectangleIcon, PaperAirplaneIcon , ClockIcon } from '@heroicons/react/24/outline';
+import { HomeIcon, UserGroupIcon, AcademicCapIcon,  ArrowRightEndOnRectangleIcon, PaperAirplaneIcon , ClockIcon, DocumentCheckIcon } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
 import { signOut } from 'next-auth/react';
 
@@ -15,6 +15,7 @@ export default function SideNav() {
     { name: 'Lecturers', href: '/cod/lecturers', icon: UserGroupIcon },
     { name: 'Students', href: '/cod/students', icon: AcademicCapIcon },
     { name: 'Pending', href: '/cod/pending', icon: ClockIcon },
+    { name: 'Cleared', href: '/cod/cleared', icon: DocumentCheckIcon },
     { name: 'Forwarded', href: '/cod/forwarded', icon: PaperAirplaneIcon },
     { name: 'Logout', href: '/', icon: ArrowRightEndOnRectangleIcon },
 ];

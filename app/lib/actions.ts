@@ -482,6 +482,14 @@ export async function fetchDepartmentReports(email: string){
         })
         const codDeptId = cod?.departmentId;
 
+        const clearedReports = await prisma.missingMarksReport.findMany({
+            where:{
+                student: {
+                    departmentId: codDeptId,
+                },
+                reportStatus: { in: ["MARK_FOUND", "MARK_NOT_FOUND"]},
+            }
+        })
         const pendingReports = await prisma.missingMarksReport.findMany({
             where:{
                 student: {
@@ -498,7 +506,7 @@ export async function fetchDepartmentReports(email: string){
                 reportStatus: "FOR_FURTHER_INVESTIGATION",
             }
         })
-        return {pendingReports, forwardedReports};
+        return {pendingReports, forwardedReports, clearedReports};
     }catch(error){
         console.error("Error fetching Department Missing Marks:", error);
     }

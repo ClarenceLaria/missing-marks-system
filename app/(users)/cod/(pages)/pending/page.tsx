@@ -40,6 +40,7 @@ export default function Page() {
   if (loading) return <Loader/>;
 
   const transformedReports = pendingReports?.map(pending => ({
+    id: pending.id,
     title: pending.unitName,
     unitCode: pending.unitCode,
     date: pending.createdAt,
@@ -52,7 +53,7 @@ export default function Page() {
                 <Search placeholder='Search for a Pending Missing Mark...'></Search>
             </Suspense>
             <Suspense fallback={<Loading/>}>
-                <Table reports={transformedReports}></Table>
+                <Table pageType='pending' reports={transformedReports}></Table>
             </Suspense>
         </div>
     </div>
