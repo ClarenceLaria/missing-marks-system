@@ -36,7 +36,7 @@ export default function Page() {
   },[email])
 
   const transformedLecturers = lecturers.map(lecturer => ({
-    name: lecturer.firstName + lecturer.secondName,
+    name: lecturer.firstName + " " + lecturer.secondName,
     email: lecturer.email,
     phoneNo: lecturer.phoneNumber,
     role: lecturer.userType,

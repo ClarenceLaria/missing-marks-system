@@ -10,32 +10,24 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { TableVirtuoso, TableComponents } from 'react-virtuoso';
 
-interface Data {
+interface Student {
   name: string;
   email: String;
   regNo: string;
   role: string;
 }
 
-function createData(
-  name: string,
-  email: String,
-  regNo: string,
-  role: string,
-) {
-  return { name, email, regNo, role};
-}
-
 interface ColumnData {
-  dataKey: keyof Data;
+  dataKey: keyof Student;
   label: string;
   numeric?: boolean;
   width: number;
   button?: string;
 }
 
-const data = 'Student'
-const sample = [createData('Clarence Laria', 'clarencelaria@gmail.com', 'SIT/B/01-02287/2021', 'Student')];
+interface TableProps{
+  students: Student[];
+}
 
 const columns: ColumnData[] = [
   {
@@ -63,13 +55,7 @@ const columns: ColumnData[] = [
   },
 ];
 
-// Generate rows
-const rows: Data[] = Array.from({ length: 20 }, () => {
-  const randomSelection = sample[Math.floor(Math.random() * sample.length)];
-  return createData(randomSelection.name, randomSelection.email, randomSelection.regNo, randomSelection.role);
-});
-
-const VirtuosoTableComponents: TableComponents<Data> = {
+const VirtuosoTableComponents: TableComponents<Student> = {
   Scroller: React.forwardRef<HTMLDivElement>((props, ref) => (
     <TableContainer component={Paper} {...props} ref={ref} />
   )),
@@ -113,7 +99,7 @@ function fixedHeaderContent() {
   );
 }
 
-function rowContent(_index: number, row: Data) {
+function rowContent(_index: number, row: Student) {
   return (
     <>
       {columns.map((column) => (
@@ -125,11 +111,11 @@ function rowContent(_index: number, row: Data) {
   );
 }
 
-export default function ReactVirtualizedTable() {
+export default function ReactVirtualizedTable({students}: TableProps) {
   return (
     <Paper style={{ height: 550, width: '100%' }} className="mt-6">
       <TableVirtuoso
-        data={rows}
+        data={students}
         components={VirtuosoTableComponents}
         fixedHeaderContent={fixedHeaderContent}
         itemContent={rowContent}
