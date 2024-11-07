@@ -447,3 +447,28 @@ export async function fetchDepartmentUserTotals(email: string) {
         throw new Error("Could not fetch User Totals")
     }
 }
+
+export async function fetchDepartmentUsers(email:string){
+    try{
+        const cod = await prisma.staff.findUnique({
+            where:{
+                email: email,
+            }
+        })
+        const codDeptId = cod?.departmentId;
+        const lecturers = await prisma.staff.findMany({
+            where:{
+                departmentId: codDeptId,
+            }
+        })
+        const students = await prisma.student.findMany({
+            where:{
+                departmentId: codDeptId,
+            }
+        })
+        return {students, lecturers};
+    }catch(error){
+        console.error("Error fetching Department Users", error);
+        throw new Error("Could not fetch Department Users")
+    }
+}
