@@ -34,7 +34,7 @@ export default function Page() {
                 const lecturerProfile = await fetchStaffProfile(email);
                 setStaff(lecturerProfile);
             }catch(error){
-                console.error("Error fetching Lecturer's profile:", error)
+                console.error("Error fetching COD's profile:", error)
             } finally{
                 setLoading(false);
             }
