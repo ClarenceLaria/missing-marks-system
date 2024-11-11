@@ -56,20 +56,27 @@ const columns: ColumnData[] = [
 ];
 
 const VirtuosoTableComponents: TableComponents<Student> = {
-  Scroller: React.forwardRef<HTMLDivElement>((props, ref) => (
-    <TableContainer component={Paper} {...props} ref={ref} />
-  )),
-  Table: (props) => (
-    <Table {...props} sx={{ borderCollapse: 'separate', tableLayout: 'fixed' }} />
-  ),
-  TableHead: React.forwardRef<HTMLTableSectionElement>((props, ref) => (
-    <TableHead {...props} ref={ref} />
-  )),
-  TableRow,
-  TableBody: React.forwardRef<HTMLTableSectionElement>((props, ref) => (
-    <TableBody {...props} ref={ref} />
-  )),
-};
+    Scroller: React.forwardRef<HTMLDivElement>((props, ref) => (
+      <TableContainer component={Paper} {...props} ref={ref} />
+    )),
+    Table: (props) => (
+      <Table {...props} sx={{ borderCollapse: 'separate', tableLayout: 'fixed' }} />
+    ),
+    TableHead: React.forwardRef<HTMLTableSectionElement>((props, ref) => (
+      <TableHead {...props} ref={ref} />
+    )),
+    TableRow,
+    TableBody: React.forwardRef<HTMLTableSectionElement>((props, ref) => (
+      <TableBody {...props} ref={ref} />
+    )),
+    EmptyPlaceholder: () => (
+      <TableRow>
+        <TableCell colSpan={columns.length} align="center">
+          <div className="p-4 text-gray-500">There are no Students here!</div>
+        </TableCell>
+      </TableRow>
+    ),
+  };
 
 if (VirtuosoTableComponents.Scroller) {
   VirtuosoTableComponents.Scroller.displayName = 'Scroller';
