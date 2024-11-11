@@ -1,10 +1,10 @@
 'use client'
-import React, { Suspense, useEffect, useState } from 'react';
+import React,{Suspense, use, useEffect, useState} from 'react'
 import Table from '@/app/(users)/Admin/Components/Table'
-import Search from '@/app/(users)/Student/Components/Search';
-import { ExamType, ReportStatus, Semester } from '@prisma/client';
+import Search from '@/app/(users)/Student/Components/Search'
 import { useSession } from 'next-auth/react';
 import { fetchSchoolReports } from '@/app/lib/actions';
+import { ExamType, ReportStatus, Semester } from '@prisma/client';
 import Loader from '@/app/Components/Loader';
 
 const Loading = () => <div>Loading...</div>;
@@ -23,7 +23,7 @@ interface missingReport {
   unitId: number;
 }
 export default function Page() {
-  const [reports, setReports] = useState<missingReport[]>([]);
+  const [report, setReport] = useState<missingReport[]>([]);
   const [loading, setLoading] = useState(true);
 
   const session = useSession();
@@ -33,8 +33,8 @@ export default function Page() {
       try{
         setLoading(true);
         const result = await fetchSchoolReports(email);
-        const forwardedReports = result?.forwardedReports || [];
-        setReports(forwardedReports);
+        const pendingReports = result?.clearedReports || [];
+        setReport(pendingReports);
         setLoading(false);
       }catch(error){
         console.log("Error fetching reports: ", error);
@@ -42,9 +42,9 @@ export default function Page() {
     };
     handleFetchReports();
   },[email])
-  if (loading) return <Loader/>;
+  if (loading) return <Loader/>
 
-  const transformedReports = reports.map((report) => ({
+  const transformedReports = report.map((report) => ({
     id: report.id,
     title: report.unitName,
     unitCode: report.unitCode,
@@ -52,15 +52,15 @@ export default function Page() {
     status: report.reportStatus,
   }));
   return (
-    <div className="w-full h-full">
-      <div className="p-10">
-        <Suspense fallback={<Loading />}>
-          <Search placeholder="Search for a User..." />
-        </Suspense>
-        <Suspense fallback={<Loading />}>
-          <Table pageType='forwarded' reports={transformedReports}/>
-        </Suspense>
-      </div>
+    <div className='w-full h-full'>
+        <div className='p-10'>
+            <Suspense fallback={<Loading/>}>
+                <Search placeholder='Search for a Pending Missing Mark...'></Search>
+            </Suspense>
+            <Suspense fallback={<Loading/>}>
+                <Table pageType='cleared' reports={transformedReports}></Table>
+            </Suspense>
+        </div>
     </div>
-  );
+  )
 }
