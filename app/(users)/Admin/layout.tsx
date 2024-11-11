@@ -19,6 +19,15 @@ export default async function StudentLayout({
     redirect('/')
   }
   const userType =session?.userType
+  if (userType === 'STUDENT') {
+    redirect('/Student/home');
+  } else if (userType === 'LECTURER') {
+    redirect('/Lecturer');
+  } else if (userType === 'COD') {
+    redirect('/cod');
+  } else if (userType === 'SUPERADMIN') {
+    redirect('/SuperAdmin');
+  }
   return (
     <>
       <div className="w-screen h-screen flex flex-col overflow-hidden">
