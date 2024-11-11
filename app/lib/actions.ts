@@ -712,3 +712,35 @@ export async function fetchSchoolUsers(email: string){
         console.error("Error Fetching School Users: ", error);
     }
 }
+
+export async function fetchSchoolReports(email: string){
+    try{
+        const dean = await prisma.staff.findUnique({
+            where:{
+                email: email,
+            },
+        });
+
+        const deptId = dean?.departmentId;
+        const dept = await prisma.department.findUnique({
+            where:{
+                id: deptId,
+            }
+        });
+        const schoolId = dept?.schoolId;
+        const pendingReports = await prisma.missingMarksReport.findMany({
+            where:{
+                reportStatus: "PENDING",
+                student:{
+                    department:{
+                        schoolId: schoolId,
+                    }
+                }
+            }
+        });
+
+        return {pendingReports};
+    }catch(error){
+        console.error("Error fetching missing marks: ", error)
+    }
+}
