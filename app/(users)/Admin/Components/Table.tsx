@@ -1,4 +1,4 @@
-'use client'; // Ensure this file runs on the client-side
+'use client';
 
 import * as React from 'react';
 import Table from '@mui/material/Table';
@@ -11,14 +11,14 @@ import Paper from '@mui/material/Paper';
 import { TableVirtuoso, TableComponents } from 'react-virtuoso';
 import Link from 'next/link';
 
-interface Report {
+type Report = {
   id: number;
   title: string;
   unitCode: string;
   date: Date;
   status: string;
   button?: string;
-}
+};
 
 interface ColumnData {
   dataKey: keyof Report;
@@ -29,40 +29,16 @@ interface ColumnData {
 }
 
 interface TableProps {
-  reports: Report[],
-  pageType: 'cleared' | 'pending' | 'forwarded';
+  reports: Report[];
+  pageType: 'pending' | 'cleared' | 'forwarded';
 }
 
 const columns: ColumnData[] = [
-  {
-    width: 200,
-    label: 'Unit Name',
-    dataKey: 'title',
-  },
-  {
-    width: 120,
-    label: 'Unit Code',
-    dataKey: 'unitCode',
-    numeric: true,
-  },
-  {
-    width: 120,
-    label: 'Date',
-    dataKey: 'date',
-    numeric: true,
-  },
-  {
-    width: 150,
-    label: 'Action',
-    dataKey: 'button',
-    numeric: true,
-  },
-  {
-    width: 150,
-    label: 'Status',
-    dataKey: 'status',
-    numeric: true,
-  },
+  { width: 200, label: 'Unit Name', dataKey: 'title' },
+  { width: 120, label: 'Unit Code', dataKey: 'unitCode', numeric: true },
+  { width: 120, label: 'Date', dataKey: 'date', numeric: true },
+  { width: 150, label: 'Action', dataKey: 'button', numeric: true },
+  { width: 150, label: 'Status', dataKey: 'status', numeric: true },
 ];
 
 const VirtuosoTableComponents: TableComponents<Report> = {
@@ -79,6 +55,13 @@ const VirtuosoTableComponents: TableComponents<Report> = {
   TableBody: React.forwardRef<HTMLTableSectionElement>((props, ref) => (
     <TableBody {...props} ref={ref} />
   )),
+  EmptyPlaceholder: () => (
+    <TableRow>
+      <TableCell colSpan={columns.length} align="center">
+        <div className="p-4 text-gray-500">There are no missing marks here!</div>
+      </TableCell>
+    </TableRow>
+  ),
 };
 
 if (VirtuosoTableComponents.Scroller) {
@@ -109,7 +92,7 @@ function fixedHeaderContent() {
   );
 }
 
-export default function ReactVirtualizedTable({reports, pageType}: TableProps) {
+export default function ReactVirtualizedTable({ reports, pageType }: TableProps) {
   return (
     <Paper style={{ height: 550, width: '100%' }} className="mt-6">
       <TableVirtuoso
@@ -117,20 +100,25 @@ export default function ReactVirtualizedTable({reports, pageType}: TableProps) {
         components={VirtuosoTableComponents}
         fixedHeaderContent={fixedHeaderContent}
         itemContent={(_index, row) => (
-        <>
-          {columns.map((column) => (
-            <TableCell key={column.dataKey} align={column.numeric ? 'right' : 'left'}>
-              {column.dataKey === 'date' ? (row.date as Date).toLocaleDateString() : row[column.dataKey]}
-              {column.dataKey === 'button' ? 
-                <Link href={`/cod/${pageType}/${row.id}`}>
-                  <button className='bg-sky-300 rounded-full p-1 lg:rounded-md'>
-                    <h1 className='px-2 hidden lg:block'>View</h1>
-                  </button>
-                </Link> : ''}
-            </TableCell>
-          ))}
-        </>
-      )}
+          <>
+            {columns.map((column) => (
+              <TableCell key={column.dataKey} align={column.numeric ? 'right' : 'left'}>
+                {column.dataKey === 'date'
+                  ? (row.date as Date).toLocaleDateString()
+                  : row[column.dataKey]}
+                {column.dataKey === 'button' ? (
+                  <Link href={`/Lecturer/${pageType}/${row.id}`}>
+                    <button className="bg-sky-300 rounded-full p-1 lg:rounded-md">
+                      <h1 className="px-2 hidden lg:block">View</h1>
+                    </button>
+                  </Link>
+                ) : (
+                  ''
+                )}
+              </TableCell>
+            ))}
+          </>
+        )}
       />
     </Paper>
   );
