@@ -21,26 +21,15 @@ export default async function CodLayout({
   }
   const userType =session?.userType
 
-  // if(userType === 'STUDENT'){
-    
-  //   redirect('/Student/home')
-  // }
-  // if(userType === 'LECTURER'){
-    
-  //   redirect('/Lecturer')
-  // }
-  // if(userType === 'COD'){
-    
-  //   redirect('/cod')
-  // }
-  // if(userType === 'ADMIN' || userType === 'DEAN'){
-    
-  //   redirect('/Admin')
-  // }  
-  // if(userType === 'SUPERADMIN'){
-    
-  //   redirect('/SuperAdmin')
-  // }
+  if (userType === 'STUDENT') {
+    redirect('/Student/home');
+  } else if (userType === 'LECTURER') {
+    redirect('/Lecturer');
+  } else if (userType === 'ADMIN' || userType === 'DEAN') {
+    redirect('/Admin');
+  } else if (userType === 'SUPERADMIN') {
+    redirect('/SuperAdmin');
+  }
   return (
     <>
       <div className="w-screen h-screen flex flex-col overflow-hidden">

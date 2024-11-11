@@ -45,9 +45,7 @@ export default function StaffAuthForm() {
         router.push('/Lecturer');
       }else if (userType === 'COD'){
         router.push('/cod');
-      }else if (userType === 'DEAN'){
-        router.push('/dean');
-      }else if(userType === 'ADMIN') {
+      }else if(userType === 'ADMIN' || userType === 'DEAN') {
         router.push('/Admin');
       }else if(userType === 'SUPERADMIN'){
         router.push('/SuperAdmin/Dashboard')

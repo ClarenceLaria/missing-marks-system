@@ -539,3 +539,87 @@ export async function fetchDepartmentSingleReport(reportId: number){
         console.error("Error fetching Report: ", error);
     }
 }
+
+export async function fetchSchoolTotals(email: string){
+    try{
+        const dean = await prisma.staff.findUnique({
+            where:{
+                email: email,
+            },
+            include:{
+
+            }
+        });
+        const deptId = dean?.departmentId;
+
+        const dept = await prisma.department.findUnique({
+            where:{
+                id: deptId,
+            },
+            include:{
+                school: true,
+            }
+        })
+        const schoolId = dept?.schoolId;
+
+        const pendingTotals = await prisma.missingMarksReport.count({
+            where:{
+                reportStatus: "PENDING",
+                student:{
+                    department:{
+                        schoolId: schoolId,
+                    }
+                }
+            }
+        })
+
+        const markFoundTotals = await prisma.missingMarksReport.count({
+            where:{
+                reportStatus: "MARK_FOUND",
+                student:{
+                    department:{
+                        schoolId: schoolId,
+                    }
+                }
+            }
+        });
+
+        const markNotFoundTotals = await prisma.missingMarksReport.count({
+            where:{
+                reportStatus: "MARK_NOT_FOUND",
+                student:{
+                    department:{
+                        schoolId: schoolId,
+                    }
+                }
+            }
+        });
+
+        const forInvestigationTotals = await prisma.missingMarksReport.count({
+            where:{
+                reportStatus: "FOR_FURTHER_INVESTIGATION",
+                student:{
+                    department:{
+                        schoolId: schoolId,
+                    }
+                }
+            }
+        });
+
+        const totalReports = await prisma.missingMarksReport.count({
+            where:{
+                student:{
+                    department:{
+                        schoolId: schoolId,
+                    }
+                }
+            }
+        });
+
+        const totalCleared = markFoundTotals + markNotFoundTotals;
+
+        return {pendingTotals, markFoundTotals, markNotFoundTotals, forInvestigationTotals, totalCleared, totalReports};
+    }catch(error){
+        console.error("Error Fetching School Totals: ", error);
+    }
+}
