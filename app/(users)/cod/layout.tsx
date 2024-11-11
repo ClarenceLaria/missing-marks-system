@@ -17,7 +17,7 @@ export default async function CodLayout({
   // const session = await getServerSession(authOptions);
   const session = await getServerSession(authOptions);
   if (!session){
-    redirect('/login')
+    redirect('/')
   }
   const userType =session?.userType
 

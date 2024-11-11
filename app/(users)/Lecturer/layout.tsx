@@ -16,7 +16,7 @@ export default async function StudentLayout({
 }>) {
   const session = await getServerSession(authOptions);
   if (!session){
-    redirect('/login')
+    redirect('/')
   }
   const userType =session?.userType
   return (
