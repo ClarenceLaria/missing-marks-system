@@ -664,5 +664,51 @@ export async function fetchSchoolUsersTotals(email: string){
 
         const totalUsers = lecturers + students;
         return {lecturers, students, totalUsers};
-    }catch(error){}
+    }catch(error){
+        console.error("Error Fetching School Users Totals: ", error);
+    }
+}
+
+export async function fetchSchoolUsers(email: string){
+    try{
+        const dean = await prisma.staff.findUnique({
+            where:{
+                email: email,
+            },
+            include:{
+
+            }
+        });
+        const deptId = dean?.departmentId;
+
+        const dept = await prisma.department.findUnique({
+            where:{
+                id: deptId,
+            },
+            include:{
+                school: true,
+            }
+        })
+        const schoolId = dept?.schoolId;
+
+        const lecturers = await prisma.staff.findMany({
+            where:{
+                department:{
+                    schoolId: schoolId,
+                }
+            }
+        })
+
+        const students = await prisma.student.findMany({
+            where:{
+                department:{
+                    schoolId: schoolId,
+                }
+            }
+        })
+
+        return {lecturers, students};
+    }catch(error){
+        console.error("Error Fetching School Users: ", error);
+    }
 }
