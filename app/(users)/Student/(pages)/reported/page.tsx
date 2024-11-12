@@ -27,6 +27,8 @@ export default function Page() {
   const [reports, setReports] = useState<missingReport[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading,setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState<string | null>(null);
+  const [searchDate, setSearchDate] = useState<Date | null>(null);
 
   const session = useSession();
   const email = session.data?.user?.email!;
@@ -58,13 +60,32 @@ export default function Page() {
     status: report.reportStatus,
   }));
   
+  const filteredReports = transformedReports.filter(
+    (report) => {
+      const matchesSearchTerm =
+      !searchTerm ||
+      report.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      report.unitCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      report.status.toLowerCase().includes(searchTerm.toLowerCase());
+
+      const matchesDate = 
+      !searchDate || report.date.toDateString() === searchDate.toDateString();
+
+      return matchesSearchTerm && matchesDate;
+  });
   return (
     <div className='w-full h-full p-10'>
         <Suspense fallback={<Loading/>}>
-          {/* <Search placeholder='Search for a Reported Missing mark...'></Search> */}
+            <Search 
+              placeholder='Search for a Pending Missing Mark...'
+              onSearch = {(term, date) => {
+                  setSearchDate(date);
+                  setSearchTerm(term);
+              }}
+            ></Search>
         </Suspense>
         <Suspense fallback={<Loading/>}>
-          <Table reports={transformedReports} ></Table>
+          <Table reports={filteredReports} ></Table>
         </Suspense>
        
     </div>

@@ -79,6 +79,13 @@ const VirtuosoTableComponents: TableComponents<Report> = {
   TableBody: React.forwardRef<HTMLTableSectionElement>((props, ref) => (
     <TableBody {...props} ref={ref} />
   )),
+  EmptyPlaceholder: () => (
+    <TableRow>
+      <TableCell colSpan={columns.length} align="center">
+        <div className="p-4 text-gray-500">There are no missing marks here!</div>
+      </TableCell>
+    </TableRow>
+  ),
 };
 
 if (VirtuosoTableComponents.Scroller) {
@@ -130,9 +137,8 @@ export default function ReactVirtualizedTable({reports, pageType}: TableProps) {
             </TableCell>
           ))}
         </>
-  )}
-/>
-
+        )}
+      />
     </Paper>
   );
 }
