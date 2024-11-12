@@ -50,7 +50,7 @@ export default function Page() {
     <div className='w-full h-full'>
         <div className='p-10'>
             <Suspense fallback={<Loading/>}>
-                <Search placeholder='Search for a Pending Missing Mark...'></Search>
+                {/* <Search placeholder='Search for a Pending Missing Mark...'></Search> */}
             </Suspense>
             <Suspense fallback={<Loading/>}>
                 <Table pageType='pending' reports={transformedReports}></Table>

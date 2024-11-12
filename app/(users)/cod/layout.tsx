@@ -5,8 +5,8 @@ import {authOptions} from "@/app/utils/authOptions";
 import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
-  title: "MMUST MISSING MARK SYSTEM",
-  description: "Track your missing marks",
+  title: "MMUST Missing Marks System",
+  description: "A comprehensive system for tracking, reporting, and managing missing marks at Masinde Muliro University of Science and Technology (MMUST). Facilitates efficient communication and resolution for academic records.",
 };
 
 export default async function CodLayout({

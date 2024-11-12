@@ -61,7 +61,7 @@ export default function Page() {
   return (
     <div className='w-full h-full p-10'>
         <Suspense fallback={<Loading/>}>
-          <Search placeholder='Search for a Reported Missing mark...'></Search>
+          {/* <Search placeholder='Search for a Reported Missing mark...'></Search> */}
         </Suspense>
         <Suspense fallback={<Loading/>}>
           <Table reports={transformedReports} ></Table>

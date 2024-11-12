@@ -56,7 +56,7 @@ export default function Page() {
         <div className='p-10'>
             <h1 className='text-2xl font-bold'>Uncleared Missing Marks</h1>
             <Suspense fallback={<Loading/>}>
-              <Search placeholder='Search for a Reported Missing mark...'></Search>
+              {/* <Search placeholder='Search for a Reported Missing mark...'></Search> */}
             </Suspense>
             <Suspense fallback={<Loading/>}>
               <Table pageType='submissions' reports={transformedReports}></Table>

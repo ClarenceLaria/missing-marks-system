@@ -53,7 +53,7 @@ export default function Page() {
         <div className='p-10'>
             <h1 className='text-2xl font-bold'>Forwarded Missing Marks</h1>
             <Suspense fallback={<Loading/>}>
-              <Search placeholder='Search for a forwarded Missing mark...'></Search>
+              {/* <Search placeholder='Search for a forwarded Missing mark...'></Search> */}
             </Suspense>
             <Suspense fallback={<Loading/>}>
               <Table pageType='forwarded' reports={transformedReports}></Table>
