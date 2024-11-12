@@ -23,6 +23,7 @@ const Loading = () => <div>Loading...</div>;
 export default function Page() {
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState<string | null>(null);
 
   const session = useSession();
   const email = session.data?.user?.email!;
@@ -44,14 +45,31 @@ export default function Page() {
     regNo: student.regNo,
     role: student.userType,
   }))
+
+  const filteredStudents = transformedStudent.filter(
+    (student) => {
+      const matchesSearchTerm =
+      !searchTerm ||
+      student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      student.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      student.regNo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      student.role.toLowerCase().includes(searchTerm.toLowerCase());
+
+      return matchesSearchTerm;
+  });
   return (
     <div className='w-full h-full'>
         <div className='p-10'>
             <Suspense fallback={<Loading/>}>
-              {/* <Search placeholder='Search for a User...'></Search> */}
+                <Search 
+                  placeholder='Search for a Pending Missing Mark...'
+                  onSearch = {(term) => {
+                      setSearchTerm(term);
+                  }}
+                ></Search>            
             </Suspense>
             <Suspense fallback={<Loading/>}>
-              <Table students={transformedStudent}></Table>
+              <Table students={filteredStudents}></Table>
             </Suspense>
         </div>
     </div>
