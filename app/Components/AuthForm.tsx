@@ -237,7 +237,7 @@ export default function AuthForm() {
            required
            id='email'
            name='email'
-           label=' Email'
+           label='Email'
            type='email'
            placeholder='Email address'
            disabled={disabled}
