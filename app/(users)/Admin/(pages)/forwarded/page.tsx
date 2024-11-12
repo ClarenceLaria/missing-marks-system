@@ -55,7 +55,7 @@ export default function Page() {
     <div className="w-full h-full">
       <div className="p-10">
         <Suspense fallback={<Loading />}>
-          <Search placeholder="Search for a User..." />
+          {/* <Search placeholder="Search for a User..." /> */}
         </Suspense>
         <Suspense fallback={<Loading />}>
           <Table pageType='forwarded' reports={transformedReports}/>
