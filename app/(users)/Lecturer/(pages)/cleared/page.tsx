@@ -25,6 +25,8 @@ const Loading = () => <div>Loading...</div>;
 export default function Page() {
   const [reports, setReports] = useState<missingReport[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState<string | null>(null);
+  const [searchDate, setSearchDate] = useState<Date | null>(null);
 
   const session = useSession();
   const email = session.data?.user?.email!;
@@ -50,16 +52,35 @@ export default function Page() {
     status: report.reportStatus,
   }));
 
-  if(loading) return <Loader/>
+  if(loading) return <Loader/>;
+
+  const filteredReports = transformedReports.filter(
+    (report) => {
+      const matchesSearchTerm =
+      !searchTerm ||
+      report.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      report.unitCode.toLowerCase().includes(searchTerm.toLowerCase());
+
+      const matchesDate = 
+      !searchDate || report.date.toDateString() === searchDate.toDateString();
+
+      return matchesSearchTerm && matchesDate;
+  });
   return (
     <div className='w-full h-full'>
         <div className='p-10'>
             <h1 className='text-2xl font-bold'>Cleared Missing Marks</h1>
             <Suspense fallback={<Loading/>}>
-              {/* <Search placeholder='Search for a Cleared Missing mark...'></Search> */}
+                <Search 
+                  placeholder='Search for a Pending Missing Mark...'
+                  onSearch = {(term, date) => {
+                      setSearchDate(date);
+                      setSearchTerm(term);
+                  }}
+                ></Search>
             </Suspense>
             <Suspense fallback={<Loading/>}>
-              <Table pageType='cleared' reports={transformedReports}></Table>
+              <Table pageType='cleared' reports={filteredReports}></Table>
             </Suspense>
         </div>
     </div>
