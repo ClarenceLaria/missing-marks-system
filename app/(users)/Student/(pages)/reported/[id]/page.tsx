@@ -45,14 +45,9 @@ console.log(email)
         setLoading(true)
         const singleReport = await fetchSingleReport(email, id);
         setReport(singleReport.report);
-        // setDept(singleReport.dept)
-        // setSchool(singleReport.school)
-        // setStudent(singleReport.student);
         setLoading(false)
-        toast.success('Report fetched successfully')
       }catch(error){
         console.error('Error fetching single report:', error)
-        toast.error('Failed to fetch report')
       }
     }
     handleSingleReport();
