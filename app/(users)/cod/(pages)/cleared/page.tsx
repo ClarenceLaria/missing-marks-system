@@ -38,7 +38,6 @@ export default function Page() {
         setLoading(false);
       } catch (error) {
         console.error('Error fetching reports:', error)
-        toast.error('Failed to fetch Cleared Missing Marks')
       }
     }
     handlefetchReports();

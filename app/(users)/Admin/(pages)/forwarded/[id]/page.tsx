@@ -67,10 +67,8 @@ export default function Page({ params }: { params: { id: string } }) {
           setStudent(singleReport.student ?? null);
         }
         setLoading(false)
-        toast.success('Report fetched successfully')
       }catch(error){
         console.error('Error fetching single report:', error)
-        toast.error('Failed to fetch report')
       }
     }
     handleSingleReport();

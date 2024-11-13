@@ -37,9 +37,7 @@ export default function Page() {
             const fetchedReports = await fetchLecturerMissingMarks(email);
             setReports(fetchedReports);
             setLoading(false)
-            toast.success('Missing Marks Reports Fetched Successfully')
         }catch(error){
-          toast.error('Failed to fetch missing marks reports')
           console.error('Error fetching missing marks report:', error)
         }
     }

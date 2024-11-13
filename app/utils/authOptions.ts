@@ -44,6 +44,7 @@ export const authOptions: AuthOptions = {
           return null;
         } 
 
+
         const student = await prisma.student.findUnique ({
           where: { 
             email: credentials?.email, 
