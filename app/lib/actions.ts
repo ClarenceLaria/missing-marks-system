@@ -797,3 +797,16 @@ export async function fetchAdminTotals(){
         console.error('Error fetching totals for admin:', error)
     }
 }
+
+export async function fetchMissingReportsStats () {
+    try{
+        const reportStats = await prisma.missingMarksReport.groupBy({
+            by: ['reportStatus', 'createdAt'],
+            _count: {_all: true},
+            orderBy: {createdAt: 'asc'},
+        })
+        return reportStats;
+    }catch(error){
+        console.error('Error Fetching Stats', error);
+    }
+}
