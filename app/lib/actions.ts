@@ -766,3 +766,34 @@ export async function fetchSchoolReports(email: string){
         console.error("Error fetching missing marks: ", error)
     }
 }
+
+export async function fetchAdminTotals(){
+    try{
+        const pendingTotals = await prisma.missingMarksReport.count({
+            where:{
+                reportStatus: "PENDING",
+            }
+        });
+        const markFoundTotals = await prisma.missingMarksReport.count({
+            where:{
+                reportStatus: "MARK_FOUND",
+            }
+        })
+        const notFoundTotals = await prisma.missingMarksReport.count({
+            where:{
+                reportStatus: "MARK_NOT_FOUND",
+            }
+        });
+        const forwardedTotals = await prisma.missingMarksReport.count({
+            where:{
+                reportStatus: "FOR_FURTHER_INVESTIGATION",
+            }
+        });
+        const totalStudents = await prisma.student.count();
+        const totalLecturers = await prisma.staff.count();
+        const totalUsers = totalStudents + totalLecturers;
+        return {pendingTotals, markFoundTotals, notFoundTotals, forwardedTotals, totalUsers, totalLecturers, totalStudents};
+    }catch(error){
+        console.error('Error fetching totals for admin:', error)
+    }
+}
