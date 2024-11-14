@@ -1,6 +1,6 @@
 'use client'
 import Loader from '@/app/Components/Loader';
-import { fetchAdminTotals, fetchSchoolTotals, fetchSchoolUsersTotals } from '@/app/lib/actions';
+import { fetchAdminTotals, fetchMissingReportsStats, fetchSchoolTotals, fetchSchoolUsersTotals } from '@/app/lib/actions';
 import { useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react'
 import { Box, Grid, Typography, Paper, CircularProgress } from '@mui/material';
@@ -84,6 +84,33 @@ export default function Page() {
         handleFetchAdminTotals();
     },[]);
 
+    //Charts Logic
+    const [reportData, setReportData] = useState<{ month: string; markFound: number; Pending: number; markNotFound: number; underInvestigation: number}[]>([]);
+
+    useEffect(() => {
+        const getData = async () => {
+            const data = await fetchMissingReportsStats();
+
+            const monthlyData = data?.reduce((acc, item) => {
+                const month = new Date(item.createdAt).toLocaleString('default', { month: 'short' });
+                if (!acc[month]) acc[month] = { month, markFound: 0, Pending: 0, markNotFound: 0, underInvestigation: 0 };
+        
+                if (item.reportStatus === 'MARK_FOUND') acc[month].markFound += item._count._all;
+                else if (item.reportStatus === 'PENDING') acc[month].Pending += item._count._all;
+                else if (item.reportStatus === 'MARK_NOT_FOUND') acc[month].markNotFound += item._count._all;
+                else if (item.reportStatus === 'FOR_FURTHER_INVESTIGATION') acc[month].underInvestigation += item._count._all;
+        
+                return acc;
+              }, {} as Record<string, { month: string; markFound: number; Pending: number; markNotFound: number; underInvestigation: number }>);
+        
+              if (monthlyData) {
+                setReportData(Object.values(monthlyData));
+              }
+            };
+        
+            getData();
+    }, []);
+
     if(loading) return <Loader/>;
   return (
     <div className='w-full h-full'>
@@ -158,14 +185,15 @@ export default function Page() {
                 <Paper className="p-4 shadow-lg">
                 <Typography variant="h6" className="font-semibold mb-4">Report Statistics</Typography>
                 <ResponsiveContainer width="100%" height={270}>
-                <BarChart data={[]}>
-                    <CartesianGrid strokeDasharray="3 3" />
+                <BarChart data={reportData}>
+                    <CartesianGrid strokeDasharray="4 4" />
                     <XAxis dataKey="month" />
                     <YAxis />
                     <Tooltip />
-                    <Bar dataKey="completed" fill="#4caf50" />
-                    <Bar dataKey="active" fill="#ffeb3b" />
-                    <Bar dataKey="failed" fill="#f44336" />
+                    <Bar dataKey="markFound" fill="#4caf50" />
+                    <Bar dataKey="Pending" fill="#ffeb3b" />
+                    <Bar dataKey="markNotFound" fill="#f44336" />
+                    <Bar dataKey="underInvestigation" fill="#2196f3" />
                 </BarChart>
                 </ResponsiveContainer>
             </Paper>
