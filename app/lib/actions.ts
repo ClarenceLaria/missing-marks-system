@@ -862,3 +862,13 @@ export async function fetchSchoolReportStatistics (abbreviation: string) {
         console.error('Error Fetching School Stats', error);
     }
 }
+
+export async function fetchUniversityUsers (){
+    try{
+        const lecturers = await prisma.staff.findMany();
+        const students = await prisma.student.findMany();
+        return {lecturers, students};
+    }catch(error){
+        console.error("Error Fetching University Users", error)
+    }
+}
