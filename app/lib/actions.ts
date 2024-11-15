@@ -810,3 +810,53 @@ export async function fetchMissingReportsStats () {
         console.error('Error Fetching Stats', error);
     }
 }
+
+export async function fetchMissingReportsStatsByUnit () {
+    try{
+        const reportStats = await prisma.missingMarksReport.groupBy({
+            by: ['reportStatus', 'unitId'],
+            _count: {_all: true},
+        })
+        return reportStats;
+    }catch(error){
+        console.error('Error Fetching Stats', error);
+    }
+}
+export async function fetchSchoolAbbreviations () {
+    try{
+        const schools = await prisma.school.findMany({
+            select: {
+                abbreviation: true,
+            }
+        })
+        return schools;
+    }catch(error){
+        console.error("Error Fetching School Info", error)
+    }
+}
+
+export async function fetchSchoolReportStatistics (abbreviation: string) {
+    try{
+        const school = await prisma.school.findFirst({
+            where:{
+                abbreviation: abbreviation,
+            }
+        });
+        const schoolId = school?.id;
+        const reportStats = await prisma.missingMarksReport.groupBy({
+            by: ['reportStatus', 'createdAt'],
+            _count: {_all: true},
+            where:{
+                student:{
+                    department:{
+                        schoolId: schoolId,
+                    }
+                }
+            },
+            orderBy: {createdAt: 'asc'},
+        })
+        return reportStats;
+    }catch(error){
+        console.error('Error Fetching School Stats', error);
+    }
+}

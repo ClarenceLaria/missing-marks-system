@@ -1,6 +1,6 @@
 'use client'
 import Loader from '@/app/Components/Loader';
-import { fetchAdminTotals, fetchMissingReportsStats, fetchSchoolTotals, fetchSchoolUsersTotals } from '@/app/lib/actions';
+import { fetchAdminTotals, fetchMissingReportsStats, fetchSchoolAbbreviations, fetchSchoolTotals, fetchSchoolUsersTotals } from '@/app/lib/actions';
 import { useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react'
 import { Box, Grid, Typography, Paper, CircularProgress } from '@mui/material';
@@ -110,7 +110,23 @@ export default function Page() {
         
             getData();
     }, []);
+    
+    // Abbreviations Logic
+    const [abbreviations, setAbbreviations] = useState<{ abbreviation: string }[]>();
 
+    useEffect(() => {
+            const handleFetchAbbreviations = async () => {
+                try{
+                    setLoading(true);
+                    const result = await fetchSchoolAbbreviations();
+                    setAbbreviations(result);
+                    setLoading(false);
+                }catch(error){
+                    console.error('Error fetching abbreviations', error);
+                }
+            }
+            handleFetchAbbreviations();
+        },[])
     if(loading) return <Loader/>;
   return (
     <div className='w-full h-full'>
@@ -181,22 +197,52 @@ export default function Page() {
             </Grid>
 
             {/* Reports Bar Chart */}
-            <div className='w-1/2'>
-                <Paper className="p-4 shadow-lg">
-                <Typography variant="h6" className="font-semibold mb-4">Report Statistics</Typography>
-                <ResponsiveContainer width="100%" height={270}>
-                <BarChart data={reportData}>
-                    <CartesianGrid strokeDasharray="4 4" />
-                    <XAxis dataKey="month" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="markFound" fill="#4caf50" />
-                    <Bar dataKey="Pending" fill="#ffeb3b" />
-                    <Bar dataKey="markNotFound" fill="#f44336" />
-                    <Bar dataKey="underInvestigation" fill="#2196f3" />
-                </BarChart>
-                </ResponsiveContainer>
-            </Paper>
+            <div className='flex gap-4'>
+                <div className='w-1/2'>
+                    <Paper className="p-4 shadow-lg">
+                    <Typography variant="h6" className="font-semibold mb-4">University Report Statistics</Typography>
+                    <ResponsiveContainer width="100%" height={270}>
+                    <BarChart data={reportData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="month" />
+                        <YAxis />
+                        <Tooltip />
+                        <Bar dataKey="markFound" fill="#4caf50" />
+                        <Bar dataKey="Pending" fill="#ffeb3b" />
+                        <Bar dataKey="markNotFound" fill="#f44336" />
+                        <Bar dataKey="underInvestigation" fill="#2196f3" />
+                    </BarChart>
+                    </ResponsiveContainer>
+                </Paper>
+                </div>
+                <div className='w-1/2'>
+                    <Paper className="p-4 shadow-lg">
+                    <div className='flex justify-between'>
+                        <Typography variant="h6" className="font-semibold mb-4">School&apos;s Report Statistics</Typography>
+                        <div>
+                            <label htmlFor="">Select a school:</label>
+                            <select className="p-2 rounded-lg border border-gray-300 mb-4">
+                                <option value="all">All Schools</option>
+                                {abbreviations?.map((abbr, index) => (
+                                    <option key={index} value={abbr.abbreviation}>{abbr.abbreviation}</option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+                    <ResponsiveContainer width="100%" height={270}>
+                    <BarChart data={reportData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="month" />
+                        <YAxis />
+                        <Tooltip />
+                        <Bar dataKey="markFound" fill="#4caf50" />
+                        <Bar dataKey="Pending" fill="#ffeb3b" />
+                        <Bar dataKey="markNotFound" fill="#f44336" />
+                        <Bar dataKey="underInvestigation" fill="#2196f3" />
+                    </BarChart>
+                    </ResponsiveContainer>
+                </Paper>
+                </div>
             </div>
             </Box>
         </>
