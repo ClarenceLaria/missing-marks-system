@@ -1,6 +1,6 @@
 'use client'
 import Loader from '@/app/Components/Loader';
-import { fetchAdminTotals, fetchMissingReportsStats, fetchSchoolAbbreviations, fetchSchoolTotals, fetchSchoolUsersTotals } from '@/app/lib/actions';
+import { fetchAdminTotals, fetchMissingReportsStats, fetchSchoolAbbreviations, fetchSchoolReportStatistics, fetchSchoolTotals, fetchSchoolUsersTotals } from '@/app/lib/actions';
 import { useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react'
 import { Box, Grid, Typography, Paper, CircularProgress } from '@mui/material';
@@ -126,7 +126,38 @@ export default function Page() {
                 }
             }
             handleFetchAbbreviations();
-        },[])
+        },[]);
+
+    const [abbr, setAbbr] = useState<string>();
+    const [schoolData, setschoolData] = useState<{month: string; markFound: number; Pending: number; markNotFound: number; underInvestigation: number;}[]>([]);
+    useEffect(() => {
+        const handleGetSchoolStatistics = async () => {
+            try{
+                setLoading(true);
+                const data =  await fetchSchoolReportStatistics(abbr ?? '');
+                
+                const monthlyData = data?.reduce((acc, item) => {
+                    const month = new Date(item.createdAt).toLocaleString('default', { month: 'short' });
+                    if (!acc[month]) acc[month] = { month, markFound: 0, Pending: 0, markNotFound: 0, underInvestigation: 0 };
+            
+                    if (item.reportStatus === 'MARK_FOUND') acc[month].markFound += item._count._all;
+                    else if (item.reportStatus === 'PENDING') acc[month].Pending += item._count._all;
+                    else if (item.reportStatus === 'MARK_NOT_FOUND') acc[month].markNotFound += item._count._all;
+                    else if (item.reportStatus === 'FOR_FURTHER_INVESTIGATION') acc[month].underInvestigation += item._count._all;
+            
+                    return acc;
+                  }, {} as Record<string, { month: string; markFound: number; Pending: number; markNotFound: number; underInvestigation: number }>);
+            
+                  if (monthlyData) {
+                    setschoolData(Object.values(monthlyData));
+                  }
+                  setLoading(false);
+            }catch(error){
+                console.error("Error fetching statistics", error)
+            }
+        };
+        handleGetSchoolStatistics();
+    },[abbr]);
     if(loading) return <Loader/>;
   return (
     <div className='w-full h-full'>
@@ -221,7 +252,10 @@ export default function Page() {
                         <Typography variant="h6" className="font-semibold mb-4">School&apos;s Report Statistics</Typography>
                         <div>
                             <label htmlFor="">Select a school:</label>
-                            <select className="p-2 rounded-lg border border-gray-300 mb-4">
+                            <select className="p-2 rounded-lg border border-gray-300 mb-4"
+                                value={abbr}
+                                onChange={(e) => setAbbr(e.target.value)}
+                            >
                                 <option value="all">All Schools</option>
                                 {abbreviations?.map((abbr, index) => (
                                     <option key={index} value={abbr.abbreviation}>{abbr.abbreviation}</option>
@@ -230,7 +264,7 @@ export default function Page() {
                         </div>
                     </div>
                     <ResponsiveContainer width="100%" height={270}>
-                    <BarChart data={reportData}>
+                    <BarChart data={schoolData}>
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="month" />
                         <YAxis />
