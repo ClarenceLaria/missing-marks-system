@@ -872,3 +872,28 @@ export async function fetchUniversityUsers (){
         console.error("Error Fetching University Users", error)
     }
 }
+
+export async function fetchUniversityMissingReports () {
+    try{
+        const pending = await prisma.missingMarksReport.findMany({
+            where: {
+                reportStatus: "PENDING"
+            }
+        })
+
+        const cleared = await prisma.missingMarksReport.findMany({
+            where: {
+                reportStatus: {in: ['MARK_FOUND', 'MARK_NOT_FOUND']}
+            }
+        })
+
+        const forInvestigation = await prisma.missingMarksReport.findMany({
+            where: {
+                reportStatus: 'FOR_FURTHER_INVESTIGATION'
+            }
+        })
+        return {pending, cleared, forInvestigation};
+    }catch(error){
+        console.error("Error fetching reports: ", error)
+    }
+}
