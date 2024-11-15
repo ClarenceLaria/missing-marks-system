@@ -837,7 +837,7 @@ export async function fetchSchoolAbbreviations () {
 
 export async function fetchSchoolReportStatistics (abbreviation: string) {
     try{
-        const school = await prisma.school.findFirst({
+        const school = await prisma.school.findUnique({
             where:{
                 abbreviation: abbreviation,
             }
@@ -849,7 +849,9 @@ export async function fetchSchoolReportStatistics (abbreviation: string) {
             where:{
                 student:{
                     department:{
-                        schoolId: schoolId,
+                        school: {
+                            abbreviation: abbreviation,
+                        },
                     }
                 }
             },

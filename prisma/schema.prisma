@@ -47,7 +47,7 @@ model Student {
 model School {
   id          Int         @id @default(autoincrement())
   name        String
-  abbreviation String
+  abbreviation String     @unique
   departments Department[]
 }
 
