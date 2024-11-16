@@ -58,6 +58,7 @@ export default function Page() {
         console.error("Error fetching reports: ", error)
       }
     };
+    handleFetchReports();
   },[])
   if (loading) return <Loader/>
 
@@ -89,7 +90,7 @@ export default function Page() {
     date: report.createdAt,
     status: report.reportStatus,
   }))
-  const adminFiltered = transformedReports.filter(
+  const adminFiltered = adminTransformed.filter(
     (report) => {
       const matchesSearchTerm =
       !searchTerm ||
