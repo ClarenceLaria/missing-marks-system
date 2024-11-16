@@ -3,7 +3,7 @@ import React,{Suspense, use, useEffect, useState} from 'react'
 import Table from '@/app/(users)/Admin/Components/Table'
 import Search from '@/app/(users)/Student/Components/Search'
 import { useSession } from 'next-auth/react';
-import { fetchSchoolReports } from '@/app/lib/actions';
+import { fetchSchoolReports, fetchUniversityMissingReports } from '@/app/lib/actions';
 import { ExamType, ReportStatus, Semester } from '@prisma/client';
 import Loader from '@/app/Components/Loader';
 
@@ -30,6 +30,7 @@ export default function Page() {
 
   const session = useSession();
   const email = session.data?.user?.email!;
+  const userType = session.data?.userType;
   useEffect(() => {
     const handleFetchReports = async () => {
       try{
@@ -44,6 +45,20 @@ export default function Page() {
     };
     handleFetchReports();
   },[email])
+
+  const [adminReports, setAdminReports] = useState<missingReport[]>([])
+  useEffect(() => {
+    const handleFetchReports = async () => {
+      try{
+        setLoading(true);
+        const results = await fetchUniversityMissingReports();
+        setAdminReports(results?.cleared || []);
+        setLoading(false);
+      }catch(error){
+        console.error("Error fetching reports: ", error)
+      }
+    };
+  },[])
   if (loading) return <Loader/>
 
   const transformedReports = report.map((report) => ({
@@ -66,6 +81,26 @@ export default function Page() {
 
       return matchesSearchTerm && matchesDate;
   });
+
+  const adminTransformed = adminReports.map((report) => ({
+    id: report.id,
+    title: report.unitName,
+    unitCode: report.unitCode,
+    date: report.createdAt,
+    status: report.reportStatus,
+  }))
+  const adminFiltered = transformedReports.filter(
+    (report) => {
+      const matchesSearchTerm =
+      !searchTerm ||
+      report.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      report.unitCode.toLowerCase().includes(searchTerm.toLowerCase());
+
+      const matchesDate = 
+      !searchDate || report.date.toDateString() === searchDate.toDateString();
+
+      return matchesSearchTerm && matchesDate;
+    })
   return (
     <div className='w-full h-full'>
         <div className='p-10'>
@@ -78,9 +113,16 @@ export default function Page() {
                   }}
                 ></Search>            
             </Suspense>
-            <Suspense fallback={<Loading/>}>
+            {userType === 'DEAN' && (
+              <Suspense fallback={<Loading/>}>
                 <Table pageType='cleared' reports={filteredReports}></Table>
-            </Suspense>
+              </Suspense>
+            )}
+            {userType === 'ADMIN' && (
+              <Suspense fallback={<Loading/>}>
+                <Table pageType='cleared' reports={adminFiltered}></Table>
+              </Suspense>
+            )}
         </div>
     </div>
   )
