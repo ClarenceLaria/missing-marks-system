@@ -1,7 +1,7 @@
 'use client'
 import Button from '@/app/Components/Button'
 import Input from '@/app/Components/Input'
-import { fetchUnits } from '@/app/lib/actions'
+import { fetchLecPhoneNo, fetchUnits } from '@/app/lib/actions'
 import { useSession } from 'next-auth/react'
 import React, { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
@@ -16,6 +16,8 @@ export default function Page() {
     const [lecturerName, setLecturerName] = useState('');
     const [loading, setLoading] = useState(false);
     const [unitId, setUnitId] = useState<number | null>(null);
+    const [lecId, setLecId] = useState<number | null>(null);
+    const [phoneNo, setPhoneNo] = useState<string>('');
     interface Unit {
         id: number;
         name: string;
@@ -100,6 +102,7 @@ export default function Page() {
         if (selectedUnit) {
             setSelectedUnitName(selectedUnit.name);
             setUnitId(selectedUnit.id);
+            setLecId(selectedUnit.lecturerId);
         } else {
             setSelectedUnitName('');
             setUnitId(null);
@@ -110,11 +113,26 @@ export default function Page() {
         if(selectedUnit){
             setSelectedUnitCode(selectedUnit.code);
             setUnitId(selectedUnit.id);
+            setLecId(selectedUnit.lecturerId);
         } else {
             setSelectedUnitCode("")
             setUnitId(null);
         }
-    }, [selectedUnitName, units])
+    }, [selectedUnitName, units]);
+
+    useEffect(() => {
+        const handleFetchPhoneNo = async () => {
+            try{
+                if (lecId !== null) {
+                    const phoneNo = await fetchLecPhoneNo(lecId);
+                    setPhoneNo(phoneNo || '');
+                }
+            }catch(error){
+                console.error("Error fetching phone number: ", error)
+            };
+        }
+        handleFetchPhoneNo();
+    },[lecId]);
 
   return (
     <div className='w-full h-full mx-10 my-5'>

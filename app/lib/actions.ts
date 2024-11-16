@@ -897,3 +897,18 @@ export async function fetchUniversityMissingReports () {
         console.error("Error fetching reports: ", error)
     }
 }
+
+export async function fetchLecPhoneNo (lecId: number){
+    try{
+        const lecturer = await prisma.staff.findUnique({
+            where: {
+                id: lecId,
+            },
+        });
+        const phoneNo = lecturer?.phoneNumber;
+
+        return phoneNo;
+    }catch(error){
+        console.error("Error fetching phone number: ", error)
+    }
+}
