@@ -133,7 +133,15 @@ export default function Page() {
         }
         handleFetchPhoneNo();
     },[lecId]);
-
+    // const message = "Dear [Lecturers Name], \nA missing marks report has been submitted by: \n[Student's Name], (Reg No: [RegNo]). \nDetails: \nAcademic Year: [AcademicYear] \nUnit Name: [UnitName] \nUnit Code: [UnitCode] \nPlease review the report at your earliest convenience. \nThank you."
+    // const apiKey = process.env.APIKEY;
+    // async function sendSMS(message:string, phoneNo:string){
+    //     const headers = {
+    //         apikey: apiKey as string,
+    //         "Content-Type": "application/x-www-form-urlencoded",
+    //         Accept: "application/json",
+    //     }
+    // }
   return (
     <div className='w-full h-full mx-10 my-5'>
         <h1 className='font-semibold text-2xl flex justify-center'>Make a Report over your missing mark</h1>
