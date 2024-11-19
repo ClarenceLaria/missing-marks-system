@@ -8,6 +8,14 @@ import {authOptions} from "@/app/utils/authOptions";
 export const metadata: Metadata = {
   title: "MMUST Missing Marks System",
   description: "A comprehensive system for tracking, reporting, and managing missing marks at Masinde Muliro University of Science and Technology (MMUST). Facilitates efficient communication and resolution for academic records.",
+  icons: {
+    icon: [
+      {
+        url: '/images/icon.jpg',
+        href: '/images/icon.jpg',
+      }
+    ],
+  },
 };
 
 export default async function StudentLayout({

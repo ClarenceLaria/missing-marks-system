@@ -1,4 +1,5 @@
 'use server'
+import dotenv from 'dotenv'
 import { PrismaClient, Semester } from "@prisma/client"
 
 const prisma = new PrismaClient();
@@ -912,3 +913,23 @@ export async function fetchLecPhoneNo (lecId: number){
         console.error("Error fetching phone number: ", error)
     }
 }
+
+// dotenv.config();
+// export default async function sendSMS(phoneNo: string, message: string){
+//     const username = process.env.USERNAME;
+//     const api_key = process.env.APIKEY;
+//     if(!username || !api_key){
+//         throw new Error("Username or API Key not found")
+//     }
+//     console.log(api_key)
+//     const headers = {
+//         apikey: api_key as string,
+//         "Content-Type": "application/x-www-form-urlencoded",
+//         Accept: "application/json",
+//       };
+    
+//     try{
+//     }catch(error){
+//         console.error("Error sending SMS: ", error);
+//     }
+// }

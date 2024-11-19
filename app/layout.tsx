@@ -13,7 +13,15 @@ const inter = Inter({ subsets: ['latin'] })
 // export const metadata: Metadata = {
 //   title: 'MMTS MMUST',
 //   description: 'Missing Marks Tracking System',
-// }
+//   icons: {
+//     icon: [
+//       {
+//         url: '/images/icon.png',
+//         href: '/images/icon.png',
+//       }
+//     ],
+//   },
+// };
 
 export default function RootLayout({
   children,
