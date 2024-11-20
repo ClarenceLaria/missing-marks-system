@@ -899,7 +899,7 @@ export async function fetchUniversityMissingReports () {
     }
 }
 
-export async function fetchLecPhoneNo (lecId: number){
+export async function fetchLecDetails (lecId: number){
     try{
         const lecturer = await prisma.staff.findUnique({
             where: {
@@ -908,28 +908,51 @@ export async function fetchLecPhoneNo (lecId: number){
         });
         const phoneNo = lecturer?.phoneNumber;
 
-        return phoneNo;
+        return lecturer;
     }catch(error){
         console.error("Error fetching phone number: ", error)
     }
 }
 
-// dotenv.config();
-// export default async function sendSMS(phoneNo: string, message: string){
-//     const username = process.env.USERNAME;
-//     const api_key = process.env.APIKEY;
-//     if(!username || !api_key){
-//         throw new Error("Username or API Key not found")
-//     }
-//     console.log(api_key)
-//     const headers = {
-//         apikey: api_key as string,
-//         "Content-Type": "application/x-www-form-urlencoded",
-//         Accept: "application/json",
-//       };
+dotenv.config();
+export default async function sendSMS(phoneNo: string, message: string){
+    const username = process.env.SANDBOX_USERNAME!;
+    const api_key = process.env.APIKEY!;
+    const senderId = process.env.ALPHANUMERIC!;
+    const url = 'https://api.sandbox.africastalking.com/version1/messaging';
+
+    if(!username || !api_key || !senderId){
+        throw new Error("Username or API Key not found")
+    }
+    const headers = {
+        apikey: api_key as string,
+        "Content-Type": "application/x-www-form-urlencoded",
+        Accept: "application/json",
+      };
     
-//     try{
-//     }catch(error){
-//         console.error("Error sending SMS: ", error);
-//     }
-// }
+    const data = new URLSearchParams({
+        username,
+        to: phoneNo,
+        message,
+        from: senderId,
+    });
+
+    try{
+        const response = await fetch(url, {
+            method: "POST",
+            headers,
+            body: data,
+        });
+
+        if (response.ok){
+            const resData = await response.json();
+            const messageInfo = resData.SMSMessageData.Message;
+            const status = resData.SMSMessageData.Recipients[0]?.status;
+            console.log(`Message sent: ${messageInfo}, Status: ${status}`);
+        } else {
+            console.error(`Failed to send message. Status code: ${response.status}`);
+        }
+    }catch(error: any){
+        console.error("Error sending SMS: ", error.message || error);
+    }
+}
