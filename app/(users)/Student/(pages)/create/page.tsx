@@ -195,20 +195,6 @@ export default function Page() {
         };
         handlefetchStudent();
     },[email]);
-                if (lecPhoneNo) {
-                    sendSMS(lecPhoneNo, message);
-                } else {
-                    console.error('Invalid phone number format');
-                }
-    useEffect(() => {
-        const handleSMS = async () => {
-            try{
-                sendSMS(lecPhoneNo, message)
-            }catch(error){
-                console.error("Error sending sms: ", error);
-            }
-        };
-    },[])
   return (
     <div className='w-full h-full mx-10 my-5'>
         <h1 className='font-semibold text-2xl flex justify-center'>Make a Report over your missing mark</h1>
