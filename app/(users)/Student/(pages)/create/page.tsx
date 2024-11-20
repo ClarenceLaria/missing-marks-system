@@ -1,11 +1,35 @@
 'use client'
 import Button from '@/app/Components/Button'
 import Input from '@/app/Components/Input'
-import { fetchLecPhoneNo, fetchUnits } from '@/app/lib/actions'
+import sendSMS, { fetchLecDetails, fetchStudentProfile, fetchUnits } from '@/app/lib/actions'
+import { UserType } from '@prisma/client'
 import { useSession } from 'next-auth/react'
 import React, { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
 
+interface Lecturer {
+    id: number;
+    createdAt: Date;
+    email: string;
+    firstName: string;
+    secondName: string;
+    phoneNumber: string;
+    password: string;
+    userType: UserType;
+    departmentId: number;
+};
+interface Student {
+    id: number;
+    createdAt: Date;
+    email: string;
+    firstName: string;
+    secondName: string;
+    password: string;
+    regNo: string;
+    departmentId: number;
+    courseId: number;
+    userType: UserType;
+}
 export default function Page() {
     const [academicYear, setAcademicYear] = useState('2024/2025');
     const [yearOfStudy, setYearOfStudy] = useState('1');
@@ -17,7 +41,7 @@ export default function Page() {
     const [loading, setLoading] = useState(false);
     const [unitId, setUnitId] = useState<number | null>(null);
     const [lecId, setLecId] = useState<number | null>(null);
-    const [phoneNo, setPhoneNo] = useState<string>('');
+    const [lecturer, setLecturer] = useState<Lecturer | null>(null);
     interface Unit {
         id: number;
         name: string;
@@ -29,10 +53,25 @@ export default function Page() {
     }
 
     const [units, setUnits] = useState<Unit[]>([]);
+    const [student, setStudent] = useState<Student | null>(null);
 
     const session = useSession();
     const email = session.data?.user?.email!; 
-    
+    const message = `Dear ${lecturer?.firstName + ' ' + lecturer?.secondName}, \nA missing marks report has been submitted by: \n${student?.firstName + " " + student?.secondName}, (Reg No: ${student?.regNo}). \nDetails: \nYear of Study: ${yearOfStudy} \nAcademic Year: ${academicYear} \nUnit Name: ${selectedUnitName} \nUnit Code: ${selectedUnitCode} \nPlease review the report at your earliest convenience. \nThank you.`;
+    const lecPhoneNo = lecturer?.phoneNumber!;
+    function formatPhoneNumber(phoneNumber: string): string | null {
+        // Ensure the phone number starts with "0" and is followed by 9 digits
+        const phoneRegex = /^0\d{9}$/;
+      
+        if (phoneRegex.test(phoneNumber)) {
+          // Replace the leading "0" with "+254"
+          return phoneNumber.replace(/^0/, '+254');
+        } else {
+          console.error('Invalid phone number format');
+          return null;
+        }
+      }
+    const formattedPhoneNo = formatPhoneNumber(lecPhoneNo);
     useEffect(() => {
         const handleFetchUnits = async () => {  
             try{
@@ -86,6 +125,11 @@ export default function Page() {
     
           if (response.ok) {
             toast.success('Missing mark submitted successfully')
+            if (formattedPhoneNo) {
+                sendSMS(formattedPhoneNo, message);
+            } else {
+                console.error('Invalid phone number format');
+            }
           } else if(response.status === 400) {
             toast.error('Failed to submit report')
           } 
@@ -124,8 +168,10 @@ export default function Page() {
         const handleFetchPhoneNo = async () => {
             try{
                 if (lecId !== null) {
-                    const phoneNo = await fetchLecPhoneNo(lecId);
-                    setPhoneNo(phoneNo || '');
+                    const lecturer = await fetchLecDetails(lecId);
+                    if (lecturer) {
+                        setLecturer(lecturer);
+                    }
                 }
             }catch(error){
                 console.error("Error fetching phone number: ", error)
@@ -133,15 +179,22 @@ export default function Page() {
         }
         handleFetchPhoneNo();
     },[lecId]);
-    // const message = "Dear [Lecturers Name], \nA missing marks report has been submitted by: \n[Student's Name], (Reg No: [RegNo]). \nDetails: \nAcademic Year: [AcademicYear] \nUnit Name: [UnitName] \nUnit Code: [UnitCode] \nPlease review the report at your earliest convenience. \nThank you."
-    // const apiKey = process.env.APIKEY;
-    // async function sendSMS(message:string, phoneNo:string){
-    //     const headers = {
-    //         apikey: apiKey as string,
-    //         "Content-Type": "application/x-www-form-urlencoded",
-    //         Accept: "application/json",
-    //     }
-    // }
+    
+    useEffect(() => {
+        const handlefetchStudent = async () => {
+           try{
+                setLoading(true);
+               const student = await fetchStudentProfile(email)
+               if(student){
+                   setStudent(student);
+                }
+                setLoading(false);
+            } catch(error){
+                console.error("Error fetching student: ", error)
+            }
+        };
+        handlefetchStudent();
+    },[email]);
   return (
     <div className='w-full h-full mx-10 my-5'>
         <h1 className='font-semibold text-2xl flex justify-center'>Make a Report over your missing mark</h1>
