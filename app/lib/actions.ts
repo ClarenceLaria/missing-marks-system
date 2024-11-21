@@ -1,6 +1,7 @@
 'use server'
 import dotenv from 'dotenv'
 import { PrismaClient, Semester } from "@prisma/client"
+import http from 'http'
 
 const prisma = new PrismaClient();
 
@@ -949,10 +950,55 @@ export default async function sendSMS(phoneNo: string, message: string){
             const messageInfo = resData.SMSMessageData.Message;
             const status = resData.SMSMessageData.Recipients[0]?.status;
             console.log(`Message sent: ${messageInfo}, Status: ${status}`);
+            return { messageInfo, status };
         } else {
-            console.error(`Failed to send message. Status code: ${response.status}`);
+            const errorText = await response.text();
+            console.error(`Failed to send message. Status code: ${response.status}, Error: ${errorText}`);
         }
     }catch(error: any){
         console.error("Error sending SMS: ", error.message || error);
     }
 }
+
+// const server = http.createServer(async (req, res) => {
+//     if (req.method === 'POST') {
+//         let body = '';
+//         req.on('data', (chunk) => {
+//             body += chunk.toString();
+//         });
+//         req.on('end', async () => {
+//             const data = JSON.parse(body);
+//             const { phoneNo, message } = data;
+
+//             if (!phoneNo || !message) {
+//                 res.statusCode = 400;
+//                 res.writeHead(400, {'Content-Type': 'application/json'});
+//                 return res.end(JSON.stringify({error: 'Phone number or message not provided'}));
+//             }
+
+//             try{
+//                 const response = await sendSMS(phoneNo, message);
+//                 res.writeHead(200, {'Content-Type': 'application/json'});
+//                 res.end(JSON.stringify({message: 'SMS sent successfully', response}));
+//             }catch(error){
+//                 console.error("Error sending SMS: ", error);
+//                 res.statusCode = 500;
+//                 res.writeHead(500, {'Content-Type': 'application/json'});
+//                 res.end(JSON.stringify({error: 'Failed to send message'}));
+//             }
+//         });
+//     } else if (req.method === 'POST' && req.url === '/sms-callback') {
+//         console.log('SMS callback received');
+
+//         res.writeHead(200, {'Content-Type': 'application/json'});
+//         res.end('Recieved');
+//     } else {
+//         res.writeHead(404, {'Content-Type': 'application/json'});
+//         res.end('Route not found');
+//     }
+// });
+
+// const PORT = process.env.PORT || 4000;
+// server.listen(PORT, () => {
+//     console.log(`Server running on port ${PORT}`);
+// });
