@@ -126,7 +126,26 @@ export default function Page() {
           if (response.ok) {
             toast.success('Missing mark submitted successfully')
             if (formattedPhoneNo) {
-                sendSMS(formattedPhoneNo, message);
+                try{
+                    const smsResponse = await fetch('api/send-sms', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            phoneNo: formattedPhoneNo,
+                            message: message,
+                        }),
+                    });
+                    if (smsResponse.ok) {
+                        const data = await smsResponse.json();
+                        console.log('SMS sent successfully:', data);
+                    } else {
+                        console.error('Failed to send SMS');
+                    }
+                }catch(error){
+                    console.error('Error sending SMS:', error);
+                }
             } else {
                 console.error('Invalid phone number format');
             }
