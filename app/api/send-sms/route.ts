@@ -15,7 +15,7 @@ export async function POST(req: Request) {
     const response = await sendSMS(phoneNo, message);
 
     return NextResponse.json(
-        { success: true, response }, 
+        { success: true, message: 'SMS sent successfully', response }, 
         { status: 200 }
     );
   } catch (error: any) {
