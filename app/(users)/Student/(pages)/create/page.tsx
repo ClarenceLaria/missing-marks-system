@@ -57,7 +57,7 @@ export default function Page() {
 
     const session = useSession();
     const email = session.data?.user?.email!; 
-    const message = `Dear ${lecturer?.firstName + ' ' + lecturer?.secondName}, \nA missing marks report has been submitted by: \n${student?.firstName + " " + student?.secondName}, (Reg No: ${student?.regNo}). \nDetails: \nYear of Study: ${yearOfStudy} \nAcademic Year: ${academicYear} \nUnit Name: ${selectedUnitName} \nUnit Code: ${selectedUnitCode} \nPlease review the report at your earliest convenience. \nThank you.`;
+    const message = `Dear ${lecturer?.firstName + ' ' + lecturer?.secondName}, \nA missing marks report has been submitted by: \n${student?.firstName + " " + student?.secondName}, (Reg No: ${student?.regNo}). \nDetails: \nYear of Study: ${yearOfStudy} \nAcademic Year: ${academicYear} \nUnit Name: ${selectedUnitName} \nUnit Code: ${selectedUnitCode}. \nPlease review the report at your earliest convenience. \nThank you.`;
     const lecPhoneNo = lecturer?.phoneNumber!;
     function formatPhoneNumber(phoneNumber: string): string | null {
         // Ensure the phone number starts with "0" and is followed by 9 digits
@@ -125,9 +125,9 @@ export default function Page() {
     
           if (response.ok) {
             toast.success('Missing mark submitted successfully')
-            if (formattedPhoneNo) {
+            // if (formattedPhoneNo) {
                 try{
-                    const smsResponse = await fetch('api/send-sms', {
+                    const smsResponse = await fetch('/api/send-sms', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -141,14 +141,15 @@ export default function Page() {
                         const data = await smsResponse.json();
                         console.log('SMS sent successfully:', data);
                     } else {
-                        console.error('Failed to send SMS');
+                        const errorData = await smsResponse.json();
+                        console.error('Failed to send SMS', errorData.error);
                     }
                 }catch(error){
                     console.error('Error sending SMS:', error);
                 }
-            } else {
-                console.error('Invalid phone number format');
-            }
+            // } else {
+            //     console.error('Invalid phone number format');
+            // }
           } else if(response.status === 400) {
             toast.error('Failed to submit report')
           } 
