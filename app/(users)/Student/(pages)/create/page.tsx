@@ -125,7 +125,6 @@ export default function Page() {
     
           if (response.ok) {
             toast.success('Missing mark submitted successfully')
-            // if (formattedPhoneNo) {
                 try{
                     const smsResponse = await fetch('/api/send-sms', {
                         method: 'POST',
@@ -147,9 +146,6 @@ export default function Page() {
                 }catch(error){
                     console.error('Error sending SMS:', error);
                 }
-            // } else {
-            //     console.error('Invalid phone number format');
-            // }
           } else if(response.status === 400) {
             toast.error('Failed to submit report')
           } 
@@ -266,7 +262,9 @@ export default function Page() {
                 >
                     <option value="MAIN">MAIN EXAMS</option>
                     <option value="SPECIAL">SPECIAL EXAMS</option>
-                    <option value="SUPLIMENTARY">SUPLIMENTARY EXAMS</option>
+                    <option value="SUPPLIMENTARY">SUPLIMENTARY EXAMS</option>
+                    <option value="CAT">CAT</option>
+                    <option value="MAIN_AND_CAT">MAIN EXAMS AND CAT</option>
                 </select>
             </div>
             <div className='w-[18vw]'>

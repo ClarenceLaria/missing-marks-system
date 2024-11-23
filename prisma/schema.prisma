@@ -123,6 +123,7 @@ enum ExamType{
   SPECIAL
   SUPPLIMENTARY
   CAT
+  MAIN_AND_CAT
 }
 
 enum Semester{
