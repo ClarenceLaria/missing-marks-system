@@ -48,7 +48,7 @@ export default   function NavBar() {
   return (
     <div className='w-full h-full flex items-center justify-around px-1 sm:px-4 lg:px-8 '>
       <div className='sm:w-1/4  flex justify-start   '>
-        <Image src={logo} alt='logo' className=' object-cover h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 lg:h-16 lg:w-80'></Image>
+        <Image src={logo} alt='logo' className=' object-cover h-8 w-36 sm:h-12 sm:w-36 md:h-11 md:w-72 lg:h-16 lg:w-80'></Image>
       </div>
       <div className='flex-1 flex justify-center   md:text-lg lg:text-xl text-sky-400 text-xs'>
         Missing Mark System

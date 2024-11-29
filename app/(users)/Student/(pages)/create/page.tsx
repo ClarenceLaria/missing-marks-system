@@ -212,13 +212,13 @@ export default function Page() {
         handlefetchStudent();
     },[email]);
   return (
-    <div className='w-full h-full mx-10 my-5'>
-        <h1 className='font-semibold text-2xl flex justify-center'>Make a Report over your missing mark</h1>
-        <div className='grid grid-cols-3 w-full gap-y-10 my-10'>
-            <div className='w-[18vw]'>
+    <div className='w-full h-full lg:mx-10 lg:my-5 sm:mx-6 sm:my-4 mx-5 my-3'>
+        <h1 className='font-semibold lg:text-2xl md:text-xl md:flex md:justify-center'>Make a Report of your missing mark</h1>
+        <div className='md:grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-none w-full lg:gap-y-10 md:gap-y-5 lg:my-10 md:my-5'>
+            <div className='lg:w-[18vw] md:w-[24vw] w-52'>
                 <label>Select Academic Year</label><br/>
                 <select 
-                    className='my-2 w-[18vw] px-2 py-1 rounded' name="AcademicYear" id="AcademicYear" 
+                    className='my-2 lg:w-[18vw] md:w-[24vw] w-52 px-2 py-1 rounded' name="AcademicYear" id="AcademicYear" 
                     onChange={(e) => setAcademicYear(e.target.value)}
                 >
                     <option value="2024/2025">2024/2025</option>
@@ -231,10 +231,10 @@ export default function Page() {
                     <option value="2017/2018">2017/2018</option>
                 </select>
             </div>
-            <div className='w-[18vw]'>
+            <div className='lg:w-[18vw] md:w-[24vw] w-52'>
                 <label>Select Year</label><br/>
                 <select 
-                    className='my-2 w-[18vw] px-2 py-1 rounded' name="YearOfStudy" id="YearOfStudy" 
+                    className='my-2 lg:w-[18vw] md:w-[24vw] w-52 px-2 py-1 rounded' name="YearOfStudy" id="YearOfStudy" 
                     onChange={(e) => setYearOfStudy(e.target.value)}
                 >
                     <option value="1">Year 1</option>
@@ -243,10 +243,10 @@ export default function Page() {
                     <option value="4">Year 4</option>
                 </select>
             </div>
-            <div className='w-[18vw]'>
+            <div className='lg:w-[18vw] md:w-[24vw] w-52'>
                 <label>Select Semester</label><br/>
                 <select 
-                    className='my-2 w-[18vw] px-2 py-1 rounded' name="Semester" id="Semester" 
+                    className='my-2 lg:w-[18vw] md:w-[24vw] w-52 px-2 py-1 rounded' name="Semester" id="Semester" 
                     onChange={(e) => setSemester(e.target.value)}
                 >
                     <option value="SEMESTER1">SEMESTER 1</option>
@@ -254,10 +254,10 @@ export default function Page() {
                     <option value="SEMESTER3">SEMESTER 3</option>
                 </select>
             </div>
-            <div className='w-[18vw]'>
+            <div className='lg:w-[18vw] md:w-[24vw] w-52'>
                 <label>Select Exam Type</label><br/>
                 <select 
-                    className='my-2 w-[18vw] px-2 py-1 rounded' name="ExamType" id="ExamType" 
+                    className='my-2 lg:w-[18vw] md:w-[24vw] w-52 px-2 py-1 rounded' name="ExamType" id="ExamType" 
                     onChange={(e) => setExamType(e.target.value)}
                 >
                     <option value="MAIN">MAIN EXAMS</option>
@@ -267,10 +267,10 @@ export default function Page() {
                     <option value="MAIN_AND_CAT">MAIN EXAMS AND CAT</option>
                 </select>
             </div>
-            <div className='w-[18vw]'>
+            <div className='lg:w-[18vw] md:w-[24vw] w-52'>
                 <label>Select Unit Code</label><br/>
                 <select 
-                    className='my-2 w-[18vw] px-2 py-1 rounded' name="UnitCode" id="UnitCode" 
+                    className='my-2 lg:w-[18vw] md:w-[24vw] w-52 px-2 py-1 rounded' name="UnitCode" id="UnitCode" 
                     value={selectedUnitCode}
                     onChange={(e) => setSelectedUnitCode(e.target.value)}
                 >
@@ -280,10 +280,10 @@ export default function Page() {
                     ))}
                 </select>
             </div>
-            <div className='w-[18vw]'>
+            <div className='lg:w-[18vw] md:w-[24vw] w-52'>
                 <label>Select Course Title</label><br/>
                 <select 
-                className='my-2 w-[18vw] px-2 py-1 rounded' name="UnitName" id="UnitName" 
+                className='my-2 lg:w-[18vw] md:w-[24vw] w-52 px-2 py-1 rounded' name="UnitName" id="UnitName" 
                 value={selectedUnitName}
                 onChange={(e) => setSelectedUnitName(e.target.value)}
                 >
@@ -293,7 +293,7 @@ export default function Page() {
                     ))}
                 </select>
             </div>
-            <div className='w-[18vw]'> 
+            <div className='lg:w-[18vw] md:w-[24vw] w-52'> 
                 <Input
                     id='lecturerName'
                     name='lecturerName'
