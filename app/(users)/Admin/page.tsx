@@ -4,8 +4,24 @@ import { fetchAdminTotals, fetchMissingReportsStats, fetchSchoolAbbreviations, f
 import { useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react'
 import { Box, Grid, Typography, Paper, CircularProgress } from '@mui/material';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+// import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { UsersIcon, ClockIcon, DocumentCheckIcon, PaperAirplaneIcon, UserGroupIcon, AcademicCapIcon, CheckBadgeIcon } from '@heroicons/react/24/outline';
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/app/(users)/Admin/Components/ui/card";
+import { School, Users, GraduationCap, BookOpen } from "lucide-react";
+import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
+
+const data = [
+  {
+    name: "Jan",
+    total: 12,
+  },
+  {
+    name: "Feb",
+    total: 15,
+  },
+  // Add more data points
+];
 
 export default function Page() {
     const [pending, setPending] = useState<number>();
@@ -57,25 +73,19 @@ export default function Page() {
     },[email]);
 
     //Admin Logic
-    const [adminPending, setAdminPending] = useState<number>();
-    const [adminFound, setAdminFound] = useState<number>();
-    const [adminNotFound, setAdminNotFound] = useState<number>();
-    const [adminForInvestigation, setAdminForInvestigation] = useState<number>();
-    const [adminTotalUsers, setAdminTotalUsers] = useState<number>();
     const [adminTotalStudents, setAdminTotalStudents] = useState<number>();
     const [adminTotalLecturers, setAdminTotalLecturers] = useState<number>();
+    const [adminTotalSchools, setAdminTotalSchools] = useState<number>();
+    const [adminTotalCourses, setAdminTotalCourses] = useState<number>();
     useEffect(() => {
         const handleFetchAdminTotals = async() => {
             try{
                 setLoading(true);
                 const result = await fetchAdminTotals();
-                setAdminPending(result?.pendingTotals);
-                setAdminFound(result?.markFoundTotals);
-                setAdminNotFound(result?.notFoundTotals);
-                setAdminForInvestigation(result?.forwardedTotals);
-                setAdminTotalUsers(result?.totalUsers);
                 setAdminTotalStudents(result?.totalStudents);
                 setAdminTotalLecturers(result?.totalLecturers);
+                setAdminTotalSchools(result?.totalSchools);
+                setAdminTotalCourses(result?.totalCourses);
                 setLoading(false);
             }catch(error){
                 console.error('Error fetching admin totals', error);
@@ -85,29 +95,15 @@ export default function Page() {
     },[]);
 
     //Charts Logic
-    const [reportData, setReportData] = useState<{ month: string; markFound: number; Pending: number; markNotFound: number; underInvestigation: number}[]>([]);
+    const [reportData, setReportData] = useState<{ month: string; missingMarks: number;}[]>([]);
 
     useEffect(() => {
         const getData = async () => {
-            const data = await fetchMissingReportsStats();
-
-            const monthlyData = data?.reduce((acc, item) => {
-                const month = new Date(item.createdAt).toLocaleString('default', { month: 'short' });
-                if (!acc[month]) acc[month] = { month, markFound: 0, Pending: 0, markNotFound: 0, underInvestigation: 0 };
-        
-                if (item.reportStatus === 'MARK_FOUND') acc[month].markFound += item._count._all;
-                else if (item.reportStatus === 'PENDING') acc[month].Pending += item._count._all;
-                else if (item.reportStatus === 'MARK_NOT_FOUND') acc[month].markNotFound += item._count._all;
-                else if (item.reportStatus === 'FOR_FURTHER_INVESTIGATION') acc[month].underInvestigation += item._count._all;
-        
-                return acc;
-              }, {} as Record<string, { month: string; markFound: number; Pending: number; markNotFound: number; underInvestigation: number }>);
-        
-              if (monthlyData) {
-                setReportData(Object.values(monthlyData));
-              }
-            };
-        
+          const data = await fetchMissingReportsStats();
+          if (data) {
+            setReportData(data);
+          }
+        }
             getData();
     }, []);
     
@@ -128,159 +124,200 @@ export default function Page() {
             handleFetchAbbreviations();
         },[]);
 
-    const [abbr, setAbbr] = useState<string>();
-    const [schoolData, setschoolData] = useState<{month: string; markFound: number; Pending: number; markNotFound: number; underInvestigation: number;}[]>([]);
-    useEffect(() => {
-        const handleGetSchoolStatistics = async () => {
-            try{
-                setLoading(true);
-                const data =  await fetchSchoolReportStatistics(abbr ?? '');
-                
-                const monthlyData = data?.reduce((acc, item) => {
-                    const month = new Date(item.createdAt).toLocaleString('default', { month: 'short' });
-                    if (!acc[month]) acc[month] = { month, markFound: 0, Pending: 0, markNotFound: 0, underInvestigation: 0 };
-            
-                    if (item.reportStatus === 'MARK_FOUND') acc[month].markFound += item._count._all;
-                    else if (item.reportStatus === 'PENDING') acc[month].Pending += item._count._all;
-                    else if (item.reportStatus === 'MARK_NOT_FOUND') acc[month].markNotFound += item._count._all;
-                    else if (item.reportStatus === 'FOR_FURTHER_INVESTIGATION') acc[month].underInvestigation += item._count._all;
-            
-                    return acc;
-                  }, {} as Record<string, { month: string; markFound: number; Pending: number; markNotFound: number; underInvestigation: number }>);
-            
-                  if (monthlyData) {
-                    setschoolData(Object.values(monthlyData));
-                  }
-                  setLoading(false);
-            }catch(error){
-                console.error("Error fetching statistics", error)
-            }
-        };
-        handleGetSchoolStatistics();
-    },[abbr]);
     if(loading) return <Loader/>;
   return (
-    <div className='w-full h-full'>
-        {userType === 'DEAN' && (
-        <>
-            <div>
-                <h1 className='text-2xl font-bold pt-10 px-10 text-center'>Missing Marks Report</h1>
-                <div className='w-full py-5 flex flex-row justify-evenly'>
-                    <div className='w-44 h-44 rounded-lg  text-center shadow-lg flex flex-col justify-center items-center'>
-                    <h1>Total Missing Marks</h1>
-                    <h1>{totalReports}</h1>
-                    </div>
-                    <div className='w-44 h-44 rounded-lg text-center shadow-lg flex flex-col justify-center items-center'>
-                        <h1>Pending Missing Marks</h1>
-                        <h1>{pending}</h1>
-                    </div>
-                    <div className='w-44 h-44 rounded-lg text-center shadow-lg flex flex-col justify-center items-center'>
-                        <h1>Missing Marks Found</h1>
-                        <h1>{found}</h1>
-                    </div>
-                    <div className='w-44 h-44 rounded-lg text-center shadow-lg flex flex-col justify-center items-center'>
-                        <h1>Missing Marks Not Found</h1>
-                        <h1>{notFound}</h1>
-                    </div>
-                    <div className='w-44 h-44 rounded-lg text-center shadow-lg flex flex-col justify-center items-center'>
-                        <h1>Forwarded Missing Marks</h1>
-                        <h1>{forwarded}</h1>
-                    </div>
-                    <div className='w-44 h-44 rounded-lg text-center shadow-lg flex flex-col justify-center items-center'>
-                        <h1>Cleared Missing Marks</h1>
-                        <h1>{cleared}</h1>
-                    </div>
-                </div>
-            </div>
-            <div>
-                <h1 className='text-2xl font-bold pt-10 px-10 text-center'>Users</h1>
-                <div className='w-full py-5 flex flex-row justify-evenly'>
-                    <div className='w-44 h-44 rounded-lg text-center shadow-lg flex flex-col justify-center items-center'>
-                        <h1>Total Users</h1>
-                        <h1>{userTotals}</h1>
-                    </div>
-                    <div className='w-44 h-44 rounded-lg  text-center shadow-lg flex flex-col justify-center items-center'>
-                    <h1>Total Students</h1>
-                    <h1>{studentTotals}</h1>
-                    </div>
-                    <div className='w-44 h-44 rounded-lg text-center shadow-lg flex flex-col justify-center items-center'>
-                        <h1>Total Lecturers</h1>
-                        <h1>{lecturerTotals}</h1>
-                    </div>
-                </div>
-            </div>
-        </>
-        )} 
-        {userType === 'ADMIN' && (
-        <>
-            <Box className="p-6 bg-gray-100 min-h-screen">
-            <Typography variant="h4" className="font-bold text-gray-800 mb-6">Admin Dashboard</Typography>
+    // <div className='w-full h-full'>
+    //     {userType === 'DEAN' && (
+    //     <>
+    //         <div>
+    //             <h1 className='text-2xl font-bold pt-10 px-10 text-center'>Missing Marks Report</h1>
+    //             <div className='w-full py-5 flex flex-row justify-evenly'>
+    //                 <div className='w-44 h-44 rounded-lg  text-center shadow-lg flex flex-col justify-center items-center'>
+    //                 <h1>Total Missing Marks</h1>
+    //                 <h1>{totalReports}</h1>
+    //                 </div>
+    //                 <div className='w-44 h-44 rounded-lg text-center shadow-lg flex flex-col justify-center items-center'>
+    //                     <h1>Pending Missing Marks</h1>
+    //                     <h1>{pending}</h1>
+    //                 </div>
+    //                 <div className='w-44 h-44 rounded-lg text-center shadow-lg flex flex-col justify-center items-center'>
+    //                     <h1>Missing Marks Found</h1>
+    //                     <h1>{found}</h1>
+    //                 </div>
+    //                 <div className='w-44 h-44 rounded-lg text-center shadow-lg flex flex-col justify-center items-center'>
+    //                     <h1>Missing Marks Not Found</h1>
+    //                     <h1>{notFound}</h1>
+    //                 </div>
+    //                 <div className='w-44 h-44 rounded-lg text-center shadow-lg flex flex-col justify-center items-center'>
+    //                     <h1>Forwarded Missing Marks</h1>
+    //                     <h1>{forwarded}</h1>
+    //                 </div>
+    //                 <div className='w-44 h-44 rounded-lg text-center shadow-lg flex flex-col justify-center items-center'>
+    //                     <h1>Cleared Missing Marks</h1>
+    //                     <h1>{cleared}</h1>
+    //                 </div>
+    //             </div>
+    //         </div>
+    //         <div>
+    //             <h1 className='text-2xl font-bold pt-10 px-10 text-center'>Users</h1>
+    //             <div className='w-full py-5 flex flex-row justify-evenly'>
+    //                 <div className='w-44 h-44 rounded-lg text-center shadow-lg flex flex-col justify-center items-center'>
+    //                     <h1>Total Users</h1>
+    //                     <h1>{userTotals}</h1>
+    //                 </div>
+    //                 <div className='w-44 h-44 rounded-lg  text-center shadow-lg flex flex-col justify-center items-center'>
+    //                 <h1>Total Students</h1>
+    //                 <h1>{studentTotals}</h1>
+    //                 </div>
+    //                 <div className='w-44 h-44 rounded-lg text-center shadow-lg flex flex-col justify-center items-center'>
+    //                     <h1>Total Lecturers</h1>
+    //                     <h1>{lecturerTotals}</h1>
+    //                 </div>
+    //             </div>
+    //         </div>
+    //     </>
+    //     )} 
+    //     {userType === 'ADMIN' && (
+    //     <>
+    //         <Box className="p-6 bg-gray-100 min-h-screen">
+    //         <Typography variant="h4" className="font-bold text-gray-800 mb-6">Admin Dashboard</Typography>
 
-            {/* Statistics Cards */}
-            <Grid container spacing={3} className="mb-6">
-                <StatCard title="Pending Missing Marks" count={adminPending ?? 0} icon={<ClockIcon className='w-6 h-6 text-sky-300' />} color="bg-sky-300" />
-                <StatCard title="Missing Mark Found" count={adminFound ?? 0} icon={<DocumentCheckIcon className='w-6 h-6 text-sky-300' />} color="bg-sky-300" />
-                <StatCard title="Missing Mark Not Found" count={adminNotFound ?? 0} icon={<DocumentCheckIcon className='w-6 h-6 text-sky-300' />} color="bg-sky-300" />
-                <StatCard title="Forwarded Missing Mark" count={adminForInvestigation ?? 0} icon={<PaperAirplaneIcon className='w-6 h-6 text-sky-300' />} color="bg-sky-300" />
-                <StatCard title="Total Users" count={adminTotalUsers ?? 0} icon={<CheckBadgeIcon className='w-6 h-6 text-sky-300' />} color="bg-sky-300" />
-                <StatCard title="Total Lecturers" count={adminTotalLecturers ?? 0} icon={<UserGroupIcon className='w-6 h-6 text-sky-300' />} color="bg-sky-300" />
-                <StatCard title="Total Students" count={adminTotalStudents ?? 0} icon={<AcademicCapIcon className='w-6 h-6 text-sky-300'/>} color="bg-sky-300" />
-            </Grid>
+    //         {/* Statistics Cards */}
+    //         <Grid container spacing={3} className="mb-6">
+    //             <StatCard title="Pending Missing Marks" count={adminPending ?? 0} icon={<ClockIcon className='w-6 h-6 text-sky-300' />} color="bg-sky-300" />
+    //             <StatCard title="Missing Mark Found" count={adminFound ?? 0} icon={<DocumentCheckIcon className='w-6 h-6 text-sky-300' />} color="bg-sky-300" />
+    //             <StatCard title="Missing Mark Not Found" count={adminNotFound ?? 0} icon={<DocumentCheckIcon className='w-6 h-6 text-sky-300' />} color="bg-sky-300" />
+    //             <StatCard title="Forwarded Missing Mark" count={adminForInvestigation ?? 0} icon={<PaperAirplaneIcon className='w-6 h-6 text-sky-300' />} color="bg-sky-300" />
+    //             <StatCard title="Total Users" count={adminTotalUsers ?? 0} icon={<CheckBadgeIcon className='w-6 h-6 text-sky-300' />} color="bg-sky-300" />
+    //             <StatCard title="Total Lecturers" count={adminTotalLecturers ?? 0} icon={<UserGroupIcon className='w-6 h-6 text-sky-300' />} color="bg-sky-300" />
+    //             <StatCard title="Total Students" count={adminTotalStudents ?? 0} icon={<AcademicCapIcon className='w-6 h-6 text-sky-300'/>} color="bg-sky-300" />
+    //         </Grid>
 
-            {/* Reports Bar Chart */}
-            <div className='flex gap-4'>
-                <div className='w-1/2'>
-                    <Paper className="p-4 shadow-lg">
-                    <Typography variant="h6" className="font-semibold mb-4">University Report Statistics</Typography>
-                    <ResponsiveContainer width="100%" height={270}>
-                    <BarChart data={reportData}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="month" />
-                        <YAxis />
-                        <Tooltip />
-                        <Bar dataKey="markFound" fill="#4caf50" />
-                        <Bar dataKey="Pending" fill="#ffeb3b" />
-                        <Bar dataKey="markNotFound" fill="#f44336" />
-                        <Bar dataKey="underInvestigation" fill="#2196f3" />
-                    </BarChart>
-                    </ResponsiveContainer>
-                </Paper>
-                </div>
-                <div className='w-1/2'>
-                    <Paper className="p-4 shadow-lg">
-                    <div className='flex justify-between'>
-                        <Typography variant="h6" className="font-semibold mb-4">School&apos;s Report Statistics</Typography>
-                        <div>
-                            <label htmlFor="">Select a school:</label>
-                            <select className="p-2 rounded-lg border border-gray-300 mb-4"
-                                value={abbr}
-                                onChange={(e) => setAbbr(e.target.value)}
-                            >
-                                <option value="all">All Schools</option>
-                                {abbreviations?.map((abbr, index) => (
-                                    <option key={index} value={abbr.abbreviation}>{abbr.abbreviation}</option>
-                                ))}
-                            </select>
-                        </div>
-                    </div>
-                    <ResponsiveContainer width="100%" height={270}>
-                    <BarChart data={schoolData}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="month" />
-                        <YAxis />
-                        <Tooltip />
-                        <Bar dataKey="markFound" fill="#4caf50" />
-                        <Bar dataKey="Pending" fill="#ffeb3b" />
-                        <Bar dataKey="markNotFound" fill="#f44336" />
-                        <Bar dataKey="underInvestigation" fill="#2196f3" />
-                    </BarChart>
-                    </ResponsiveContainer>
-                </Paper>
-                </div>
-            </div>
-            </Box>
-        </>
-        )}
+    //         {/* Reports Bar Chart */}
+    //         <div className='flex gap-4'>
+    //             <div className='w-1/2'>
+    //                 <Paper className="p-4 shadow-lg">
+    //                 <Typography variant="h6" className="font-semibold mb-4">University Report Statistics</Typography>
+    //                 <ResponsiveContainer width="100%" height={270}>
+    //                 <BarChart data={reportData}>
+    //                     <CartesianGrid strokeDasharray="3 3" />
+    //                     <XAxis dataKey="month" />
+    //                     <YAxis />
+    //                     <Tooltip />
+    //                     <Bar dataKey="markFound" fill="#4caf50" />
+    //                     <Bar dataKey="Pending" fill="#ffeb3b" />
+    //                     <Bar dataKey="markNotFound" fill="#f44336" />
+    //                     <Bar dataKey="underInvestigation" fill="#2196f3" />
+    //                 </BarChart>
+    //                 </ResponsiveContainer>
+    //             </Paper>
+    //             </div>
+    //             <div className='w-1/2'>
+    //                 <Paper className="p-4 shadow-lg">
+    //                 <div className='flex justify-between'>
+    //                     <Typography variant="h6" className="font-semibold mb-4">School&apos;s Report Statistics</Typography>
+    //                     <div>
+    //                         <label htmlFor="">Select a school:</label>
+    //                         <select className="p-2 rounded-lg border border-gray-300 mb-4"
+    //                             value={abbr}
+    //                             onChange={(e) => setAbbr(e.target.value)}
+    //                         >
+    //                             <option value="all">All Schools</option>
+    //                             {abbreviations?.map((abbr, index) => (
+    //                                 <option key={index} value={abbr.abbreviation}>{abbr.abbreviation}</option>
+    //                             ))}
+    //                         </select>
+    //                     </div>
+    //                 </div>
+    //                 <ResponsiveContainer width="100%" height={270}>
+    //                 <BarChart data={schoolData}>
+    //                     <CartesianGrid strokeDasharray="3 3" />
+    //                     <XAxis dataKey="month" />
+    //                     <YAxis />
+    //                     <Tooltip />
+    //                     <Bar dataKey="markFound" fill="#4caf50" />
+    //                     <Bar dataKey="Pending" fill="#ffeb3b" />
+    //                     <Bar dataKey="markNotFound" fill="#f44336" />
+    //                     <Bar dataKey="underInvestigation" fill="#2196f3" />
+    //                 </BarChart>
+    //                 </ResponsiveContainer>
+    //             </Paper>
+    //             </div>
+    //         </div>
+    //         </Box>
+    //     </>
+    //     )}
+    // </div>
+    <div className="space-y-8">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Schools</CardTitle>
+            <School className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{adminTotalSchools}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Students</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{adminTotalStudents}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Lecturers</CardTitle>
+            <GraduationCap className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{adminTotalLecturers}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Courses</CardTitle>
+            <BookOpen className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{adminTotalCourses}</div>
+          </CardContent>
+        </Card>
+      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Missing Marks Overview</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ResponsiveContainer width="100%" height={350}>
+            <BarChart data={reportData}>
+              <XAxis
+                dataKey="month"
+                stroke="#888888"
+                fontSize={12}
+                tickLine={false}
+                axisLine={false}
+              />
+              <YAxis
+                stroke="#888888"
+                fontSize={12}
+                tickLine={false}
+                axisLine={false}
+                tickFormatter={(value) => `${value}`}
+              />
+              <Bar
+                dataKey="missingMarks"
+                fill="currentColor"
+                radius={[4, 4, 0, 0]}
+                className="fill-primary"
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
     </div>
   )
 }

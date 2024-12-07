@@ -1,4 +1,3 @@
-'use client'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
@@ -10,18 +9,18 @@ import NavBar from './Components/NavBar'
 
 const inter = Inter({ subsets: ['latin'] })
 
-// export const metadata: Metadata = {
-//   title: 'MMTS MMUST',
-//   description: 'Missing Marks Tracking System',
-//   icons: {
-//     icon: [
-//       {
-//         url: '/images/icon.png',
-//         href: '/images/icon.png',
-//       }
-//     ],
-//   },
-// };
+export const metadata: Metadata = {
+  title: 'MMTS MMUST',
+  description: 'Missing Marks Tracking System',
+  icons: {
+    icon: [
+      {
+        url: '/images/icon.png',
+        href: '/images/icon.png',
+      }
+    ],
+  },
+};
 
 export default function RootLayout({
   children,
@@ -29,7 +28,6 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
 
-  const pathname = usePathname()
 
   return (
     <html lang="en">
@@ -37,12 +35,11 @@ export default function RootLayout({
         <AuthContext>
           <ToasterContext/>
           <div className='w-screen h-screen flex flex-col overflow-hidden gap-1'>
-            <div className={clsx(`w-full bg-gray-200 shadow-md h-[10vh]`,  pathname === '/login' && 'hidden' || pathname === '/' && 'hidden')}>
+            {/* <div className={clsx(`w-full bg-gray-200 shadow-md h-[10vh]`,  pathname === '/login' && 'hidden' || pathname === '/' && 'hidden')}>
               <NavBar></NavBar>
-            </div>
+            </div> */}
             <div className='w-full  max-h-full h-full flex flex-row'>
-              <div className='h-full overflow-y-auto w-full bg-gray-200 overflow-x-clip'>{children}
-              </div>
+              <div className='h-full overflow-y-auto w-full  overflow-x-clip'>{children}</div>
             </div>
           </div>
         </AuthContext>
