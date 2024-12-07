@@ -9,7 +9,7 @@ import { UsersIcon, ClockIcon, DocumentCheckIcon, PaperAirplaneIcon, UserGroupIc
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/(users)/Admin/Components/ui/card";
 import { School, Users, GraduationCap, BookOpen } from "lucide-react";
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 const data = [
   {
@@ -307,6 +307,13 @@ export default function Page() {
                 tickLine={false}
                 axisLine={false}
                 tickFormatter={(value) => `${value}`}
+              />
+              <Tooltip  
+                contentStyle={{
+                  color: '#0070f3', 
+                  fontSize: '14px',
+                }}
+              // formatter={(value, name) => [`${value}`, name]}
               />
               <Bar
                 dataKey="missingMarks"

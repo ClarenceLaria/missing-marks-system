@@ -43,17 +43,6 @@ export default async function StudentLayout({
         enableSystem
         disableTransitionOnChange
       >
-      {/* <div className="w-screen h-screen flex flex-col overflow-hidden">
-          <div className={clsx(`w-full bg-gray-200 shadow-md h-[10vh]`)}>
-              <UserNav/>
-          </div>
-          <div className="flex flex-row">
-            <div className="h-screen px-4 w-[15vw] bg-sky-400">
-              <SideNav></SideNav>
-            </div>
-            <div className="w-full h-full">{children}</div>
-          </div>
-      </div> */}
       <div className="min-h-screen flex">
       <DashboardNav />
       <div className="flex-1">
