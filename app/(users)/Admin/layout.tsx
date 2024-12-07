@@ -3,6 +3,13 @@ import SideNav from "./Components/SideBar";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import {authOptions} from "@/app/utils/authOptions";
+import NavBar from "@/app/Components/NavBar";
+import clsx from "clsx";
+import { ThemeProvider } from "./Components/ThemeProvider";
+import { Toaster } from "./Components/ui/toaster";
+import { UserNav } from "./Components/user-nav";
+import { ThemeToggle } from "./Components/ThemeToggle";
+import { DashboardNav } from "./Components/DashboardNav";
 
 export const metadata: Metadata = {
   title: "MMUST Missing Marks System",
@@ -30,14 +37,39 @@ export default async function StudentLayout({
   }
   return (
     <>
-      <div className="w-screen h-screen flex flex-col overflow-hidden">
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="light"
+        enableSystem
+        disableTransitionOnChange
+      >
+      {/* <div className="w-screen h-screen flex flex-col overflow-hidden">
+          <div className={clsx(`w-full bg-gray-200 shadow-md h-[10vh]`)}>
+              <UserNav/>
+          </div>
           <div className="flex flex-row">
             <div className="h-screen px-4 w-[15vw] bg-sky-400">
               <SideNav></SideNav>
             </div>
             <div className="w-full h-full">{children}</div>
           </div>
+      </div> */}
+      <div className="min-h-screen flex">
+      <DashboardNav />
+      <div className="flex-1">
+        <header className="border-b">
+          <div className="flex h-16 items-center px-4">
+            <div className="ml-auto flex items-center space-x-4">
+              <ThemeToggle />
+              <UserNav />
+            </div>
+          </div>
+        </header>
+        <main className="p-8">{children}</main>
       </div>
+    </div>
+      <Toaster/>
+      </ThemeProvider>
     </>
   );
 }

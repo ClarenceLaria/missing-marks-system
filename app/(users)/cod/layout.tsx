@@ -3,6 +3,8 @@ import SideNav from "./Components/SideBar";
 import { getServerSession } from "next-auth";
 import {authOptions} from "@/app/utils/authOptions";
 import { redirect } from "next/navigation";
+import clsx from "clsx";
+import NavBar from "@/app/Components/NavBar";
 
 export const metadata: Metadata = {
   title: "MMUST Missing Marks System",
@@ -33,6 +35,9 @@ export default async function CodLayout({
   return (
     <>
       <div className="w-screen h-screen flex flex-col overflow-hidden">
+          <div className={clsx(`w-full bg-gray-200 shadow-md h-[10vh]`)}>
+              <NavBar></NavBar>
+          </div>
           <div className="flex flex-row">
             <div className="h-screen px-4 w-[15vw] bg-sky-400">
               <SideNav></SideNav>

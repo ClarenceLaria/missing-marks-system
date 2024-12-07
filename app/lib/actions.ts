@@ -771,30 +771,11 @@ export async function fetchSchoolReports(email: string){
 
 export async function fetchAdminTotals(){
     try{
-        const pendingTotals = await prisma.missingMarksReport.count({
-            where:{
-                reportStatus: "PENDING",
-            }
-        });
-        const markFoundTotals = await prisma.missingMarksReport.count({
-            where:{
-                reportStatus: "MARK_FOUND",
-            }
-        })
-        const notFoundTotals = await prisma.missingMarksReport.count({
-            where:{
-                reportStatus: "MARK_NOT_FOUND",
-            }
-        });
-        const forwardedTotals = await prisma.missingMarksReport.count({
-            where:{
-                reportStatus: "FOR_FURTHER_INVESTIGATION",
-            }
-        });
         const totalStudents = await prisma.student.count();
         const totalLecturers = await prisma.staff.count();
-        const totalUsers = totalStudents + totalLecturers;
-        return {pendingTotals, markFoundTotals, notFoundTotals, forwardedTotals, totalUsers, totalLecturers, totalStudents};
+        const totalSchools = await prisma.school.count();
+        const totalCourses = await prisma.course.count();
+        return {totalLecturers, totalStudents, totalSchools, totalCourses};
     }catch(error){
         console.error('Error fetching totals for admin:', error)
     }
@@ -803,11 +784,31 @@ export async function fetchAdminTotals(){
 export async function fetchMissingReportsStats () {
     try{
         const reportStats = await prisma.missingMarksReport.groupBy({
-            by: ['reportStatus', 'createdAt'],
+            by: ['createdAt'],
             _count: {_all: true},
             orderBy: {createdAt: 'asc'},
         })
-        return reportStats;
+         // Transform the results to group data by month
+        const monthlyData = reportStats.reduce((acc, record) => {
+        const month = new Date(record.createdAt).toLocaleString('default', { month: 'short' });
+        const year = new Date(record.createdAt).getFullYear();
+        const monthKey = `${month} ${year}`; // Example: "Jan 2024"
+  
+        if (!acc[monthKey]) {
+          acc[monthKey] = {
+            month: monthKey,
+            missingMarks: 0,
+          };
+        }
+  
+        acc[monthKey].missingMarks += record._count._all;
+  
+        return acc;
+      }, {} as Record<string, { month: string; missingMarks: number }>);
+  
+      // Convert the grouped data to an array
+      return Object.values(monthlyData);
+        // return reportStats;
     }catch(error){
         console.error('Error Fetching Stats', error);
     }
