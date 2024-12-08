@@ -31,7 +31,7 @@ export default function Page() {
     useEffect(() => {
         async function fetchProfile(){
             try{
-                const lecturerProfile = await fetchStaffProfile(email);
+                const lecturerProfile = await fetchStaffProfile();
                 setStaff(lecturerProfile);
             }catch(error){
                 console.error("Error fetching Lecturer's profile:", error)

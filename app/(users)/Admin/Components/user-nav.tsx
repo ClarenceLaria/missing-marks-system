@@ -19,9 +19,14 @@ import { useEffect, useState } from "react";
 
 interface StaffProfile {
   id: number;
+  createdAt: Date;
   email: string;
   firstName: string;
   secondName: string;
+  phoneNumber: string;
+  password: string;
+  userType: UserType;
+  departmentId: number;
 }
 export function UserNav() {
   const [profile, setProfile] = useState<StaffProfile | null>(null);

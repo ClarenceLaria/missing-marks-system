@@ -74,17 +74,10 @@ export async function fetchStaffProfile(){
             throw new Error('User is not authenticated');
         }
         const email = session.user.email!;
-        console.log(email)
         const user = await prisma.staff.findUnique({
             where: {
                 email: email,
             },
-            select: {
-                id: true,
-                firstName: true,
-                secondName: true,
-                email: true,
-            }
         })
         return user;
     } catch (error){
