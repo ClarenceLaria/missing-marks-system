@@ -2,6 +2,8 @@
 import dotenv from 'dotenv'
 import { PrismaClient, Semester } from "@prisma/client"
 import http from 'http'
+import { getServerSession } from 'next-auth';
+import {authOptions} from '../utils/authOptions';
 
 const prisma = new PrismaClient();
 
@@ -65,12 +67,17 @@ export async function fetchStudentProfile(email: string){
     }
 }
 
-export async function fetchStaffProfile(email: string){
+export async function fetchStaffProfile(){
     try{
+        const session = await getServerSession(authOptions);
+        if (!session || !session.user?.email) {
+            throw new Error('User is not authenticated');
+        }
+        const email = session.user.email!;
         const user = await prisma.staff.findUnique({
             where: {
                 email: email,
-            }
+            },
         })
         return user;
     } catch (error){

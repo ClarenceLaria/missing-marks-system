@@ -36,7 +36,7 @@ export function UserNav() {
   useEffect(() => {
     const handleProfile = async () => {
       try{
-        const profile = await fetchStaffProfile(email);
+        const profile = await fetchStaffProfile();
         setProfile(profile);
       }catch(error){
         console.error('Error fetching user profile:',error);
