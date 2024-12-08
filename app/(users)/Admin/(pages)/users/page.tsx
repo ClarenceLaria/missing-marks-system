@@ -17,32 +17,54 @@ import {
   TableRow,
 } from "@/app/(users)/Admin/Components/ui/table";
 import { CreateUserDialog } from "@/app/(users)/Admin/Components/admin/create-user-dialog";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { UserPlus, PenSquare, Trash2 } from "lucide-react";
 import { Badge } from "@/app/(users)/Admin/Components/ui/badge";
+import { fetchUniversityUsers, fetchUniversityUsersArray } from "@/app/lib/actions";
+import { UserStatus, UserType } from "@prisma/client";
 
-const users = [
-  {
-    id: 1,
-    name: "John Doe",
-    email: "john.doe@university.edu",
-    role: "DEAN",
-    school: "School of Computing",
-    status: "active",
-  },
-  {
-    id: 2,
-    name: "Jane Smith",
-    email: "jane.smith@university.edu",
-    role: "LECTURER",
-    school: "School of Computing",
-    status: "active",
-  },
-];
+// const users = [
+//   {
+//     id: 1,
+//     name: "John Doe",
+//     email: "john.doe@university.edu",
+//     role: "DEAN",
+//     school: "School of Computing",
+//     status: "active",
+//   },
+//   {
+//     id: 2,
+//     name: "Jane Smith",
+//     email: "jane.smith@university.edu",
+//     role: "LECTURER",
+//     school: "School of Computing",
+//     status: "active",
+//   },
+// ];
 
+interface Users {
+  id: number;
+  name: string;
+  email: string;
+  userType: UserType;
+  userStatus: UserStatus;
+  school: string;
+}
 export default function UsersPage() {
   const [open, setOpen] = useState(false);
+  const [users, setUsers] = useState<Users[]>([]);
 
+  useEffect(() => {
+    const handleUsers = async () => {
+      try{
+        const users = await fetchUniversityUsersArray();
+        setUsers(users || []);
+      }catch(error){
+        console.error('Error fetching users', error);
+      }
+    }
+    handleUsers();
+  },[]);
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -81,11 +103,11 @@ export default function UsersPage() {
                   <TableCell className="font-medium">{user.name}</TableCell>
                   <TableCell>{user.email}</TableCell>
                   <TableCell>
-                    <Badge variant="secondary">{user.role}</Badge>
+                    <Badge variant="secondary">{user.userType}</Badge>
                   </TableCell>
                   <TableCell>{user.school}</TableCell>
                   <TableCell>
-                    <Badge variant="success">{user.status}</Badge>
+                    <Badge variant="success">{user.userStatus}</Badge>
                   </TableCell>
                   <TableCell className="flex items-center gap-2">
                     <Button variant="ghost" size="icon">

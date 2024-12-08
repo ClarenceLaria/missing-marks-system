@@ -25,6 +25,7 @@ model Staff {
   department  Department @relation(fields: [departmentId], references: [id])
   departmentId Int 
   units       Unit[]
+  userStatus  UserStatus @default(inactive)
 }
 
 model Student {
@@ -41,6 +42,7 @@ model Student {
   courseId    Int 
   reports     MissingMarksReport[]
   userType    UserType @default(STUDENT)
+  userStatus  UserStatus @default(active)
 }
 
 
@@ -137,4 +139,9 @@ enum ReportStatus{
   MARK_FOUND
   MARK_NOT_FOUND
   FOR_FURTHER_INVESTIGATION
+}
+
+enum UserStatus{
+  active
+  inactive
 }
