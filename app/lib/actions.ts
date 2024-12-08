@@ -873,13 +873,76 @@ export async function fetchSchoolReportStatistics (abbreviation: string) {
     }
 }
 
-export async function fetchUniversityUsers (){
+export async function fetchUniversityUsersArray (){
+    try{
+        const lecturers = await prisma.staff.findMany({
+            select:{
+                id: true,
+                firstName: true,
+                secondName: true,
+                email: true,
+                userType: true,
+                userStatus: true,
+                department: {
+                    select: {
+                        school: {
+                            select: {
+                                name: true,
+                            }
+                        }
+                    },
+                },
+            },
+        });
+        const students = await prisma.student.findMany({
+            select: {
+                id: true,
+                firstName: true,
+                secondName: true,
+                email: true,
+                userType: true,
+                userStatus: true,
+                department: {
+                    select: {
+                        school: {
+                            select: {
+                                name: true,
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        const normalizedLecturers = lecturers.map((lecturer) => ({
+            id: lecturer.id,
+            name: `${lecturer.firstName} ${lecturer.secondName}`,
+            email: lecturer.email,
+            userType: lecturer.userType,
+            userStatus: lecturer.userStatus,
+            school: lecturer.department?.school?.name || "Unknown",
+          }));
+          const normalizedStudents = students.map((student) => ({
+            id: student.id,
+            name: `${student.firstName} ${student.secondName}`,
+            email: student.email,
+            userType: student.userType,
+            userStatus: student.userStatus,
+            school: student.department?.school?.name || "Unknown",
+          }));
+        return [...normalizedLecturers, ...normalizedStudents];
+    }catch(error){
+        console.error("Error Fetching University Users", error)
+    }
+}
+
+export async function fetchUniversityUsers(){
     try{
         const lecturers = await prisma.staff.findMany();
         const students = await prisma.student.findMany();
-        return {lecturers, students};
+
+        return {lecturers, students}
     }catch(error){
-        console.error("Error Fetching University Users", error)
+        console.error("Error fetching users:", error)
     }
 }
 
