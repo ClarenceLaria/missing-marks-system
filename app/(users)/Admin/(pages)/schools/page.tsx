@@ -42,6 +42,9 @@ const schools = [
 export default function SchoolsPage() {
   const [open, setOpen] = useState(false);
 
+  const handleOpen = () => {
+    setOpen((prev) => !prev);
+  }
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -51,7 +54,7 @@ export default function SchoolsPage() {
             Manage university schools and their deans
           </p>
         </div>
-        <Button onClick={() => setOpen(true)}>
+        <Button onClick={() => handleOpen()}>
           <School className="mr-2 h-4 w-4" />
           Add School
         </Button>

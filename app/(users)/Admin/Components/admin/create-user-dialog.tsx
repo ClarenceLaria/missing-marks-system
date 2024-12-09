@@ -28,7 +28,7 @@ import {
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -42,7 +42,7 @@ interface CreateUserDialogProps {
 }
 
 export function CreateUserDialog({ open }: CreateUserDialogProps) {
-  const [isOpen, setIsOpen] = useState(open);
+  const [isOpen, setIsOpen] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -52,6 +52,12 @@ export function CreateUserDialog({ open }: CreateUserDialogProps) {
       school: "",
     },
   });
+
+  useEffect(() => {
+    if (open) {
+      setIsOpen(true);
+    }
+  }, [open]);
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
