@@ -5,11 +5,11 @@ import { getServerSession } from "next-auth";
 import {authOptions} from "@/app/utils/authOptions";
 import NavBar from "@/app/Components/NavBar";
 import clsx from "clsx";
-import { ThemeProvider } from "./Components/ThemeProvider";
+import { ThemeProvider } from "../../Components/ThemeProvider";
 import { Toaster } from "../../Components/ui/toaster";
-import { UserNav } from "./Components/user-nav";
-import { ThemeToggle } from "./Components/ThemeToggle";
-import { DashboardNav } from "./Components/DashboardNav";
+import { UserNav } from "../../Components/user-nav";
+import { ThemeToggle } from "../../Components/ThemeToggle";
+import { DashboardNav } from "../../Components/DashboardNav";
 
 export const metadata: Metadata = {
   title: "MMUST Missing Marks System",

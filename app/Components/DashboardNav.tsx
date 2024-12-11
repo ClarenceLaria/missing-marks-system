@@ -40,22 +40,22 @@ const routes = {
     {
       title: "Dashboard",
       icon: LayoutDashboard,
-      href: "/Admin",
+      href: "/dean",
     },
     {
-      title: "Schools",
-      icon: School,
-      href: "/Admin/schools",
-    },
-    {
-      title: "Users",
-      icon: Users,
-      href: "/Admin/users",
+      title: "Departments",
+      icon: Building2,
+      href: "/dean/departments",
     },
     {
       title: "Courses",
       icon: BookOpen,
-      href: "/Admin/courses",
+      href: "/dean/courses",
+    },
+    {
+      title: "Missing Marks",
+      icon: FileSpreadsheet,
+      href: "/dean/missing-marks",
     },
   ],
   COD: [
@@ -121,7 +121,7 @@ export function DashboardNav() {
   // This should be dynamic based on user role from auth context
   const userRole = pathname.includes("/Admin")
     ? "ADMIN"
-    : pathname.includes("/Admin")
+    : pathname.includes("/dean")
     ? "DEAN"
     : pathname.includes("/cod")
     ? "COD"

@@ -1,6 +1,6 @@
 'use client'
 import React, {Suspense, useEffect, useState} from 'react'
-import Table from '@/app/(users)/Admin/Components/LecturersTable';
+import Table from '@/app/Components/LecturersTable';
 import Search from '@/app/(users)/Student/Components/Search'
 import { useSession } from 'next-auth/react';
 import { fetchDepartmentUsers } from '@/app/lib/actions';
