@@ -1,13 +1,13 @@
 "use client";
 
-import { Button } from "@/app/(users)/Admin/Components/ui/button";
+import { Button } from "@/app/Components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/app/(users)/Admin/Components/ui/card";
+} from "@/app/Components/ui/card";
 import {
   Table,
   TableBody,
@@ -15,7 +15,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/app/(users)/Admin/Components/ui/table";
+} from "@/app/Components/ui/table";
 import { useState } from "react";
 import { School, PenSquare, Trash2 } from "lucide-react";
 import { CreateSchoolDialog } from "@/app/(users)/Admin/Components/admin/create-school-dialog";

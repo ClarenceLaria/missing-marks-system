@@ -1030,3 +1030,17 @@ export default async function sendSMS(phoneNo: string, message: string){
         console.error("Error sending SMS: ", error.message || error);
     }
 }
+
+export async function fetchDepartments () {
+    try{
+        const departments = await prisma.department.findMany({
+            select: {
+                name: true,
+                id: true,
+            }
+        });
+        return departments;
+    }catch(error){
+        console.error("Error fetching departments:", error);
+    }
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/app/(users)/Admin/Components/ui/button";
+import { Button } from "@/app/Components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -8,7 +8,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/app/(users)/Admin/Components/ui/dialog";
+} from "@/app/Components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -16,19 +16,21 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/app/(users)/Admin/Components/ui/form";
-import { Input } from "@/app/(users)/Admin/Components/ui/input";
+} from "@/app/Components/ui/form";
+import { Input } from "@/app/Components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/app/(users)/Admin/Components/ui/select";
+} from "@/app/Components/ui/select";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
+import { fetchDepartments } from "@/app/lib/actions";
+import toast from "react-hot-toast";
 // import { UserType } from "@prisma/client";
 
 const formSchema = z.object({
@@ -36,7 +38,7 @@ const formSchema = z.object({
   sName: z.string().min(1, "Second Name is required"),
   email: z.string().email("Invalid email address"),
   userType: z.enum(["ADMIN", "DEAN", "LECTURER", "STUDENT", "COD"]),
-  school: z.string().min(1, "School is required"),
+  department: z.string().min(1, "Department is required"),
   regNo: z.string().optional(),
   phoneNumber: z.string().optional(),
 })
@@ -56,8 +58,19 @@ interface CreateUserDialogProps {
   open: boolean;
 }
 
+interface Department {
+  name: string;
+    id: number;
+}
+
 export function CreateUserDialog({ open }: CreateUserDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [departments, setDepartments] = useState<Department[]>([]);
+  const [loading, setisLoading] = useState(false);
+  
+  const toggleLoading = () => {
+    setisLoading((prevLoading) => !prevLoading);
+  };
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -65,12 +78,23 @@ export function CreateUserDialog({ open }: CreateUserDialogProps) {
       sName: "",
       email: "",
       userType: "STUDENT",
-      school: "",
+      department: "",
       regNo: "",
       phoneNumber: "",
     },
   });
 
+  const password= "Mmust@2024"; 
+  const email = form.getValues('email');
+  const regNo = form.getValues('regNo')!;
+  const isValidEmail = (email: string) => {
+    const emailRegex = /^[a-z][a-z0-9._%+-]*@[a-z0-9.-]+\.[a-z]{2,}$/; //This rejects emails like 123@gmail.com and accepts emails like example123@gmail.com, all emails must be lowercase
+    return emailRegex.test(email);
+  };
+  const validateRegistrationNumber = (regNo: string) => {
+    const pattern = /^[A-Z]{3}\/B\/\d{2}-\d{5}\/\d{4}$/;
+    return pattern.test(regNo);
+  };
   const selectedType = form.watch('userType');
   useEffect(() => {
     if (open) {
@@ -84,6 +108,74 @@ export function CreateUserDialog({ open }: CreateUserDialogProps) {
     form.reset();
   }
 
+  useEffect(() => {
+    const handleDepartments = async () => {
+      try{
+        const departments = await fetchDepartments();
+        setDepartments(departments || []);
+      }catch(error){
+        console.error("Error fetching Departments:", error)
+      };
+    };
+    handleDepartments();
+  },[]);
+
+  const handleSubmit = async () => {
+    if (!isValidEmail(email)) {
+      toggleLoading();
+      toast.error('Please enter a valid email address');
+      return;
+    }
+    try{
+      if (!validateRegistrationNumber(regNo)) {
+        toast.error('Please enter a valid registration number');
+        return;
+      }
+
+      try{
+        toast.loading("Sending request...");
+
+        const response = await fetch('/api/registerUser', {
+          method: 'POST',
+          headers: {
+            'content-type': 'application/json',
+          },
+          body: JSON.stringify({
+            firstName: form.getValues('fName'),
+            secondName: form.getValues('sName'),
+            email,
+            password,
+            registrationNumber: regNo,
+            userType: selectedType,
+            // departmentId: parseInt(form.getValues('department')!),
+          }),
+        });
+
+        toast.dismiss();
+
+        // Check response status and act accordingly
+        if (response.ok && response.status === 200 || response.status === 201) {
+          toast.success('User Registered Successfully');
+        } else if (response.status === 400) {
+          const errorData = await response.json();
+          toast.error(errorData.error);
+        } else if (response.status === 409) {
+          toast.error('User with these credentials already exists');
+        } else {
+          toast.error('Unexpected error occurred');
+        }
+      }catch(error){
+        toast.dismiss();
+        toast.error('Failed to send request. Please try again.');
+      }
+    } catch (error) {
+      toast.dismiss();
+      toast.error('Something went wrong');
+    } finally {
+      toggleLoading();
+    }
+  };
+  console.log(form.getValues('department'));
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="sm:max-w-[425px]">
@@ -164,19 +256,20 @@ export function CreateUserDialog({ open }: CreateUserDialogProps) {
             />
             <FormField
               control={form.control}
-              name="school"
+              name="department"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>School</FormLabel>
+                  <FormLabel>Department</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select school" />
+                        <SelectValue placeholder="Select department" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="computing">School of Computing</SelectItem>
-                      <SelectItem value="engineering">School of Engineering</SelectItem>
+                      {departments.map((department) => (
+                        <SelectItem key={department.id} value={department.id.toString()}>{department.name}</SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -212,7 +305,7 @@ export function CreateUserDialog({ open }: CreateUserDialogProps) {
               )}
             />)}
             <DialogFooter>
-              <Button type="submit">Create User</Button>
+              <Button type="submit" onClick={() => handleSubmit()}>Create User</Button>
             </DialogFooter>
           </form>
         </Form>
