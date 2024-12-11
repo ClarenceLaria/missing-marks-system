@@ -86,7 +86,6 @@ export function CreateUserDialog({ open }: CreateUserDialogProps) {
   });
 
   dotenv.config();
-  // const password= process.env.NEXT_PUBLIC_USER_PASSWORD!;
   const email = form.getValues('email');
   const regNo = form.getValues('regNo')!;
   const isValidEmail = (email: string) => {
@@ -146,7 +145,7 @@ export function CreateUserDialog({ open }: CreateUserDialogProps) {
             firstName: form.getValues('fName'),
             secondName: form.getValues('sName'),
             email,
-            password: process.env.NEXT_PUBLIC_USER_PASSWORD!,
+            password: process.env.NEXT_PUBLIC_USER_SECRET!,
             registrationNumber: regNo,
             userType: selectedType,
             // departmentId: parseInt(form.getValues('department')!),
