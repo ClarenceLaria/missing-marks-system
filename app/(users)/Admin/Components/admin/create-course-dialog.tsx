@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/app/(users)/Admin/Components/ui/button";
+import { Button } from "@/app/Components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -8,7 +8,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/app/(users)/Admin/Components/ui/dialog";
+} from "@/app/Components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -16,15 +16,15 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/app/(users)/Admin/Components/ui/form";
-import { Input } from "@/app/(users)/Admin/Components/ui/input";
+} from "@/app/Components/ui/form";
+import { Input } from "@/app/Components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/app/(users)/Admin/Components/ui/select";
+} from "@/app/Components/ui/select";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";

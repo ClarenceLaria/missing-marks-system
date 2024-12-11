@@ -7,7 +7,7 @@ import { Box, Grid, Typography, Paper, CircularProgress } from '@mui/material';
 // import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { UsersIcon, ClockIcon, DocumentCheckIcon, PaperAirplaneIcon, UserGroupIcon, AcademicCapIcon, CheckBadgeIcon } from '@heroicons/react/24/outline';
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/app/(users)/Admin/Components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/app/Components/ui/card";
 import { School, Users, GraduationCap, BookOpen } from "lucide-react";
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 

@@ -1,7 +1,7 @@
 "use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/app/(users)/Admin/Components/ui/avatar";
-import { Button } from "@/app/(users)/Admin/Components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/app/Components/ui/avatar";
+import { Button } from "@/app/Components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,7 +10,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/app/(users)/Admin/Components/ui/dropdown-menu";
+} from "@/app/Components/ui/dropdown-menu";
 import { fetchStaffProfile } from "@/app/lib/actions";
 import { UserType } from "@prisma/client";
 import { LogOut, User } from "lucide-react";

@@ -1,13 +1,13 @@
 "use client";
 
-import { Button } from "@/app/(users)/Admin/Components/ui/button";
+import { Button } from "@/app/Components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/app/(users)/Admin/Components/ui/card";
+} from "@/app/Components/ui/card";
 import {
   Table,
   TableBody,
@@ -15,12 +15,12 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/app/(users)/Admin/Components/ui/table";
+} from "@/app/Components/ui/table";
 import { CreateUserDialog } from "@/app/(users)/Admin/Components/admin/create-user-dialog";
 import { useEffect, useState } from "react";
 import { UserPlus, PenSquare, Trash2 } from "lucide-react";
-import { Badge } from "@/app/(users)/Admin/Components/ui/badge";
-import { fetchUniversityUsers, fetchUniversityUsersArray } from "@/app/lib/actions";
+import { Badge } from "@/app/Components/ui/badge";
+import { fetchUniversityUsersArray } from "@/app/lib/actions";
 import { UserStatus, UserType } from "@prisma/client";
 
 // const users = [

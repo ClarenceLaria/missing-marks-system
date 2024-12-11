@@ -6,7 +6,7 @@ import {authOptions} from "@/app/utils/authOptions";
 import NavBar from "@/app/Components/NavBar";
 import clsx from "clsx";
 import { ThemeProvider } from "./Components/ThemeProvider";
-import { Toaster } from "./Components/ui/toaster";
+import { Toaster } from "../../Components/ui/toaster";
 import { UserNav } from "./Components/user-nav";
 import { ThemeToggle } from "./Components/ThemeToggle";
 import { DashboardNav } from "./Components/DashboardNav";
