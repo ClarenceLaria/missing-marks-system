@@ -31,6 +31,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { fetchDepartments } from "@/app/lib/actions";
 import toast from "react-hot-toast";
+import dotenv from 'dotenv'
 // import { UserType } from "@prisma/client";
 
 const formSchema = z.object({
@@ -84,7 +85,8 @@ export function CreateUserDialog({ open }: CreateUserDialogProps) {
     },
   });
 
-  const password= "Mmust@2024"; 
+  dotenv.config();
+  const password= process.env.NEXT_PUBLIC_USER_PASSWORD!;
   const email = form.getValues('email');
   const regNo = form.getValues('regNo')!;
   const isValidEmail = (email: string) => {
@@ -175,7 +177,6 @@ export function CreateUserDialog({ open }: CreateUserDialogProps) {
       toggleLoading();
     }
   };
-  console.log(form.getValues('department'));
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="sm:max-w-[425px]">
