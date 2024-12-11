@@ -46,7 +46,6 @@ export function UserNav() {
   },[email]);
   const name = profile?.firstName + " " + profile?.secondName;
   const avatar = ((profile?.firstName?.substring(0, 1) ?? '') + (profile?.secondName?.substring(0, 1) ?? '')).toUpperCase();
-  console.log(avatar)
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

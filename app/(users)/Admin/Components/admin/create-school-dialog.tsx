@@ -21,7 +21,7 @@ import { Input } from "@/app/(users)/Admin/Components/ui/input";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const formSchema = z.object({
   name: z.string().min(1, "School name is required"),
@@ -33,7 +33,7 @@ interface CreateSchoolDialogProps {
 }
 
 export function CreateSchoolDialog({ open }: CreateSchoolDialogProps) {
-  const [isOpen, setIsOpen] = useState(open);
+  const [isOpen, setIsOpen] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -42,6 +42,12 @@ export function CreateSchoolDialog({ open }: CreateSchoolDialogProps) {
     },
   });
 
+  useEffect(() => {
+    if (open) {
+      setIsOpen(true);
+    }
+  }, [open]);
+
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
     setIsOpen(false);
@@ -49,7 +55,7 @@ export function CreateSchoolDialog({ open }: CreateSchoolDialogProps) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={setIsOpen}>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Create School</DialogTitle>

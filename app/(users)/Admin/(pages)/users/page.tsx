@@ -54,6 +54,9 @@ export default function UsersPage() {
   const [open, setOpen] = useState(false);
   const [users, setUsers] = useState<Users[]>([]);
 
+  const handleOpen = () => {
+    setOpen((prev) => !prev);
+  }
   useEffect(() => {
     const handleUsers = async () => {
       try{
@@ -74,7 +77,7 @@ export default function UsersPage() {
             Manage system users and their roles
           </p>
         </div>
-        <Button onClick={() => setOpen(true)}>
+        <Button onClick={() => handleOpen()}>
           <UserPlus className="mr-2 h-4 w-4" />
           Add User
         </Button>
