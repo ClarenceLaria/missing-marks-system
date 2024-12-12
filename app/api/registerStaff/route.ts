@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, UserStatus } from '@prisma/client';
 import { NextResponse } from 'next/server';
 
 const prisma = new PrismaClient();
@@ -10,9 +10,11 @@ export async function POST(req: Request) {
   }
   
   try {
-  const { firstName, secondName, email, password, phoneNumber  } = await req.json();
+  const { firstName, secondName, email, password, phoneNumber, departmentId, userStatus, userType  } = await req.json();
 
-  if (!firstName || !secondName || !email || !password || !phoneNumber) {
+  const validStatus = ['active', 'inactive'].includes(userStatus) ? userStatus : null;
+
+  if (!firstName || !secondName || !email || !password || !phoneNumber || !departmentId) {
     return NextResponse.json({ error: 'Please fill all the fields' }, { status: 400 });
   }
 
@@ -39,8 +41,10 @@ export async function POST(req: Request) {
         phoneNumber,
         password: hashedPassword,
         department:{
-            connect:{ id: 1 },
+            connect:{ id: departmentId },
         },
+        userStatus: validStatus as UserStatus,
+        userType,
       },
     });
 
