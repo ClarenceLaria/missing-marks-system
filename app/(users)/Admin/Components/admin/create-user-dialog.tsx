@@ -32,6 +32,7 @@ import { useEffect, useState } from "react";
 import { fetchDepartments } from "@/app/lib/actions";
 import toast from "react-hot-toast";
 import dotenv from 'dotenv'
+import { UserStatus } from "@prisma/client";
 // import { UserType } from "@prisma/client";
 
 const formSchema = z.object({
@@ -88,10 +89,13 @@ export function CreateUserDialog({ open }: CreateUserDialogProps) {
   dotenv.config();
   const email = form.getValues('email');
   const regNo = form.getValues('regNo')!;
+  const status = 'active';
+
   const isValidEmail = (email: string) => {
     const emailRegex = /^[a-z][a-z0-9._%+-]*@[a-z0-9.-]+\.[a-z]{2,}$/; //This rejects emails like 123@gmail.com and accepts emails like example123@gmail.com, all emails must be lowercase
     return emailRegex.test(email);
   };
+
   const validateRegistrationNumber = (regNo: string) => {
     const pattern = /^[A-Z]{3}\/B\/\d{2}-\d{5}\/\d{4}$/;
     return pattern.test(regNo);
@@ -127,6 +131,7 @@ export function CreateUserDialog({ open }: CreateUserDialogProps) {
       toast.error('Please enter a valid email address');
       return;
     }
+    if(selectedType === 'STUDENT'){
     try{
       if (!validateRegistrationNumber(regNo)) {
         toast.error('Please enter a valid registration number');
@@ -176,6 +181,48 @@ export function CreateUserDialog({ open }: CreateUserDialogProps) {
       toggleLoading();
     }
   };
+  if(selectedType === 'ADMIN' || selectedType === 'DEAN' || selectedType === 'COD' || selectedType === 'LECTURER'){
+    try{
+      toast.loading("Sending request...");
+
+      const response = await fetch('/api/registerStaff', {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          firstName: form.getValues('fName'),
+          secondName: form.getValues('sName'),
+          email,
+          password: process.env.NEXT_PUBLIC_USER_SECRET!,
+          phoneNumber: form.getValues('phoneNumber'),
+          userType: selectedType,
+          userStatus: status,
+          departmentId: parseInt(form.getValues('department')!),
+        }),
+      });
+
+      toast.dismiss();
+
+      // Check response status and act accordingly
+      if (response.ok && response.status === 200 || response.status === 201) {
+        toast.success(`${selectedType} Registered Successfully`);
+      } else if (response.status === 400) {
+        const errorData = await response.json();
+        toast.error(errorData.error);
+      } else if (response.status === 409) {
+        toast.error('User with these credentials already exists');
+      } else {
+        toast.error('Unexpected error occurred');
+      }
+    }catch(error){
+      console.error('Error creating user:', error);
+    }finally{
+      toggleLoading();
+  }
+  };
+};
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="sm:max-w-[425px]">
