@@ -1,6 +1,6 @@
 'use client'
 import Loader from '@/app/Components/Loader';
-import { fetchAdminTotals, fetchMissingReportsStats, fetchSchoolAbbreviations, fetchSchoolReportStatistics, fetchSchoolTotals, fetchSchoolUsersTotals } from '@/app/lib/actions';
+import { fetchAdminTotals, fetchMissingReportsStats, fetchSchoolReportStatistics, fetchSchoolTotals, fetchSchoolUsersTotals } from '@/app/lib/actions';
 import { useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react'
 import { Box, Grid, Typography, Paper, CircularProgress } from '@mui/material';
@@ -107,22 +107,6 @@ export default function Page() {
             getData();
     }, []);
     
-    // Abbreviations Logic
-    const [abbreviations, setAbbreviations] = useState<{ abbreviation: string }[]>();
-
-    useEffect(() => {
-            const handleFetchAbbreviations = async () => {
-                try{
-                    setLoading(true);
-                    const result = await fetchSchoolAbbreviations();
-                    setAbbreviations(result);
-                    setLoading(false);
-                }catch(error){
-                    console.error('Error fetching abbreviations', error);
-                }
-            }
-            handleFetchAbbreviations();
-        },[]);
 
     if(loading) return <Loader/>;
   return (

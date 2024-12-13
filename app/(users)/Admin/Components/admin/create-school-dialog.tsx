@@ -25,6 +25,7 @@ import { useEffect, useState } from "react";
 
 const formSchema = z.object({
   name: z.string().min(1, "School name is required"),
+  abbreviation: z.string().min(1, "School abbreviation is required"),
   deanEmail: z.string().email("Invalid email address"),
 });
 
@@ -38,6 +39,7 @@ export function CreateSchoolDialog({ open }: CreateSchoolDialogProps) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
+      abbreviation: "",
       deanEmail: "",
     },
   });
@@ -73,6 +75,19 @@ export function CreateSchoolDialog({ open }: CreateSchoolDialogProps) {
                   <FormLabel>School Name</FormLabel>
                   <FormControl>
                     <Input placeholder="School of Computing..." {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="abbreviation"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>School Abbreviation</FormLabel>
+                  <FormControl>
+                    <Input placeholder="SCI" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

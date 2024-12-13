@@ -16,9 +16,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/app/Components/ui/table";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { School, PenSquare, Trash2 } from "lucide-react";
 import { CreateSchoolDialog } from "@/app/(users)/Admin/Components/admin/create-school-dialog";
+import { fetchSchoolDetails, fetchSchools } from "@/app/lib/actions";
 
 const schools = [
   {
@@ -39,12 +40,34 @@ const schools = [
   },
 ];
 
+interface Schools {
+  id: number;
+  name: string;
+  totalDepartments: number;
+  totalStudents: number;
+  totalLecturers: number;
+  deans: any[];
+}
 export default function SchoolsPage() {
   const [open, setOpen] = useState(false);
+  const [schools, setSchools] = useState<Schools[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const handleOpen = () => {
     setOpen((prev) => !prev);
   }
+
+  useEffect(() => {
+    const handleSchools = async () => {
+      try{
+        const schools = await fetchSchoolDetails();
+        setSchools(schools);
+      }catch(error){
+        console.error('Error fetching schools: ',error);
+      }
+    }
+    handleSchools();
+  },[]);
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -81,10 +104,10 @@ export default function SchoolsPage() {
               {schools.map((school) => (
                 <TableRow key={school.id}>
                   <TableCell className="font-medium">{school.name}</TableCell>
-                  <TableCell>{school.dean}</TableCell>
-                  <TableCell>{school.departments}</TableCell>
-                  <TableCell>{school.students}</TableCell>
-                  <TableCell>{school.lecturers}</TableCell>
+                  <TableCell>{school.deans.map((dean) => (dean.firstName + dean.secondName))}</TableCell>
+                  <TableCell>{school.totalDepartments}</TableCell>
+                  <TableCell>{school.totalStudents}</TableCell>
+                  <TableCell>{school.totalLecturers}</TableCell>
                   <TableCell className="flex items-center gap-2">
                     <Button variant="ghost" size="icon">
                       <PenSquare className="h-4 w-4" />
