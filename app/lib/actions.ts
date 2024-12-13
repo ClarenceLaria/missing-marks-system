@@ -4,6 +4,7 @@ import { PrismaClient, Semester } from "@prisma/client"
 import http from 'http'
 import { getServerSession } from 'next-auth';
 import {authOptions} from '../utils/authOptions';
+import { UserType } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -1142,5 +1143,30 @@ export async function fetchDepartments () {
         return departments;
     }catch(error){
         console.error("Error fetching departments:", error);
+    }
+}
+
+
+export async function UpdateStaff(email: string, userType: UserType){
+    try{
+        const checkStaff = await prisma.staff.findUnique({
+            where: {
+                email: email,
+            }
+        })
+        if (!checkStaff){
+            throw new Error("Staff not found");
+        }
+        const staff = await prisma.staff.update({
+            where: {
+                email: email,
+            },
+            data: {
+                userType: userType,
+            }
+        });
+        // return staff;
+    }catch(error){
+        console.error("Error updating staff status:", error);
     }
 }

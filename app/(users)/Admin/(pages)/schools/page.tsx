@@ -104,7 +104,7 @@ export default function SchoolsPage() {
               {schools.map((school) => (
                 <TableRow key={school.id}>
                   <TableCell className="font-medium">{school.name}</TableCell>
-                  <TableCell>{school.deans.map((dean) => (dean.firstName + dean.secondName))}</TableCell>
+                  <TableCell>{school.deans.map((dean) => (dean.firstName + ' ' + dean.secondName))}</TableCell>
                   <TableCell>{school.totalDepartments}</TableCell>
                   <TableCell>{school.totalStudents}</TableCell>
                   <TableCell>{school.totalLecturers}</TableCell>
