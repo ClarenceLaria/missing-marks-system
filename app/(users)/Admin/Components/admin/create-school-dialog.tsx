@@ -22,9 +22,12 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { UpdateStaff } from "@/app/lib/actions";
 
 const formSchema = z.object({
   name: z.string().min(1, "School name is required"),
+  abbreviation: z.string().min(1, "School abbreviation is required"),
   deanEmail: z.string().email("Invalid email address"),
 });
 
@@ -38,6 +41,7 @@ export function CreateSchoolDialog({ open }: CreateSchoolDialogProps) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
+      abbreviation: "",
       deanEmail: "",
     },
   });
@@ -53,6 +57,46 @@ export function CreateSchoolDialog({ open }: CreateSchoolDialogProps) {
     setIsOpen(false);
     form.reset();
   }
+
+  const name = form.getValues("name");
+  const abbreviation = form.getValues("abbreviation");
+  const deanEmail = form.getValues("deanEmail");
+  const role = "DEAN" ;
+  const handleSubmit = async () => {
+    try{
+      toast.loading('Sending Request...');
+      const response = await fetch('/api/createSchool', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(
+          {
+            name,
+            abbreviation,
+          }
+        ),
+      });
+
+      toast.dismiss();
+
+      if(response.ok && response.status === 200 || response.status === 201){
+        const data = await response.json();
+        console.log(data);
+        toast.success(data.message);
+      }else if (response.status === 400){
+        const errorData = await response.json();
+        toast.error(errorData.error);
+      } else {
+        toast.error('Failed to create school');
+      }
+      
+    }catch(error){
+      console.error('Error creating school: ',error);
+      toast.error('An error occurred while creating school');
+    }
+    // UpdateStaff(deanEmail, role);
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -80,6 +124,19 @@ export function CreateSchoolDialog({ open }: CreateSchoolDialogProps) {
             />
             <FormField
               control={form.control}
+              name="abbreviation"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>School Abbreviation</FormLabel>
+                  <FormControl>
+                    <Input placeholder="SCI" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
               name="deanEmail"
               render={({ field }) => (
                 <FormItem>
@@ -96,7 +153,7 @@ export function CreateSchoolDialog({ open }: CreateSchoolDialogProps) {
               )}
             />
             <DialogFooter>
-              <Button type="submit">Create School</Button>
+              <Button type="submit" onClick={() => handleSubmit()}>Create School</Button>
             </DialogFooter>
           </form>
         </Form>

@@ -21,7 +21,6 @@ export async function POST(req: NextRequest) {
       unitId,
     } = body;
 
-    console.log(examType);
     const validSemester = ['SEMESTER1', 'SEMESTER2', 'SEMESTER3'].includes(semester) ? semester : null;
     const validExamType = ['MAIN', 'SPECIAL', 'SUPPLIMENTARY', 'CAT', 'MAIN_AND_CAT'].includes(examType) ? examType : null;
     console.log(validExamType);

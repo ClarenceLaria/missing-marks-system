@@ -4,6 +4,7 @@ import { PrismaClient, Semester } from "@prisma/client"
 import http from 'http'
 import { getServerSession } from 'next-auth';
 import {authOptions} from '../utils/authOptions';
+import { UserType } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -832,18 +833,118 @@ export async function fetchMissingReportsStatsByUnit () {
         console.error('Error Fetching Stats', error);
     }
 }
-export async function fetchSchoolAbbreviations () {
+export async function fetchSchools () {
     try{
-        const schools = await prisma.school.findMany({
+        const schools = await prisma.school.findMany();
+        const deans = await prisma.staff.findMany({
+            where: {
+              userType: "DEAN",  
+            },
             select: {
-                abbreviation: true,
-            }
-        })
-        return schools;
+                id: true,
+                firstName: true,
+                secondName: true,
+                department: {
+                    select: {
+                        school: {
+                            select: {
+                                id: true,
+                            }
+                        }
+                    }
+                }
+            },
+        });
+        return {schools, deans};
     }catch(error){
         console.error("Error Fetching School Info", error)
     }
 }
+
+export async function fetchSchoolDetails() {
+    try {
+      const schools = await prisma.school.findMany({
+        select: {
+          id: true, // School ID
+          name: true, // School name
+          departments: {
+            select: {
+              id: true, // For counting the number of departments
+              students: {
+                select: {
+                  id: true, // For counting the number of students
+                },
+              },
+              staffS: {
+                select: {
+                  id: true,
+                },
+              },
+            },
+          },
+        },
+      });
+      
+      const deptToSchoolMap: { [key: number]: number } = {};
+      schools.forEach((school) => {
+        school.departments.forEach((department) => {
+          deptToSchoolMap[department.id] = school.id; // Map department ID to school ID
+        });
+      });
+  
+      const departmentIds = Object.keys(deptToSchoolMap).map(Number);
+      const deans = await prisma.staff.findMany({
+        where: {
+            userType: "DEAN",
+            departmentId: {
+                in: departmentIds,
+            }
+        },
+        select: {
+            id: true,
+            firstName: true,
+            secondName: true,
+            departmentId: true, // To map back to schools
+          },
+      });
+
+      const schoolDeanMap: { [key: number]: any[] } = {};
+        deans.forEach((dean) => {
+        const schoolId = deptToSchoolMap[dean.departmentId];
+        if (!schoolDeanMap[schoolId]) {
+            schoolDeanMap[schoolId] = [];
+        }
+        schoolDeanMap[schoolId].push(dean); // Group deans by school
+        });
+
+      // Process data to include counts
+      const schoolDetails = schools.map((school) => {
+        const totalDepartments = school.departments.length;
+        const totalStudents = school.departments.reduce(
+          (acc, department) => acc + department.students.length,
+          0
+        );
+        const totalLecturers = school.departments.reduce(
+          (acc, department) => acc + department.staffS.length,
+          0
+        );  
+        const deans = schoolDeanMap[school.id] || [];
+        return {
+          id: school.id,
+          name: school.name,
+          totalDepartments,
+          totalStudents,
+          totalLecturers,
+          deans,
+        };
+      });
+      return schoolDetails;
+    } catch (error) {
+      console.error("Error fetching school details:", error);
+      throw error;
+    }
+  }
+  
 
 export async function fetchSchoolReportStatistics (abbreviation: string) {
     try{
@@ -1042,5 +1143,30 @@ export async function fetchDepartments () {
         return departments;
     }catch(error){
         console.error("Error fetching departments:", error);
+    }
+}
+
+
+export async function UpdateStaff(email: string, userType: UserType){
+    try{
+        const checkStaff = await prisma.staff.findUnique({
+            where: {
+                email: email,
+            }
+        })
+        if (!checkStaff){
+            throw new Error("Staff not found");
+        }
+        const staff = await prisma.staff.update({
+            where: {
+                email: email,
+            },
+            data: {
+                userType: userType,
+            }
+        });
+        // return staff;
+    }catch(error){
+        console.error("Error updating staff status:", error);
     }
 }
