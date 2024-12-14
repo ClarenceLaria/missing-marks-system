@@ -10,11 +10,11 @@ export async function POST(req: Request) {
   }
   
   try {
-  const { firstName, secondName, email, password, phoneNumber, departmentId, userStatus, userType  } = await req.json();
+  const { firstName, secondName, email, password, phoneNumber, departmentId, userStatus, userType, schoolId } = await req.json();
 
   const validStatus = ['active', 'inactive'].includes(userStatus) ? userStatus : null;
 
-  if (!firstName || !secondName || !email || !password || !phoneNumber || !departmentId) {
+  if (!firstName || !secondName || !email || !password || !phoneNumber ) { //|| !departmentId || !schoolId
     return NextResponse.json({ error: 'Please fill all the fields' }, { status: 400 });
   }
 
@@ -41,7 +41,10 @@ export async function POST(req: Request) {
         phoneNumber,
         password: hashedPassword,
         department:{
-            connect:{ id: departmentId },
+            connect:{ id: departmentId || 1},
+        },
+        school:{
+          connect:{ id: schoolId || 1},
         },
         userStatus: validStatus as UserStatus,
         userType,

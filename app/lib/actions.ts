@@ -836,26 +836,8 @@ export async function fetchMissingReportsStatsByUnit () {
 export async function fetchSchools () {
     try{
         const schools = await prisma.school.findMany();
-        const deans = await prisma.staff.findMany({
-            where: {
-              userType: "DEAN",  
-            },
-            select: {
-                id: true,
-                firstName: true,
-                secondName: true,
-                department: {
-                    select: {
-                        school: {
-                            select: {
-                                id: true,
-                            }
-                        }
-                    }
-                }
-            },
-        });
-        return {schools, deans};
+        
+        return schools;
     }catch(error){
         console.error("Error Fetching School Info", error)
     }

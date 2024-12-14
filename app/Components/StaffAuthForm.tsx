@@ -25,6 +25,8 @@ export default function StaffAuthForm() {
     email: '',
     password: '',
     phoneNumber: '',
+    userStatus: 'inactive',
+    userType: 'LECTURER',
   });
 
   const toggleLoading = () => {
