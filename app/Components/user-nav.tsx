@@ -14,7 +14,8 @@ import {
 import { fetchStaffProfile } from "@/app/lib/actions";
 import { UserType } from "@prisma/client";
 import { LogOut, User } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 interface StaffProfile {
@@ -46,6 +47,25 @@ export function UserNav() {
   },[email]);
   const name = profile?.firstName + " " + profile?.secondName;
   const avatar = ((profile?.firstName?.substring(0, 1) ?? '') + (profile?.secondName?.substring(0, 1) ?? '')).toUpperCase();
+
+  // const { data: session } = useSession();
+    let profileLink = '/Student/profile'; 
+  
+    if (session.data?.userType === 'LECTURER') {
+      profileLink = '/Lecturer/profile';
+    } else if (session?.data?.userType === 'COD' ){
+      profileLink = '/cod/profile';
+    } else if (session?.data?.userType === 'ADMIN' || session?.data?.userType === 'DEAN'){
+      profileLink = '/Admin/profile';
+    }
+  
+    const handleLogout = () => {
+      if(session?.data?.userType === 'STUDENT'){
+      signOut({callbackUrl: '/'})
+      } else {
+        signOut({callbackUrl: '/login'})
+      }
+    };
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -68,12 +88,14 @@ export function UserNav() {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem>
+            <Link href={profileLink}>
             <User className="mr-2 h-4 w-4" />
             <span>Profile</span>
+            </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={() => handleLogout()}>
           <LogOut className="mr-2 h-4 w-4" />
           <span>Log out</span>
         </DropdownMenuItem>

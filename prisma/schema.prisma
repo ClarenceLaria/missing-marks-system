@@ -25,7 +25,11 @@ model Staff {
   department  Department @relation(fields: [departmentId], references: [id])
   departmentId Int 
   units       Unit[]
+  school      School     @relation(fields: [schoolId], references: [id]) // Relationship to School
+  schoolId    Int
   userStatus  UserStatus @default(inactive)
+
+  // @@unique([schoolId, userType], name: "unique_dean_per_school")
 }
 
 model Student {
@@ -51,6 +55,7 @@ model School {
   name        String
   abbreviation String     @unique
   departments Department[]
+  staff       Staff[]
 }
 
 model Department {

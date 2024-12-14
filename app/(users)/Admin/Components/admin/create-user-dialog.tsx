@@ -29,7 +29,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
-import { fetchDepartments } from "@/app/lib/actions";
+import { fetchDepartments, fetchSchools } from "@/app/lib/actions";
 import toast from "react-hot-toast";
 import dotenv from 'dotenv'
 import { UserStatus } from "@prisma/client";
@@ -40,6 +40,7 @@ const formSchema = z.object({
   sName: z.string().min(1, "Second Name is required"),
   email: z.string().email("Invalid email address"),
   userType: z.enum(["ADMIN", "DEAN", "LECTURER", "STUDENT", "COD"]),
+  school: z.string().min(1, "School is required"),
   department: z.string().min(1, "Department is required"),
   regNo: z.string().optional(),
   phoneNumber: z.string().optional(),
@@ -65,9 +66,15 @@ interface Department {
     id: number;
 }
 
+interface School {
+  id: number;
+  name: string;
+  abbreviation: string;
+}
 export function CreateUserDialog({ open }: CreateUserDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [departments, setDepartments] = useState<Department[]>([]);
+  const [schools, setSchools] = useState<School[]>([]);
   const [loading, setisLoading] = useState(false);
   
   const toggleLoading = () => {
@@ -80,6 +87,7 @@ export function CreateUserDialog({ open }: CreateUserDialogProps) {
       sName: "",
       email: "",
       userType: "STUDENT",
+      school: "",
       department: "",
       regNo: "",
       phoneNumber: "",
@@ -125,6 +133,18 @@ export function CreateUserDialog({ open }: CreateUserDialogProps) {
     handleDepartments();
   },[]);
 
+  useEffect(() => {
+    const handleSchools = async () => {
+      try{
+        const schools = await fetchSchools();
+        setSchools(schools || []);
+      }catch(error){
+        console.error("Error fetching Schools: ", error)
+      }
+    }
+    handleSchools();
+  },[]);
+  
   const handleSubmit = async () => {
     if (!isValidEmail(email)) {
       toggleLoading();
@@ -295,6 +315,28 @@ export function CreateUserDialog({ open }: CreateUserDialogProps) {
                       <SelectItem value="COD">Cod</SelectItem>
                       <SelectItem value="LECTURER">Lecturer</SelectItem>
                       <SelectItem value="STUDENT">Student</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="school"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>School</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select school" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {schools.map((school) => (
+                        <SelectItem key={school.id} value={school.id.toString()}>{school.name}</SelectItem> 
+                      ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />
