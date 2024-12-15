@@ -20,6 +20,7 @@ import { useEffect, useState } from "react";
 import { School, PenSquare, Trash2 } from "lucide-react";
 import { CreateSchoolDialog } from "@/app/(users)/Admin/Components/admin/create-school-dialog";
 import { fetchSchoolDetails, fetchSchools } from "@/app/lib/actions";
+import { DeleteSchoolDialog } from "../../Components/admin/delete-school-dialog";
 
 const schools = [
   {
@@ -50,11 +51,17 @@ interface Schools {
 }
 export default function SchoolsPage() {
   const [open, setOpen] = useState(false);
+  const [id, setId] = useState<number>(0);
+  const [openDelete, setOpenDelete] = useState(false);
   const [schools, setSchools] = useState<Schools[]>([]);
   const [loading, setLoading] = useState(false);
 
   const handleOpen = () => {
     setOpen((prev) => !prev);
+  }
+
+  const handleOpenDelete = () => {
+    setOpenDelete((prev) => !prev);
   }
 
   useEffect(() => {
@@ -112,7 +119,7 @@ export default function SchoolsPage() {
                     <Button variant="ghost" size="icon">
                       <PenSquare className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="icon">
+                    <Button variant="ghost" size="icon" onClick={() => {setId(school.id); handleOpenDelete(); }}>
                       <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>
                   </TableCell>
@@ -124,6 +131,7 @@ export default function SchoolsPage() {
       </Card>
 
       <CreateSchoolDialog open={open} /*onOpenChange={setOpen}*/ />
+      <DeleteSchoolDialog id={id} open={openDelete}/>
     </div>
   );
 }

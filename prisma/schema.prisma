@@ -22,10 +22,10 @@ model Staff {
   phoneNumber String     @unique
   password    String
   userType    UserType   @default(LECTURER)
-  department  Department @relation(fields: [departmentId], references: [id])
+  department  Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
   departmentId Int 
   units       Unit[]
-  school      School     @relation(fields: [schoolId], references: [id]) // Relationship to School
+  school      School     @relation(fields: [schoolId], references: [id], onDelete: Cascade) // Relationship to School
   schoolId    Int
   userStatus  UserStatus @default(inactive)
 
@@ -40,9 +40,9 @@ model Student {
   secondName  String
   password    String
   regNo       String     @unique
-  department  Department @relation(fields: [departmentId], references: [id])
+  department  Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
   departmentId Int
-  course      Course @relation(fields: [courseId], references: [id])
+  course      Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
   courseId    Int 
   reports     MissingMarksReport[]
   userType    UserType @default(STUDENT)
@@ -61,7 +61,7 @@ model School {
 model Department {
   id         Int      @id @default(autoincrement())
   name       String
-  school     School   @relation(fields: [schoolId], references: [id])
+  school     School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
   schoolId   Int
   students   Student[] 
   staffS      Staff[]
@@ -71,7 +71,7 @@ model Department {
 model Course {
   id          Int      @id @default(autoincrement())
   name        String
-  department  Department @relation(fields: [departmentId], references: [id])
+  department  Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
   departmentId Int
   students    Student[] 
   units       UnitCourse[]    
@@ -85,7 +85,7 @@ model Unit {
   yearOfStudy   Int      
   semester      Semester @default(SEMESTER1)
   courses       UnitCourse[]
-  lecturer      Staff    @relation(fields: [lecturerId], references: [id])
+  lecturer      Staff    @relation(fields: [lecturerId], references: [id], onDelete: Cascade)
   lecturerId    Int
   missingMarks  MissingMarksReport[]
 }
@@ -93,8 +93,8 @@ model Unit {
 model UnitCourse {
   unitId   Int
   courseId Int
-  unit     Unit   @relation(fields: [unitId], references: [id])
-  course   Course @relation(fields: [courseId], references: [id])
+  unit     Unit   @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   @@id([unitId, courseId]) // Composite primary key
 }
@@ -110,9 +110,9 @@ model MissingMarksReport {
   reportStatus ReportStatus @default(PENDING)
   yearOfStudy  Int
   semester     Semester
-  student      Student  @relation(fields: [studentId], references: [id])
+  student      Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
   studentId    Int
-  unit         Unit     @relation(fields: [unitId], references: [id]) 
+  unit         Unit     @relation(fields: [unitId], references: [id], onDelete: Cascade) 
   unitId       Int      
 }
 

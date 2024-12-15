@@ -1152,3 +1152,17 @@ export async function UpdateStaff(email: string, userType: UserType){
         console.error("Error updating staff status:", error);
     }
 }
+
+export async function deleteSchool() {
+    try {
+      const school = await prisma.school.delete({
+        where: {
+          id: 1,
+        },
+      });
+      
+      return school;
+    } catch (error) {
+      console.error("Error deleting school:", error);
+    }
+}
