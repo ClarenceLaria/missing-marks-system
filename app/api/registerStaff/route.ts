@@ -41,10 +41,10 @@ export async function POST(req: Request) {
         phoneNumber,
         password: hashedPassword,
         department:{
-            connect:{ id: departmentId || 1},
+            connect:{ id: departmentId || 2},
         },
         school:{
-          connect:{ id: schoolId || 1},
+          connect:{ id: schoolId || 2},
         },
         userStatus: validStatus as UserStatus,
         userType,
