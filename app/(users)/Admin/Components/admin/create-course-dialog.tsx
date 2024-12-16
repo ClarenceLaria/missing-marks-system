@@ -39,7 +39,7 @@ const formSchema = z.object({
   academicYear: z.string().min(1, "Academic year is required"),
   yearofStudy: z.string().min(1, "Year of study is required"),
   semester: z.string().min(1, "Semester is required"),
-  Course: z.array(z.string()).min(1, "At least one Program is required"),
+  program: z.array(z.string()).min(1, "At least one Program is required"),
 });
 
 interface CreateCourseDialogProps {
@@ -55,6 +55,10 @@ export function CreateCourseDialog({ open }: CreateCourseDialogProps) {
       name: "",
       school: "",
       departments: [],
+      academicYear: "",
+      yearofStudy: "",
+      semester: "",
+      program: [],
     },
   });
 
@@ -130,8 +134,125 @@ export function CreateCourseDialog({ open }: CreateCourseDialogProps) {
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="academicYear"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Academic Year</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select academic year" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="2023/2024">
+                        2023/2024
+                      </SelectItem>
+                      <SelectItem value="2022/2023">
+                        2022/2023
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="yearofStudy"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Year of Study</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select year of study" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="1">
+                        Year 1
+                      </SelectItem>
+                      <SelectItem value="2">
+                        Year 2
+                      </SelectItem>
+                      <SelectItem value="3">
+                        Year 3
+                      </SelectItem>
+                      <SelectItem value="4">
+                        Year 4
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="semester"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Semester</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select semester" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="SEMESTER1">
+                        Semester 1
+                      </SelectItem>
+                      <SelectItem value="SEMESTER2">
+                        Semester 2
+                      </SelectItem>
+                      <SelectItem value="SEMESTER3">
+                        Semester 3
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="program"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Program</FormLabel>
+                  <Select onValueChange={(value) => {
+                    const currentSelection = field.value || [];
+                    const newSelection = currentSelection.includes(value)
+                      ? currentSelection.filter((item) => item !== value) // Remove if already selected
+                      : [...currentSelection, value]; // Add new selection
+                    field.onChange(newSelection);
+                  }} 
+                  defaultValue={field.value[0]}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select program" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="BIT">
+                        Bsc. Information Technology
+                      </SelectItem>
+                      <SelectItem value="BCS">
+                        Bsc. Computer Science
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <DialogFooter>
-              <Button type="submit">Create Course</Button>
+              <Button type="submit" onClick={() => {console.log(form.getValues())}}>Create Course</Button>
             </DialogFooter>
           </form>
         </Form>
