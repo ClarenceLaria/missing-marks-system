@@ -29,6 +29,20 @@ export async function POST(req: Request) {
         )
     }
 
+    const existingDean = await prisma.staff.findUnique({
+      where: { 
+        userType: 'DEAN',
+        email: email,
+        schoolId: schoolId || 2,
+      },
+    });
+
+    if(existingDean){
+      return new Response(
+        JSON.stringify({ message: 'A dean with this email already exists' }),
+        { status: 409 }
+      )
+    }
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 

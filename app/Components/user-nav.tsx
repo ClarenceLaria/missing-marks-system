@@ -88,7 +88,7 @@ export function UserNav() {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem>
-            <Link href={profileLink}>
+            <Link className="flex" href={profileLink}>
             <User className="mr-2 h-4 w-4" />
             <span>Profile</span>
             </Link>
