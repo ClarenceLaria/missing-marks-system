@@ -29,6 +29,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
+import { fetchDepartmentsBySchoolId, fetchSchools } from "@/app/lib/actions";
+import toast from "react-hot-toast";
 
 const formSchema = z.object({
   name: z.string().min(1, "Course name is required"),
@@ -40,8 +42,20 @@ interface CreateCourseDialogProps {
   open: boolean;
 }
 
+interface School {
+    id: number;
+    name: string;
+    abbreviation: string;
+};
+interface Department {
+    id: number;
+    name: string;
+    schoolId: number;
+};
 export function CreateProgramDialog({ open }: CreateCourseDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [schools, setSchools] = useState<School[]>([]);
+  const [departments, setDepartments] = useState<Department[]>([]);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -51,6 +65,30 @@ export function CreateProgramDialog({ open }: CreateCourseDialogProps) {
     },
   });
 
+  const schoolId = parseInt(form.watch('school'));
+  useEffect(() => {
+    const handleSchools = async () => {
+        try{
+            const schools = await fetchSchools();
+            setSchools(schools || []);
+        }catch(error){
+            console.error('Error fetching schools: ',error);
+        }
+    };
+    handleSchools();
+  },[]);
+
+  useEffect(() => {
+    const handleDepartments = async () => {
+        try{
+            const departments = await fetchDepartmentsBySchoolId(schoolId);
+            setDepartments(departments || []);
+        }catch(error){
+            console.error('Error fetching departments: ',error);
+        }
+    }; 
+    handleDepartments();
+  },[schoolId]);
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
     setIsOpen(false);
@@ -62,6 +100,43 @@ export function CreateProgramDialog({ open }: CreateCourseDialogProps) {
       setIsOpen(true);
     }
   }, [open]);
+
+  const deptId = parseInt(form.getValues('department')!);
+  const programName = form.getValues('name');
+  console.log(deptId, programName);
+  const handleSubmit = async () => {
+    try {
+      toast.loading('Sending Request...');
+      const response = await fetch('/api/createProgram', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(
+          {
+            name: programName,
+            departmentId: deptId,
+          }
+        ),
+      });
+
+      toast.dismiss();
+
+      if(response.ok && response.status === 200 || response.status === 201){
+        const data = await response.json();
+        console.log(data);
+        toast.success(data.message);
+      } else if (response.status === 400){
+        const errorData = await response.json();
+        toast.error(errorData.error);
+      } else {
+        toast.error('Failed to create program');
+      }
+
+    } catch (error){
+      console.error('Error creating program: ', error);
+    }
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -79,7 +154,7 @@ export function CreateProgramDialog({ open }: CreateCourseDialogProps) {
                 <FormItem>
                   <FormLabel>Program Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Database Systems" {...field} />
+                    <Input placeholder="Bsc. Information Technology" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -98,12 +173,11 @@ export function CreateProgramDialog({ open }: CreateCourseDialogProps) {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="computing">
-                        School of Computing
-                      </SelectItem>
-                      <SelectItem value="engineering">
-                        School of Engineering
-                      </SelectItem>
+                        {schools.map((school) => (
+                            <SelectItem key={school.id} value={(school.id).toString()}>
+                                {school.name}
+                            </SelectItem>
+                        ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -123,12 +197,11 @@ export function CreateProgramDialog({ open }: CreateCourseDialogProps) {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="Information Technology">
-                        Information Technology
-                      </SelectItem>
-                      <SelectItem value="Computer Science">
-                        Computer Science
-                      </SelectItem>
+                        {departments.map((department) => (
+                            <SelectItem key={department.id} value={(department.id).toString()}>
+                                {department.name}
+                            </SelectItem>
+                        ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -136,7 +209,7 @@ export function CreateProgramDialog({ open }: CreateCourseDialogProps) {
               )}
             />
             <DialogFooter>
-              <Button type="submit">Create Program</Button>
+              <Button type="submit" onClick={() => handleSubmit()}>Create Program</Button>
             </DialogFooter>
           </form>
         </Form>

@@ -1166,3 +1166,16 @@ export async function deleteSchool() {
       console.error("Error deleting school:", error);
     }
 }
+
+export async function fetchDepartmentsBySchoolId(schoolId: number) {
+    try {
+      const departments = await prisma.department.findMany({
+        where: {
+          schoolId: schoolId,
+        },
+      });
+      return departments;
+    } catch (error) {
+      console.error("Error fetching departments by school ID:", error);
+    }
+  }
