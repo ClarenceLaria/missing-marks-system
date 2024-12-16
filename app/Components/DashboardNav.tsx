@@ -9,6 +9,7 @@ import {
   Users,
   Building2,
   FileSpreadsheet,
+  GraduationCapIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -29,6 +30,11 @@ const routes = {
       title: "Users",
       icon: Users,
       href: "/Admin/users",
+    },
+    {
+      title: "Programs",
+      icon: GraduationCapIcon,
+      href: "/Admin/programs",
     },
     {
       title: "Courses",
