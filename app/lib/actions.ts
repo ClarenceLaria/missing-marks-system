@@ -1179,3 +1179,28 @@ export async function fetchDepartmentsBySchoolId(schoolId: number) {
       console.error("Error fetching departments by school ID:", error);
     }
   }
+
+  export async function fetchPrograms(){
+    try{
+        const courses = await prisma.course.findMany({
+            select:{
+                id: true,
+                name: true,
+                department: {
+                    select: {
+                        name: true,
+                        school: {
+                            select: {
+                                name: true,
+                            }
+                        }
+                    }
+                },
+            }
+        });
+
+        return courses;
+    }catch(error){
+        console.error("Error fetching courses: ", error)
+    }
+  }

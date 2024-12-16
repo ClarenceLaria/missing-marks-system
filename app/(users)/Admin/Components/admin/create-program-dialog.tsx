@@ -103,7 +103,6 @@ export function CreateProgramDialog({ open }: CreateCourseDialogProps) {
 
   const deptId = parseInt(form.getValues('department')!);
   const programName = form.getValues('name');
-  console.log(deptId, programName);
   const handleSubmit = async () => {
     try {
       toast.loading('Sending Request...');
