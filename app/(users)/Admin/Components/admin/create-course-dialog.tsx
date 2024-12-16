@@ -30,35 +30,46 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { CourseList } from "@/app/Components/lecturer/course-list";
+import toast from "react-hot-toast";
+import { fetchDepartmentsBySchoolId, fetchProgramsBySchoolId, fetchSchools } from "@/app/lib/actions";
 
 const formSchema = z.object({
   code: z.string().min(1, "Course code is required"),
   name: z.string().min(1, "Course name is required"),
   school: z.string().min(1, "School is required"),
-  departments: z.array(z.string()).min(1, "At least one department is required"),
   academicYear: z.string().min(1, "Academic year is required"),
   yearofStudy: z.string().min(1, "Year of study is required"),
   semester: z.string().min(1, "Semester is required"),
-  program: z.array(z.string()).min(1, "At least one Program is required"),
+  programs: z.array(z.number()).min(1, "At least one Program is required"),
 });
 
 interface CreateCourseDialogProps {
   open: boolean;
 }
 
+interface School {
+  id: number;
+  name: string;
+  abbreviation: string;
+}
+interface Department {
+  name: string;
+  id: number;
+}
 export function CreateCourseDialog({ open }: CreateCourseDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [schools, setSchools] = useState<School[]>([]);
+  const [programs, setPrograms] = useState<Department[]>([]);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       code: "",
       name: "",
       school: "",
-      departments: [],
       academicYear: "",
       yearofStudy: "",
       semester: "",
-      program: [],
+      programs: [],
     },
   });
 
@@ -73,6 +84,62 @@ export function CreateCourseDialog({ open }: CreateCourseDialogProps) {
       setIsOpen(true);
     }
   }, [open]);
+
+  useEffect(() => {
+    const handleSchools = async () => {
+      try{
+        const schools = await fetchSchools();
+        setSchools(schools || []);
+      }catch(error){
+        console.error('Error fetching schools: ',error);
+      }
+    };
+    handleSchools();
+  }, []);
+
+  const schoolId = parseInt(form.watch('school'));
+  useEffect(() => { 
+    const handlePrograms = async () => {
+      try{
+        const departments = await fetchProgramsBySchoolId(schoolId);
+        setPrograms(departments || []);
+      }catch(error){
+        console.error('Error fetching departments: ',error);
+      }
+    }; 
+    handlePrograms();
+  },[schoolId]);
+
+  const handleSubmit = async () => {
+    try {
+      const response = await fetch("/api/createCourse", {
+        method: "POST",
+        body: JSON.stringify({
+          name: form.getValues("name"),
+          code: form.getValues("code"),
+          academicYear: form.getValues("academicYear"),
+          yearofStudy: parseInt(form.getValues("yearofStudy")!),
+          semester: form.getValues("semester"),
+          courses: form.getValues("programs"),
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (response.ok && response.status === 200 || response.status === 201) {
+        const result = await response.json();
+        console.log(result);
+        toast.success(result.message);
+      } else {
+        const error = await response.json();
+        console.error(error);
+        toast.error(error.error);
+      }
+    } catch (error) {
+      console.error("An error occurred while creating course: ", error);
+      toast.error("An error occurred while creating course");
+    }
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -122,12 +189,11 @@ export function CreateCourseDialog({ open }: CreateCourseDialogProps) {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="computing">
-                        School of Computing
-                      </SelectItem>
-                      <SelectItem value="engineering">
-                        School of Engineering
-                      </SelectItem>
+                      {schools.map((school) => (
+                        <SelectItem value={school.id.toString()} key={school.id}>
+                          {school.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -147,11 +213,20 @@ export function CreateCourseDialog({ open }: CreateCourseDialogProps) {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
+                      <SelectItem value="2024/2025">
+                        2024/2025
+                      </SelectItem>
                       <SelectItem value="2023/2024">
                         2023/2024
                       </SelectItem>
                       <SelectItem value="2022/2023">
                         2022/2023
+                      </SelectItem>
+                      <SelectItem value="2021/2022">
+                        2021/2022
+                      </SelectItem>
+                      <SelectItem value="2020/2021">
+                        2020/2021
                       </SelectItem>
                     </SelectContent>
                   </Select>
@@ -220,18 +295,18 @@ export function CreateCourseDialog({ open }: CreateCourseDialogProps) {
             />
             <FormField
               control={form.control}
-              name="program"
+              name="programs"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Program</FormLabel>
+                  <FormLabel>Program(s)</FormLabel>
                   <Select onValueChange={(value) => {
                     const currentSelection = field.value || [];
-                    const newSelection = currentSelection.includes(value)
-                      ? currentSelection.filter((item) => item !== value) // Remove if already selected
+                    const newSelection = currentSelection.includes(parseInt(value))
+                      ? currentSelection.filter((item) => item !== parseInt(value)) // Remove if already selected
                       : [...currentSelection, value]; // Add new selection
                     field.onChange(newSelection);
                   }} 
-                  defaultValue={field.value[0]}
+                  defaultValue={field.value[0]?.toString()}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -239,12 +314,11 @@ export function CreateCourseDialog({ open }: CreateCourseDialogProps) {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="BIT">
-                        Bsc. Information Technology
-                      </SelectItem>
-                      <SelectItem value="BCS">
-                        Bsc. Computer Science
-                      </SelectItem>
+                      {programs.map((program) => (
+                        <SelectItem value={program.id.toString()} key={program.id}>
+                          {program.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -252,7 +326,7 @@ export function CreateCourseDialog({ open }: CreateCourseDialogProps) {
               )}
             />
             <DialogFooter>
-              <Button type="submit" onClick={() => {console.log(form.getValues())}}>Create Course</Button>
+              <Button type="submit" onClick={() => handleSubmit()}>Create Course</Button>
             </DialogFooter>
           </form>
         </Form>
