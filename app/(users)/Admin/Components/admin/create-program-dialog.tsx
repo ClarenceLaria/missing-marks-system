@@ -31,7 +31,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 
 const formSchema = z.object({
-  code: z.string().min(1, "Course code is required"),
   name: z.string().min(1, "Course name is required"),
   school: z.string().min(1, "School is required"),
   department: z.string().min(1, "Department is required"),
@@ -46,7 +45,6 @@ export function CreateProgramDialog({ open }: CreateCourseDialogProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      code: "",
       name: "",
       school: "",
       department: "",
