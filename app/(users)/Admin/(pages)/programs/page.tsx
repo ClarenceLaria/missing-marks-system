@@ -16,10 +16,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/app/Components/ui/table";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BookOpen, PenSquare, Trash2, UserPlus } from "lucide-react";
 import { Badge } from "@/app/Components/ui/badge";
 import { CreateProgramDialog } from "../../Components/admin/create-program-dialog";
+import Loader from "@/app/Components/Loader";
+import { fetchPrograms } from "@/app/lib/actions";
 
 const courses = [
   {
@@ -61,13 +63,41 @@ const courses = [
   
 ];
 
+interface Program {
+  id: number;
+  name: string;
+  department: {
+      name: string;
+      school: {
+          name: string;
+      };
+  };
+}
 export default function CoursesPage() {
   const [createOpen, setCreateOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [programs, setPrograms] = useState<Program[]>([]); 
 
   const handleOpen = () => {
     setCreateOpen((prev) => !prev);
   };
 
+  useEffect(() => {
+    const handlePrograms = async () => {
+      try{
+        setLoading(true);
+        const programs = await fetchPrograms();
+        setPrograms(programs || []);
+        setLoading(false);
+      }catch(error){
+        console.error('Error fetching programs: ',error);
+      }
+    };
+    handlePrograms();
+  },[]);
+  console.log(programs);
+
+  if(loading) return <Loader />;
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -101,18 +131,16 @@ export default function CoursesPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {courses.map((course) => {
+              {programs.map((program) => {
                 return (
-                  <TableRow key={course.id}>
-                    <TableCell className="font-medium">{course.name}</TableCell>
-                    <TableCell>{course.school}</TableCell>
+                  <TableRow key={program.id}>
+                    <TableCell className="font-medium">{program.name}</TableCell>
+                    <TableCell>{program.department.school.name}</TableCell>
                     <TableCell>
                       <div className="flex gap-1">
-                        {course.departments.map((dept) => (
-                          <Badge key={dept} variant="secondary">
-                            {dept}
+                          <Badge key={program.department.name} variant="secondary">
+                            {program.department.name}
                           </Badge>
-                        ))}
                       </div>
                     </TableCell>
                     <TableCell>

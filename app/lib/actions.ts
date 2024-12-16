@@ -1166,3 +1166,41 @@ export async function deleteSchool() {
       console.error("Error deleting school:", error);
     }
 }
+
+export async function fetchDepartmentsBySchoolId(schoolId: number) {
+    try {
+      const departments = await prisma.department.findMany({
+        where: {
+          schoolId: schoolId,
+        },
+      });
+      return departments;
+    } catch (error) {
+      console.error("Error fetching departments by school ID:", error);
+    }
+  }
+
+  export async function fetchPrograms(){
+    try{
+        const courses = await prisma.course.findMany({
+            select:{
+                id: true,
+                name: true,
+                department: {
+                    select: {
+                        name: true,
+                        school: {
+                            select: {
+                                name: true,
+                            }
+                        }
+                    }
+                },
+            }
+        });
+
+        return courses;
+    }catch(error){
+        console.error("Error fetching courses: ", error)
+    }
+  }
