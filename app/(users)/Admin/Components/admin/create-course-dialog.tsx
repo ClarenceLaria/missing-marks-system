@@ -60,6 +60,7 @@ export function CreateCourseDialog({ open }: CreateCourseDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [schools, setSchools] = useState<School[]>([]);
   const [programs, setPrograms] = useState<Department[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -111,6 +112,7 @@ export function CreateCourseDialog({ open }: CreateCourseDialogProps) {
   },[schoolId]);
 
   const handleSubmit = async () => {
+    setIsSubmitting(true);
     try {
       const response = await fetch("/api/createCourse", {
         method: "POST",
@@ -138,6 +140,9 @@ export function CreateCourseDialog({ open }: CreateCourseDialogProps) {
     } catch (error) {
       console.error("An error occurred while creating course: ", error);
       toast.error("An error occurred while creating course");
+    }
+    finally{
+      setIsSubmitting(false);
     }
   }
 
@@ -326,7 +331,7 @@ export function CreateCourseDialog({ open }: CreateCourseDialogProps) {
               )}
             />
             <DialogFooter>
-              <Button type="submit" onClick={() => handleSubmit()}>Create Course</Button>
+              <Button disabled={isSubmitting} type="submit" onClick={() => handleSubmit()}>Create Course</Button>
             </DialogFooter>
           </form>
         </Form>

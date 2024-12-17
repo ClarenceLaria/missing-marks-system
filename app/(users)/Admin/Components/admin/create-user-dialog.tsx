@@ -76,6 +76,7 @@ export function CreateUserDialog({ open }: CreateUserDialogProps) {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [schools, setSchools] = useState<School[]>([]);
   const [loading, setisLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const toggleLoading = () => {
     setisLoading((prevLoading) => !prevLoading);
@@ -151,6 +152,8 @@ export function CreateUserDialog({ open }: CreateUserDialogProps) {
       toast.error('Please enter a valid email address');
       return;
     }
+
+    setIsSubmitting(true);
     if(selectedType === 'STUDENT'){
     try{
       if (!validateRegistrationNumber(regNo)) {
@@ -199,6 +202,7 @@ export function CreateUserDialog({ open }: CreateUserDialogProps) {
       toast.error('Something went wrong');
     } finally {
       toggleLoading();
+      setIsSubmitting(false);
     }
   };
   if(selectedType === 'ADMIN' || selectedType === 'DEAN' || selectedType === 'COD' || selectedType === 'LECTURER'){
@@ -394,7 +398,7 @@ export function CreateUserDialog({ open }: CreateUserDialogProps) {
               )}
             />)}
             <DialogFooter>
-              <Button type="submit" onClick={() => handleSubmit()}>Create User</Button>
+              <Button disabled={isSubmitting} type="submit" onClick={() => handleSubmit()}>Create User</Button>
             </DialogFooter>
           </form>
         </Form>
