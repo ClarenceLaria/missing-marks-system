@@ -98,6 +98,7 @@ export function CreateUserDialog({ open }: CreateUserDialogProps) {
   dotenv.config();
   const email = form.getValues('email');
   const regNo = form.getValues('regNo')!;
+  const schoolId = parseInt(form.getValues('school')!);
   const status = 'active';
 
   const isValidEmail = (email: string) => {
@@ -123,18 +124,6 @@ export function CreateUserDialog({ open }: CreateUserDialogProps) {
   }
 
   useEffect(() => {
-    const handleDepartments = async () => {
-      try{
-        const departments = await fetchDepartments();
-        setDepartments(departments || []);
-      }catch(error){
-        console.error("Error fetching Departments:", error)
-      };
-    };
-    handleDepartments();
-  },[]);
-
-  useEffect(() => {
     const handleSchools = async () => {
       try{
         const schools = await fetchSchools();
@@ -144,7 +133,16 @@ export function CreateUserDialog({ open }: CreateUserDialogProps) {
       }
     }
     handleSchools();
-  },[]);
+    const handleDepartments = async () => {
+      try{
+        const departments = await fetchDepartments(schoolId);
+        setDepartments(departments || []);
+      }catch(error){
+        console.error("Error fetching Departments:", error)
+      };
+    };
+    handleDepartments();
+  },[schoolId]);
   
   const handleSubmit = async () => {
     if (!isValidEmail(email)) {

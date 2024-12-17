@@ -1114,12 +1114,15 @@ export default async function sendSMS(phoneNo: string, message: string){
     }
 }
 
-export async function fetchDepartments () {
+export async function fetchDepartments (schoolId: number) {
     try{
         const departments = await prisma.department.findMany({
             select: {
                 name: true,
                 id: true,
+            },
+            where: {
+                schoolId: schoolId,
             }
         });
         return departments;
@@ -1131,6 +1134,15 @@ export async function fetchDepartments () {
 
 export async function UpdateStaff(email: string, userType: UserType){
     try{
+        const dean = await prisma.staff.findFirst({
+            where: {
+                userType: 'DEAN',
+
+            }
+        });
+        if (dean){
+            throw new Error("Dean already exists");
+        }
         const checkStaff = await prisma.staff.findUnique({
             where: {
                 email: email,
@@ -1222,5 +1234,41 @@ export async function fetchDepartmentsBySchoolId(schoolId: number) {
         return courses;
     }catch(error){
         console.error("Error fetching courses: ", error)
+    }
+  }
+
+  export async function fetchUnitsForAdmin(){
+    try{
+        const units = await prisma.unit.findMany({
+            include:{
+                courses: true,
+            }
+        });
+        const courseId = units.map(unit => unit.courses[0].courseId);
+
+        const courses = await prisma.course.findMany({
+            where:{
+                id: {
+                    in: courseId,
+                },
+            },
+            select:{
+                id: true,
+                name: true,
+                department: {
+                    select:{
+                        name: true,
+                        school: {
+                            select:{
+                                name: true,
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        return units;
+    }catch(error){
+        console.error("Error fetching units: ", error)
     }
   }

@@ -76,6 +76,7 @@ export function CreateSchoolDialog({ open }: CreateSchoolDialogProps) {
           {
             name,
             abbreviation,
+            email: deanEmail,
           }
         ),
       });
@@ -89,7 +90,10 @@ export function CreateSchoolDialog({ open }: CreateSchoolDialogProps) {
       }else if (response.status === 400){
         const errorData = await response.json();
         toast.error(errorData.error);
-      } else {
+      } else if (response.status === 404){
+        const errorData = await response.json();
+        toast.error(errorData.error);
+      }else{
         toast.error('Failed to create school');
       }
       

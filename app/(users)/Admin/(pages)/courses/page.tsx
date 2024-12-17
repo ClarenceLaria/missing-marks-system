@@ -18,9 +18,10 @@ import {
 } from "@/app/Components/ui/table";
 import { CreateCourseDialog } from "@/app/(users)/Admin/Components/admin/create-course-dialog";
 import { AssignCourseDialog } from "@/app/(users)/Admin/Components/admin/assign-course-dialog";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BookOpen, PenSquare, Trash2, UserPlus } from "lucide-react";
 import { Badge } from "@/app/Components/ui/badge";
+import { fetchUnitsForAdmin } from "@/app/lib/actions";
 
 const courses = [
   {
@@ -61,6 +62,7 @@ const courses = [
 export default function CoursesPage() {
   const [createOpen, setCreateOpen] = useState(false);
   const [assignOpen, setAssignOpen] = useState(false);
+  const [course, setCourses] = useState();
   const [selectedCourse, setSelectedCourse] = useState<typeof courses[0] | null>(
     null
   );
@@ -73,6 +75,17 @@ export default function CoursesPage() {
     setAssignOpen(true);
   };
 
+  useEffect(() => {
+    const handleCourses = async () => {
+      try{
+        const units = await fetchUnitsForAdmin();
+        // setCourses(units);
+      }catch(error){
+        console.error("Error fetching courses: ", error);
+      }
+    };
+    handleCourses();
+  },[]);
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
