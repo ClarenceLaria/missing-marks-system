@@ -76,6 +76,7 @@ export function CreateUserDialog({ open }: CreateUserDialogProps) {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [schools, setSchools] = useState<School[]>([]);
   const [loading, setisLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const toggleLoading = () => {
     setisLoading((prevLoading) => !prevLoading);
@@ -97,6 +98,7 @@ export function CreateUserDialog({ open }: CreateUserDialogProps) {
   dotenv.config();
   const email = form.getValues('email');
   const regNo = form.getValues('regNo')!;
+  const schoolId = parseInt(form.getValues('school')!);
   const status = 'active';
 
   const isValidEmail = (email: string) => {
@@ -122,18 +124,6 @@ export function CreateUserDialog({ open }: CreateUserDialogProps) {
   }
 
   useEffect(() => {
-    const handleDepartments = async () => {
-      try{
-        const departments = await fetchDepartments();
-        setDepartments(departments || []);
-      }catch(error){
-        console.error("Error fetching Departments:", error)
-      };
-    };
-    handleDepartments();
-  },[]);
-
-  useEffect(() => {
     const handleSchools = async () => {
       try{
         const schools = await fetchSchools();
@@ -143,7 +133,16 @@ export function CreateUserDialog({ open }: CreateUserDialogProps) {
       }
     }
     handleSchools();
-  },[]);
+    const handleDepartments = async () => {
+      try{
+        const departments = await fetchDepartments(schoolId);
+        setDepartments(departments || []);
+      }catch(error){
+        console.error("Error fetching Departments:", error)
+      };
+    };
+    handleDepartments();
+  },[schoolId]);
   
   const handleSubmit = async () => {
     if (!isValidEmail(email)) {
@@ -151,6 +150,8 @@ export function CreateUserDialog({ open }: CreateUserDialogProps) {
       toast.error('Please enter a valid email address');
       return;
     }
+
+    setIsSubmitting(true);
     if(selectedType === 'STUDENT'){
     try{
       if (!validateRegistrationNumber(regNo)) {
@@ -199,6 +200,7 @@ export function CreateUserDialog({ open }: CreateUserDialogProps) {
       toast.error('Something went wrong');
     } finally {
       toggleLoading();
+      setIsSubmitting(false);
     }
   };
   if(selectedType === 'ADMIN' || selectedType === 'DEAN' || selectedType === 'COD' || selectedType === 'LECTURER'){
@@ -394,7 +396,7 @@ export function CreateUserDialog({ open }: CreateUserDialogProps) {
               )}
             />)}
             <DialogFooter>
-              <Button type="submit" onClick={() => handleSubmit()}>Create User</Button>
+              <Button disabled={isSubmitting} type="submit" onClick={() => handleSubmit()}>Create User</Button>
             </DialogFooter>
           </form>
         </Form>

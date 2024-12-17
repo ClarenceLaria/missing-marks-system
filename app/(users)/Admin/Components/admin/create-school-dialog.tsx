@@ -37,6 +37,7 @@ interface CreateSchoolDialogProps {
 
 export function CreateSchoolDialog({ open }: CreateSchoolDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -63,6 +64,7 @@ export function CreateSchoolDialog({ open }: CreateSchoolDialogProps) {
   const deanEmail = form.getValues("deanEmail");
   const role = "DEAN" ;
   const handleSubmit = async () => {
+    setIsSubmitting(true);
     try{
       toast.loading('Sending Request...');
       const response = await fetch('/api/createSchool', {
@@ -74,6 +76,7 @@ export function CreateSchoolDialog({ open }: CreateSchoolDialogProps) {
           {
             name,
             abbreviation,
+            email: deanEmail,
           }
         ),
       });
@@ -87,13 +90,18 @@ export function CreateSchoolDialog({ open }: CreateSchoolDialogProps) {
       }else if (response.status === 400){
         const errorData = await response.json();
         toast.error(errorData.error);
-      } else {
+      } else if (response.status === 404){
+        const errorData = await response.json();
+        toast.error(errorData.error);
+      }else{
         toast.error('Failed to create school');
       }
       
     }catch(error){
       console.error('Error creating school: ',error);
       toast.error('An error occurred while creating school');
+    } finally {
+      setIsSubmitting(false);
     }
     // UpdateStaff(deanEmail, role);
   };
@@ -153,7 +161,7 @@ export function CreateSchoolDialog({ open }: CreateSchoolDialogProps) {
               )}
             />
             <DialogFooter>
-              <Button type="submit" onClick={() => handleSubmit()}>Create School</Button>
+              <Button disabled={isSubmitting} type="submit" onClick={() => handleSubmit()}>Create School</Button>
             </DialogFooter>
           </form>
         </Form>

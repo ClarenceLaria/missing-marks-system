@@ -56,6 +56,7 @@ export function CreateProgramDialog({ open }: CreateCourseDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [schools, setSchools] = useState<School[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -104,6 +105,7 @@ export function CreateProgramDialog({ open }: CreateCourseDialogProps) {
   const deptId = parseInt(form.getValues('department')!);
   const programName = form.getValues('name');
   const handleSubmit = async () => {
+    setIsSubmitting(true);
     try {
       toast.loading('Sending Request...');
       const response = await fetch('/api/createProgram', {
@@ -134,6 +136,8 @@ export function CreateProgramDialog({ open }: CreateCourseDialogProps) {
 
     } catch (error){
       console.error('Error creating program: ', error);
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -208,7 +212,7 @@ export function CreateProgramDialog({ open }: CreateCourseDialogProps) {
               )}
             />
             <DialogFooter>
-              <Button type="submit" onClick={() => handleSubmit()}>Create Program</Button>
+              <Button disabled={isSubmitting} type="submit" onClick={() => handleSubmit()}>Create Program</Button>
             </DialogFooter>
           </form>
         </Form>
