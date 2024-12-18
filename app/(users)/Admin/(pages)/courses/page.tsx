@@ -23,55 +23,73 @@ import { BookOpen, PenSquare, Trash2, UserPlus } from "lucide-react";
 import { Badge } from "@/app/Components/ui/badge";
 import { fetchUnitsForAdmin } from "@/app/lib/actions";
 
-const courses = [
-  {
-    id: 1,
-    code: "BCS 203",
-    name: "Database Systems",
-    school: "School of Computing",
-    departments: ["IT", "Computer Science"],
-    assignments: [
-      {
-        academicYear: "2023/2024",
-        lecturer: "Dr. Jane Smith",
-        students: 120,
-      },
-      {
-        academicYear: "2022/2023",
-        lecturer: "Prof. John Doe",
-        students: 98,
-      },
-    ],
-  },
-  {
-    id: 2,
-    code: "BIT 301",
-    name: "Web Development",
-    school: "School of Computing",
-    departments: ["IT"],
-    assignments: [
-      {
-        academicYear: "2023/2024",
-        lecturer: "Dr. Alice Johnson",
-        students: 85,
-      },
-    ],
-  },
-];
+// const courses = [
+//   {
+//     id: 1,
+//     code: "BCS 203",
+//     name: "Database Systems",
+//     school: "School of Computing",
+//     departments: ["IT", "Computer Science"],
+//     assignments: [
+//       {
+//         academicYear: "2023/2024",
+//         lecturer: "Dr. Jane Smith",
+//         students: 120,
+//       },
+//       {
+//         academicYear: "2022/2023",
+//         lecturer: "Prof. John Doe",
+//         students: 98,
+//       },
+//     ],
+//   },
+//   {
+//     id: 2,
+//     code: "BIT 301",
+//     name: "Web Development",
+//     school: "School of Computing",
+//     departments: ["IT"],
+//     assignments: [
+//       {
+//         academicYear: "2023/2024",
+//         lecturer: "Dr. Alice Johnson",
+//         students: 85,
+//       },
+//     ],
+//   },
+// ];
 
+interface Course {
+  unitId: number;
+  unitName: string;
+  unitCode: string;
+  academicYear: string;
+  schoolName: string | null;
+  courses: string[];
+  lecturer: string;
+  totalStudents: number;
+}
 export default function CoursesPage() {
   const [createOpen, setCreateOpen] = useState(false);
   const [assignOpen, setAssignOpen] = useState(false);
-  const [course, setCourses] = useState();
-  const [selectedCourse, setSelectedCourse] = useState<typeof courses[0] | null>(
-    null
-  );
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [selectedCourse, setSelectedCourse] = useState<{
+    id: number;
+    code: string;
+    name: string;
+  } | null>(null);
 
   const handleOpen = () => {
     setCreateOpen((prev) => !prev);
   };
+
   const handleAssign = (course: typeof courses[0]) => {
-    setSelectedCourse(course);
+    const selectedCourse = {
+      id: course.unitId,      // Map unitId to id
+      code: course.unitCode,  // Map unitCode to code
+      name: course.unitName,  // Map unitName to name
+    };
+    setSelectedCourse(selectedCourse);
     setAssignOpen(true);
   };
 
@@ -79,7 +97,7 @@ export default function CoursesPage() {
     const handleCourses = async () => {
       try{
         const units = await fetchUnitsForAdmin();
-        // setCourses(units);
+        setCourses(units || []);
       }catch(error){
         console.error("Error fetching courses: ", error);
       }
@@ -122,30 +140,30 @@ export default function CoursesPage() {
             </TableHeader>
             <TableBody>
               {courses.map((course) => {
-                const currentAssignment = course.assignments[0];
+                // const currentAssignment = course.assignments[0];
                 return (
-                  <TableRow key={course.id}>
-                    <TableCell className="font-medium">{course.code}</TableCell>
-                    <TableCell>{course.name}</TableCell>
-                    <TableCell>{course.school}</TableCell>
+                  <TableRow key={course.unitId}>
+                    <TableCell className="font-medium">{course.unitCode}</TableCell>
+                    <TableCell>{course.unitName}</TableCell>
+                    <TableCell>{course.schoolName}</TableCell>
                     <TableCell>
                       <div className="flex gap-1">
-                        {course.departments.map((dept) => (
-                          <Badge key={dept} variant="secondary">
-                            {dept}
+                        {course.courses.map((course) => (
+                          <Badge key={course} variant="secondary">
+                            {course}
                           </Badge>
                         ))}
                       </div>
                     </TableCell>
                     <TableCell>
-                      {currentAssignment ? (
+                      {course.lecturer ? (
                         <div className="text-sm">
                           <p className="font-medium">
-                            {currentAssignment.lecturer}
+                            {course.lecturer}
                           </p>
                           <p className="text-muted-foreground">
-                            {currentAssignment.academicYear} •{" "}
-                            {currentAssignment.students} students
+                            {course.academicYear} •{" "}
+                            {course.totalStudents} students
                           </p>
                         </div>
                       ) : (

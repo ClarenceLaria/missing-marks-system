@@ -1240,34 +1240,44 @@ export async function fetchDepartmentsBySchoolId(schoolId: number) {
   export async function fetchUnitsForAdmin(){
     try{
         const units = await prisma.unit.findMany({
-            include:{
-                courses: true,
-            }
-        });
-        const courseId = units.map(unit => unit.courses[0].courseId);
-
-        const courses = await prisma.course.findMany({
-            where:{
-                id: {
-                    in: courseId,
+            include: {
+                courses: {
+                  include: {
+                    course: {
+                      include: {
+                        department: {
+                          include: {
+                            school: true, // Fetch the school name
+                          },
+                        },
+                        students: true, // Fetch students to count them
+                      },
+                    },
+                  },
                 },
-            },
-            select:{
-                id: true,
-                name: true,
-                department: {
-                    select:{
-                        name: true,
-                        school: {
-                            select:{
-                                name: true,
-                            }
-                        }
-                    }
-                }
-            }
+                lecturer: true, // Fetch lecturer information
+              },
         });
-        return units;
+
+        const formattedUnits = units.map((unit) => {
+            const allCourses = unit.courses.map((unitCourse) => unitCourse.course);
+            const schoolName = allCourses.length > 0 ? allCourses[0].department.school.name : null;
+      
+            return {
+              unitId: unit.id,
+              unitName: unit.name,
+              unitCode: unit.code,
+              academicYear: unit.academicYear,
+              schoolName: schoolName,
+              courses: allCourses.map((course) => course.name), // Course names
+              lecturer: `${unit.lecturer.firstName} ${unit.lecturer.secondName}`, // Lecturer name
+              totalStudents: allCourses.reduce(
+                (sum, course) => sum + course.students.length,
+                0
+              ), // Total students
+            };
+          });
+        return formattedUnits;
     }catch(error){
         console.error("Error fetching units: ", error)
     }
