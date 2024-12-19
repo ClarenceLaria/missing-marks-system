@@ -110,7 +110,12 @@ export default function UsersPage() {
                   </TableCell>
                   <TableCell>{user.school}</TableCell>
                   <TableCell>
-                    <Badge variant="success">{user.userStatus}</Badge>
+                    {user.userStatus === "active"  && (
+                      <Badge variant="success">{user.userStatus}</Badge>
+                    )} 
+                    {user.userStatus === 'inactive' && (
+                      <Badge variant="destructive">{user.userStatus}</Badge>
+                    )}
                   </TableCell>
                   <TableCell className="flex items-center gap-2">
                     <Button variant="ghost" size="icon">
