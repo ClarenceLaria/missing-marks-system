@@ -23,41 +23,6 @@ import { BookOpen, PenSquare, Trash2, UserPlus } from "lucide-react";
 import { Badge } from "@/app/Components/ui/badge";
 import { fetchUnitsForAdmin } from "@/app/lib/actions";
 
-// const courses = [
-//   {
-//     id: 1,
-//     code: "BCS 203",
-//     name: "Database Systems",
-//     school: "School of Computing",
-//     departments: ["IT", "Computer Science"],
-//     assignments: [
-//       {
-//         academicYear: "2023/2024",
-//         lecturer: "Dr. Jane Smith",
-//         students: 120,
-//       },
-//       {
-//         academicYear: "2022/2023",
-//         lecturer: "Prof. John Doe",
-//         students: 98,
-//       },
-//     ],
-//   },
-//   {
-//     id: 2,
-//     code: "BIT 301",
-//     name: "Web Development",
-//     school: "School of Computing",
-//     departments: ["IT"],
-//     assignments: [
-//       {
-//         academicYear: "2023/2024",
-//         lecturer: "Dr. Alice Johnson",
-//         students: 85,
-//       },
-//     ],
-//   },
-// ];
 
 interface Course {
   unitId: number;
@@ -77,17 +42,19 @@ export default function CoursesPage() {
     id: number;
     code: string;
     name: string;
+    academicYear: string;
   } | null>(null);
 
   const handleOpen = () => {
     setCreateOpen((prev) => !prev);
   };
 
-  const handleAssign = (course: typeof courses[0]) => {
+  const handleAssign = (course: Course) => {
     const selectedCourse = {
       id: course.unitId,      // Map unitId to id
       code: course.unitCode,  // Map unitCode to code
       name: course.unitName,  // Map unitName to name
+      academicYear: course.academicYear,
     };
     setSelectedCourse(selectedCourse);
     setAssignOpen(true);

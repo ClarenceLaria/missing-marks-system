@@ -1282,3 +1282,9 @@ export async function fetchDepartmentsBySchoolId(schoolId: number) {
         console.error("Error fetching units: ", error)
     }
   }
+
+  export async function assignLecturer(courseId: number, lecturerId: number){
+    try{}catch(error){
+        console.error("Error assigning lecturer: ", error)
+    }
+  }
