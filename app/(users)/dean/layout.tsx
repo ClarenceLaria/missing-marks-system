@@ -2,12 +2,31 @@ import { DashboardNav } from "@/app/Components/DashboardNav";
 import { UserNav } from "@/app/Components/user-nav";
 import { ThemeToggle } from "@/app/Components/ThemeToggle";
 import { ThemeProvider } from "@/app/Components/ThemeProvider";
+import { getServerSession } from "next-auth";
+import {authOptions} from "@/app/utils/authOptions";
+import { redirect } from "next/navigation";
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+    const session = await getServerSession(authOptions);
+    if (!session){
+      redirect('/')
+    }
+    const userType =session?.userType;
+    if (userType === 'STUDENT') {
+      redirect('/Student/home');
+    } else if (userType === 'LECTURER') {
+      redirect('/Lecturer');
+    } else if (userType === 'COD') {
+      redirect('/cod');
+    } else if (userType === 'ADMIN') {
+      redirect('/Admin');
+    } else if (userType === 'SUPERADMIN') {
+      redirect('/SuperAdmin');
+    }
   return (
     <>
     <ThemeProvider
