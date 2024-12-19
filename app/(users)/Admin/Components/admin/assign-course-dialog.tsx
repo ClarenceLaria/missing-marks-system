@@ -27,6 +27,10 @@ import {
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
+import { fetchUniversityUsers } from "@/app/lib/actions";
+import { UserStatus, UserType } from "@prisma/client";
+import toast from "react-hot-toast";
 
 const formSchema = z.object({
   academicYear: z.string().min(1, "Academic year is required"),
@@ -40,9 +44,23 @@ interface AssignCourseDialogProps {
     id: number;
     code: string;
     name: string;
+    academicYear: string;
   } | null;
 }
 
+interface Lecturer {
+  id: number;
+  departmentId: number;
+  schoolId: number;
+  createdAt: Date;
+  email: string;
+  firstName: string;
+  secondName: string;
+  password: string;
+  userType: UserType;
+  userStatus: UserStatus;
+  phoneNumber: string;
+}
 export function AssignCourseDialog({
   open,
   onOpenChange,
@@ -55,11 +73,55 @@ export function AssignCourseDialog({
       lecturer: "",
     },
   });
+  const [lecturers, setLecturers] = useState<Lecturer []>([]);
+
+  const lecturerId = parseInt(form.getValues("lecturer")!);
+  const academicYear = course?.academicYear;
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log({ courseId: course?.id, ...values });
     onOpenChange(false);
     form.reset();
+  }
+
+  useEffect(() => {
+    const handleLecturers = async () => {
+      try {
+        const lecturers = await fetchUniversityUsers();
+        setLecturers(lecturers?.lecturers || []);
+      } catch (error) {
+        console.error("Error fetching lecturers: ", error);
+      }
+    };
+    handleLecturers();
+  },[]);
+
+  const handleSubmit = async () => {
+    try {
+      const response = await fetch("/api/assignLecturer", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          unitId: course?.id,
+          lecturerId,
+          academicYear,
+        }),
+      });
+      
+      if(response.ok && response.status === 200){
+        const data = await response.json();
+        toast.success(data.message);
+      } else {
+        const error = await response.json();
+        console.error("Error assigning lecturer to course: ", error);
+        toast.error(error.error);
+      }
+
+    } catch (error) {
+      console.error("Error assigning lecturer to course: ", error);
+      toast.error("An error occurred while assigning lecturer to course");
+    }
   }
 
   if (!course) return null;
@@ -77,27 +139,6 @@ export function AssignCourseDialog({
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
-              name="academicYear"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Academic Year</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select academic year" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="2023/2024">2023/2024</SelectItem>
-                      <SelectItem value="2022/2023">2022/2023</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
               name="lecturer"
               render={({ field }) => (
                 <FormItem>
@@ -109,9 +150,11 @@ export function AssignCourseDialog({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="js">Dr. Jane Smith</SelectItem>
-                      <SelectItem value="jd">Prof. John Doe</SelectItem>
-                      <SelectItem value="aj">Dr. Alice Johnson</SelectItem>
+                      {lecturers.map((lecturer) => (
+                        <SelectItem key={lecturer.id} value={(lecturer.id).toString()}>
+                          {lecturer.firstName} {lecturer.secondName}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -119,7 +162,7 @@ export function AssignCourseDialog({
               )}
             />
             <DialogFooter>
-              <Button type="submit">Assign Course</Button>
+              <Button type="submit" onClick={() => handleSubmit()}>Assign Course</Button>
             </DialogFooter>
           </form>
         </Form>

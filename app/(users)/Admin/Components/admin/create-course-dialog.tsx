@@ -331,7 +331,7 @@ export function CreateCourseDialog({ open }: CreateCourseDialogProps) {
               )}
             />
             <DialogFooter>
-              <Button disabled={isSubmitting} type="submit" onClick={() => handleSubmit()}>Create Course</Button>
+              <Button disabled={isSubmitting } type="submit" onClick={() => handleSubmit()}>Create Course</Button>
             </DialogFooter>
           </form>
         </Form>
