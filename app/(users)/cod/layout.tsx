@@ -31,8 +31,10 @@ export default async function CodLayout({
     redirect('/Student/home');
   } else if (userType === 'LECTURER') {
     redirect('/Lecturer');
-  } else if (userType === 'ADMIN' || userType === 'DEAN') {
+  } else if (userType === 'ADMIN') {
     redirect('/Admin');
+  } else if (userType === 'DEAN'){
+    redirect('/dean');
   } else if (userType === 'SUPERADMIN') {
     redirect('/SuperAdmin');
   }

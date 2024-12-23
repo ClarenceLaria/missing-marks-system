@@ -29,8 +29,10 @@ export default async function StudentLayout({
     redirect('/Student/home');
   } else if (userType === 'COD') {
     redirect('/cod');
-  } else if (userType === 'ADMIN' || userType === 'DEAN') {
+  } else if (userType === 'ADMIN') {
     redirect('/Admin');
+  } else if (userType === 'DEAN'){
+    redirect('/dean');
   } else if (userType === 'SUPERADMIN') {
     redirect('/SuperAdmin');
   }

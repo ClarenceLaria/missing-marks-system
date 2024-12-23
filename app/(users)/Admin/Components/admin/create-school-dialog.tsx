@@ -23,7 +23,6 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { UpdateStaff } from "@/app/lib/actions";
 
 const formSchema = z.object({
   name: z.string().min(1, "School name is required"),
@@ -103,7 +102,6 @@ export function CreateSchoolDialog({ open }: CreateSchoolDialogProps) {
     } finally {
       setIsSubmitting(false);
     }
-    // UpdateStaff(deanEmail, role);
   };
 
   return (
