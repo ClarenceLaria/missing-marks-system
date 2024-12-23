@@ -23,7 +23,6 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { UpdateStaff } from "@/app/lib/actions";
 
 const formSchema = z.object({
   delete: z.string().min(1, "Delete Statment is required"),
@@ -87,7 +86,6 @@ export function DeleteSchoolDialog({ open, id}: DeleteSchoolDialogProps) {
       console.error('Error Deleting school: ',error);
       toast.error('An error occurred while deleting school');
     }
-    // UpdateStaff(deanEmail, role);
   };
 
   return (
