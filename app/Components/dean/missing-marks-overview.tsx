@@ -1,6 +1,9 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/Components/ui/card";
+import { fetchSchoolReportStatistics } from "@/app/lib/actions";
+import { ReportStatus } from "@prisma/client";
+import { useEffect, useState } from "react";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 
 const data = [
@@ -9,7 +12,27 @@ const data = [
   { name: "Resolved", value: 24 },
 ];
 
+interface ReportStatistics {
+  status: ReportStatus;
+    count: number;
+}
 export function MissingMarksOverview() {
+  const [reportData, setReportData] = useState<{reportStatus:ReportStatus; count:number;}[]>([]);
+
+  useEffect(() => {
+    const handleStats = async () => {
+      try{
+        const data = await fetchSchoolReportStatistics();
+        // if(data){
+          setReportData(data || [])
+        // }
+      }catch(error){
+        console.error("Error fetching Statistics: ", error)
+      }
+    };
+    handleStats();
+  },[])
+  console.log(reportData)
   return (
     <Card>
       <CardHeader>
@@ -17,10 +40,10 @@ export function MissingMarksOverview() {
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={data}>
-            <XAxis dataKey="name" stroke="#888888" fontSize={12} />
+          <BarChart data={reportData}>
+            <XAxis dataKey="status" stroke="#888888" fontSize={12} />
             <YAxis stroke="#888888" fontSize={12} />
-            <Bar dataKey="value" fill="currentColor" className="fill-primary" />
+            <Bar dataKey="count" fill="currentColor" className="fill-primary" />
           </BarChart>
         </ResponsiveContainer>
       </CardContent>

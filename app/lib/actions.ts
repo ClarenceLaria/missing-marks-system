@@ -560,17 +560,7 @@ export async function fetchSchoolTotals(email: string){
 
             }
         });
-        const deptId = dean?.departmentId;
-
-        const dept = await prisma.department.findUnique({
-            where:{
-                id: deptId,
-            },
-            include:{
-                school: true,
-            }
-        })
-        const schoolId = dept?.schoolId;
+        const schoolId = dean?.schoolId;
 
         const pendingTotals = await prisma.missingMarksReport.count({
             where:{
@@ -626,9 +616,15 @@ export async function fetchSchoolTotals(email: string){
             }
         });
 
+        const totalDepartments = await prisma.department.count({
+            where:{
+                schoolId: schoolId,
+            },
+        });
+
         const totalCleared = markFoundTotals + markNotFoundTotals;
 
-        return {pendingTotals, markFoundTotals, markNotFoundTotals, forInvestigationTotals, totalCleared, totalReports};
+        return {pendingTotals, markFoundTotals, markNotFoundTotals, forInvestigationTotals, totalCleared, totalReports, totalDepartments};
     }catch(error){
         console.error("Error Fetching School Totals: ", error);
     }
@@ -636,6 +632,7 @@ export async function fetchSchoolTotals(email: string){
 
 export async function fetchSchoolUsersTotals(email: string){
     try{
+
         const dean = await prisma.staff.findUnique({
             where:{
                 email: email,
@@ -644,17 +641,7 @@ export async function fetchSchoolUsersTotals(email: string){
 
             }
         });
-        const deptId = dean?.departmentId;
-
-        const dept = await prisma.department.findUnique({
-            where:{
-                id: deptId,
-            },
-            include:{
-                school: true,
-            }
-        })
-        const schoolId = dept?.schoolId;
+        const schoolId = dean?.schoolId;
 
         const lecturers = await prisma.staff.count({
             where:{
@@ -671,7 +658,6 @@ export async function fetchSchoolUsersTotals(email: string){
                 }
             }
         })
-
         const totalUsers = lecturers + students;
         return {lecturers, students, totalUsers};
     }catch(error){
@@ -689,17 +675,8 @@ export async function fetchSchoolUsers(email: string){
 
             }
         });
-        const deptId = dean?.departmentId;
 
-        const dept = await prisma.department.findUnique({
-            where:{
-                id: deptId,
-            },
-            include:{
-                school: true,
-            }
-        })
-        const schoolId = dept?.schoolId;
+        const schoolId = dean?.schoolId;
 
         const lecturers = await prisma.staff.findMany({
             where:{
@@ -731,13 +708,8 @@ export async function fetchSchoolReports(email: string){
             },
         });
 
-        const deptId = dean?.departmentId;
-        const dept = await prisma.department.findUnique({
-            where:{
-                id: deptId,
-            }
-        });
-        const schoolId = dept?.schoolId;
+        const schoolId = dean?.departmentId;
+
         const pendingReports = await prisma.missingMarksReport.findMany({
             where:{
                 reportStatus: "PENDING",
@@ -928,33 +900,46 @@ export async function fetchSchoolDetails() {
   }
   
 
-export async function fetchSchoolReportStatistics (abbreviation: string) {
-    try{
-        const school = await prisma.school.findUnique({
-            where:{
-                abbreviation: abbreviation,
-            }
-        });
-        const schoolId = school?.id;
-        const reportStats = await prisma.missingMarksReport.groupBy({
-            by: ['reportStatus', 'createdAt'],
-            _count: {_all: true},
-            where:{
-                student:{
-                    department:{
-                        school: {
-                            abbreviation: abbreviation,
-                        },
-                    }
-                }
+  export async function fetchSchoolReportStatistics() {
+    try {
+      const session = await getServerSession(authOptions);
+      if (!session || !session.user?.email) {
+        throw new Error('User is not authenticated');
+      }
+  
+      const email = session.user.email;
+  
+      const dean = await prisma.staff.findUnique({
+        where: { email },
+        select: { schoolId: true }, 
+      });
+  
+      if (!dean || !dean.schoolId) {
+        throw new Error('Dean not found or schoolId is missing');
+      }
+  
+      const statistics = await prisma.missingMarksReport.groupBy({
+        by: ['reportStatus'],
+        _count: { id: true },
+        where: {
+          student: {
+            department: {
+              schoolId: dean.schoolId,
             },
-            orderBy: {createdAt: 'asc'},
-        })
-        return reportStats;
-    }catch(error){
-        console.error('Error Fetching School Stats', error);
+          },
+        },
+      });
+  
+      return statistics.map((stat) => ({
+        reportStatus: stat.reportStatus,
+        count: stat._count.id,
+      }));
+    } catch (error) {
+      console.error('Error Fetching School Stats:', error);
+    //   return { error: error.message || 'An unexpected error occurred' };
     }
-}
+  }
+  
 
 export async function fetchUniversityUsersArray (){
     try{
@@ -1128,40 +1113,6 @@ export async function fetchDepartments (schoolId: number) {
         return departments;
     }catch(error){
         console.error("Error fetching departments:", error);
-    }
-}
-
-
-export async function UpdateStaff(email: string, userType: UserType){
-    try{
-        const dean = await prisma.staff.findFirst({
-            where: {
-                userType: 'DEAN',
-
-            }
-        });
-        if (dean){
-            throw new Error("Dean already exists");
-        }
-        const checkStaff = await prisma.staff.findUnique({
-            where: {
-                email: email,
-            }
-        })
-        if (!checkStaff){
-            throw new Error("Staff not found");
-        }
-        const staff = await prisma.staff.update({
-            where: {
-                email: email,
-            },
-            data: {
-                userType: userType,
-            }
-        });
-        // return staff;
-    }catch(error){
-        console.error("Error updating staff status:", error);
     }
 }
 
