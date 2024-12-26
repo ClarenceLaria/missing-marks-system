@@ -49,9 +49,9 @@ const routes = {
       href: "/dean",
     },
     {
-      title: "Departments",
-      icon: Building2,
-      href: "/dean/departments",
+      title: "Lecturers",
+      icon: Users,
+      href: "/dean/lecturers",
     },
     {
       title: "Courses",
