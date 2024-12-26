@@ -23,16 +23,13 @@ export function MissingMarksOverview() {
     const handleStats = async () => {
       try{
         const data = await fetchSchoolReportStatistics();
-        // if(data){
-          setReportData(data || [])
-        // }
+        setReportData(data || [])
       }catch(error){
         console.error("Error fetching Statistics: ", error)
       }
     };
     handleStats();
   },[])
-  console.log(reportData)
   return (
     <Card>
       <CardHeader>

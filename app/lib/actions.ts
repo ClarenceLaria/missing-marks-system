@@ -939,6 +939,78 @@ export async function fetchSchoolDetails() {
     //   return { error: error.message || 'An unexpected error occurred' };
     }
   }
+
+  export async function fetchSchoolDepartmentsOverview() {
+    try {
+      const session = await getServerSession(authOptions);
+  
+      const email = session?.user?.email!;
+      if (!email) {
+        throw new Error("User is not authenticated");
+      }
+  
+      // Get the dean's school ID
+      const dean = await prisma.staff.findUnique({
+        where: { email },
+        select: { schoolId: true },
+      });
+  
+      const schoolId = dean?.schoolId;
+      if (!schoolId) {
+        throw new Error("Dean's school ID not found");
+      }
+  
+      // Fetch departments, including students count, lecturers count, and CODs
+      const departments = await prisma.department.findMany({
+        where: {
+          schoolId: schoolId,
+        },
+        select: {
+          id: true,
+          name: true,
+          students: {
+            select: {
+              id: true,
+            },
+          },
+          staffS: {
+            select: {
+              id: true,
+              firstName: true,
+              secondName: true,
+              email: true,
+              userType: true,
+            },
+            where: {
+              userType: "COD", // Filter CODs for each department
+            },
+          },
+        },
+      });
+  
+      // Format the data to map CODs back to their respective departments
+      const formattedDepartments = departments.map((dept) => ({
+        id: dept.id,
+        name: dept.name,
+        totalStudents: dept.students.length, // Count of students
+        totalLecturers: dept.staffS.filter((staff) => staff.userType !== "COD").length, // Count of lecturers excluding CODs
+        cod: dept.staffS[0] // Assuming there is only one COD per department
+          ? {
+              id: dept.staffS[0].id,
+              firstName: dept.staffS[0].firstName,
+              secondName: dept.staffS[0].secondName,
+              email: dept.staffS[0].email,
+            }
+          : null,
+      }));
+  
+      return formattedDepartments;
+    } catch (error) {
+      console.error("Error fetching departments overview: ", error);
+      throw new Error("Could not fetch departments overview");
+    }
+  }
+  
   
 
 export async function fetchUniversityUsersArray (){
@@ -1231,11 +1303,5 @@ export async function fetchDepartmentsBySchoolId(schoolId: number) {
         return formattedUnits;
     }catch(error){
         console.error("Error fetching units: ", error)
-    }
-  }
-
-  export async function assignLecturer(courseId: number, lecturerId: number){
-    try{}catch(error){
-        console.error("Error assigning lecturer: ", error)
     }
   }

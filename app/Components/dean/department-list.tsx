@@ -15,6 +15,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/app/Components/ui/table";
+import { fetchSchoolDepartmentsOverview } from "@/app/lib/actions";
+import { useEffect, useState } from "react";
 
 const departments = [
   {
@@ -33,7 +35,32 @@ const departments = [
   },
 ];
 
+interface Department{
+  id: number;
+  name: string;
+  totalStudents: number;
+  totalLecturers: number;
+  cod: {
+      id: number;
+      firstName: string;
+      secondName: string;
+      email: string;
+  } | null
+}
 export function DepartmentList() {
+  const [departments, setDepartments] = useState<Department[]>([]);
+
+  useEffect(() => {
+    const handleDepartments = async () => {
+      try{
+        const data = await fetchSchoolDepartmentsOverview();
+        setDepartments(data);
+      }catch(error){
+        console.error("Error fetching Departments: ", error);
+      }
+    };
+    handleDepartments();
+  },[])
   return (
     <Card>
       <CardHeader>
@@ -54,9 +81,9 @@ export function DepartmentList() {
             {departments.map((dept) => (
               <TableRow key={dept.id}>
                 <TableCell className="font-medium">{dept.name}</TableCell>
-                <TableCell>{dept.cod}</TableCell>
-                <TableCell>{dept.students}</TableCell>
-                <TableCell>{dept.lecturers}</TableCell>
+                <TableCell>{dept.cod?.firstName+ " " + dept.cod?.secondName}</TableCell>
+                <TableCell>{dept.totalLecturers}</TableCell>
+                <TableCell>{dept.totalLecturers}</TableCell>
               </TableRow>
             ))}
           </TableBody>
