@@ -710,6 +710,25 @@ export async function fetchSchoolReports(email: string){
 
         const schoolId = dean?.departmentId;
 
+        const reports = await prisma.missingMarksReport.findMany({
+            where:{
+                student:{
+                    department:{
+                        schoolId: schoolId,
+                    },
+                },
+            },
+            include: {
+                student: {
+                    select:{
+                        regNo:true,
+                        firstName: true,
+                        secondName: true,
+                    },
+                },
+            },
+        });
+
         const pendingReports = await prisma.missingMarksReport.findMany({
             where:{
                 reportStatus: "PENDING",
@@ -742,8 +761,15 @@ export async function fetchSchoolReports(email: string){
                 }
             }
         });
-
-        return {pendingReports, clearedReports, forwardedReports};
+        
+        const reportWithStudents = reports.map((report) => ({
+            ...report,
+            student: {
+                regNo: report.student.regNo,
+                name: `${report.student.firstName + " " + report.student.secondName}`,
+            }
+        }))
+        return {pendingReports, clearedReports, forwardedReports, reports: reportWithStudents};
     }catch(error){
         console.error("Error fetching missing marks: ", error)
     }
