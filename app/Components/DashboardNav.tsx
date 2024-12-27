@@ -54,6 +54,11 @@ const routes = {
       href: "/dean/lecturers",
     },
     {
+      title: "Students",
+      icon: GraduationCapIcon,
+      href: "/dean/students",
+    },
+    {
       title: "Courses",
       icon: BookOpen,
       href: "/dean/courses",

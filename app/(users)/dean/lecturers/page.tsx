@@ -121,22 +121,30 @@ export default function Page() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredLecturers.map((lecturer) => (
-                <TableRow key={lecturer.email}>
-                  <TableCell className="font-medium">{lecturer.name}</TableCell>
-                  <TableCell>{lecturer.email}</TableCell>
-                  <TableCell>{lecturer.phoneNo}</TableCell>
-                  <TableCell>{lecturer.role}</TableCell>
-                  <TableCell className="flex items-center gap-2">
-                    <Button variant="ghost" size="icon">
-                      <PenSquare className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon" onClick={() => {handleOpenDelete(); }}>
-                      <Trash2 className="h-4 w-4 text-destructive" />
-                    </Button>
+              {filteredLecturers.length > 0 ? (
+                filteredLecturers.map((lecturer) => (
+                  <TableRow key={lecturer.email}>
+                    <TableCell className="font-medium">{lecturer.name}</TableCell>
+                    <TableCell>{lecturer.email}</TableCell>
+                    <TableCell>{lecturer.phoneNo}</TableCell>
+                    <TableCell>{lecturer.role}</TableCell>
+                    <TableCell className="flex items-center gap-2">
+                      <Button variant="ghost" size="icon">
+                        <PenSquare className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="icon" onClick={() => {handleOpenDelete(); }}>
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center ">
+                  There are no Lecturers here!
                   </TableCell>
                 </TableRow>
-              ))}
+              )}
             </TableBody>
           </Table>
         </CardContent>
