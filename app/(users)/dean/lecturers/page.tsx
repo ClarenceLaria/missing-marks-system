@@ -1,9 +1,25 @@
 'use client'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/app/Components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/app/Components/ui/table";
+import { Button } from "@/app/Components/ui/button";
+import { PenSquare, Trash2 } from "lucide-react";
 import React, {Suspense, useEffect, useState} from 'react'
-import Table from '@/app/Components/LecturersTable';
 import Search from '@/app/(users)/Student/Components/Search'
 import { useSession } from 'next-auth/react';
-import { fetchSchoolUsers, fetchUniversityUsers } from '@/app/lib/actions';
+import { fetchSchoolUsers } from '@/app/lib/actions';
 import { UserType } from '@prisma/client';
 import Loader from '@/app/Components/Loader';
 
@@ -23,6 +39,11 @@ export default function Page() {
   const [lecturers, setLecturers] = useState<Lecturer[]>([]);
   const [loading,setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState<string | null>(null);
+  const [openDelete, setOpenDelete] = useState(false);
+
+  const handleOpenDelete = () => {
+    setOpenDelete((prev) => !prev);
+  }
 
   const session = useSession();
   const email = session.data?.user?.email!;
@@ -42,22 +63,6 @@ export default function Page() {
     fetchLecturers();
   },[email]);
 
-    // ADMIN Logic
-    const [staff, setStaff] = useState<Lecturer[]>([]);
-    useEffect(() => {
-      const handleFetchStaff = async () => {
-        try{
-          setLoading(true);
-          const result = await fetchUniversityUsers();
-          const staff = result?.lecturers || [];
-          setStaff(staff);
-          setLoading(false);
-        }catch(error){
-          console.error("Error fetching staff: ",error);
-        }
-      };
-      handleFetchStaff();
-    },[])
   if (loading) return <Loader/>;
 
   const transformedLecturers = lecturers.map(lecturer => ({
@@ -79,21 +84,66 @@ export default function Page() {
       return matchesSearchTerm;
   });
   return (
-    <div className='w-full h-full'>
-        <div className='p-10'>
-            <Suspense fallback={<Loading/>}>
-                <Search 
-                  placeholder='Search for a Pending Missing Mark...'
-                  onSearch = {(term) => {
-                      setSearchTerm(term);
-                  }}
-                ></Search>            
-            </Suspense>
-            {userType === 'DEAN' && (
-            <Suspense fallback={<Loading/>}>
-              <Table lecturers={filteredLecturers}></Table>
-            </Suspense>)}
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight">School</h2>
+          <p className="text-muted-foreground">
+            Manage school&apos;s staff
+          </p>
         </div>
+        <div>
+          <Suspense fallback={<Loading/>}>
+            <Search 
+            placeholder='Search for a Lecturer...'
+            onSearch = {(term) => {
+                setSearchTerm(term);
+            }}
+            ></Search>            
+          </Suspense>
+        </div>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Lecturers</CardTitle>
+          <CardDescription>A list of all schools staff</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Lecturer&apos;s Name</TableHead>
+                <TableHead>email</TableHead>
+                <TableHead>phone No.</TableHead>
+                <TableHead>Role</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredLecturers.map((lecturer) => (
+                <TableRow key={lecturer.email}>
+                  <TableCell className="font-medium">{lecturer.name}</TableCell>
+                  <TableCell>{lecturer.email}</TableCell>
+                  <TableCell>{lecturer.phoneNo}</TableCell>
+                  <TableCell>{lecturer.role}</TableCell>
+                  <TableCell className="flex items-center gap-2">
+                    <Button variant="ghost" size="icon">
+                      <PenSquare className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon" onClick={() => {handleOpenDelete(); }}>
+                      <Trash2 className="h-4 w-4 text-destructive" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      {/* <CreateSchoolDialog open={open} onOpenChange={setOpen}/>
+      <DeleteSchoolDialog id={id} open={openDelete}/> */}
     </div>
   )
 }
