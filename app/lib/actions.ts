@@ -1305,3 +1305,66 @@ export async function fetchDepartmentsBySchoolId(schoolId: number) {
         console.error("Error fetching units: ", error)
     }
   }
+
+  export async function fetchUnitsForDean(){
+    try{
+        const session = await getServerSession(authOptions);
+        const email = session?.user?.email!;
+
+        const dean = await prisma.staff.findUnique({
+            where:{
+                email: email,
+            },
+            select:{
+                schoolId: true,
+            }
+        });
+        const schoolId = dean?.schoolId;
+        const units = await prisma.unit.findMany({
+            where:{
+                courses:{
+                    some:{
+                        course:{
+                            department:{
+                                schoolId: schoolId,
+                            },
+                        },
+                    },
+                }
+            },
+            include: {
+                courses: {
+                  include: {
+                    course: {
+                      include: {
+                        department: true,
+                        students: true, // Fetch students to count them
+                      },
+                    },
+                  },
+                },
+                lecturer: true, // Fetch lecturer information
+              },
+        });
+
+        const formattedUnits = units.map((unit) => {
+            const allCourses = unit.courses.map((unitCourse) => unitCourse.course);
+      
+            return {
+              unitId: unit.id,
+              unitName: unit.name,
+              unitCode: unit.code,
+              academicYear: unit.academicYear,
+              courses: allCourses.map((course) => course.name), // Course names
+              lecturer: `${unit.lecturer.firstName} ${unit.lecturer.secondName}`, // Lecturer name
+              totalStudents: allCourses.reduce(
+                (sum, course) => sum + course.students.length,
+                0
+              ), // Total students
+            };
+          });
+        return formattedUnits;
+    }catch(error){
+        console.error("Error fetching units: ", error)
+    }
+  }
