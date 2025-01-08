@@ -55,9 +55,11 @@ export function UserNav() {
       profileLink = '/Lecturer/profile';
     } else if (session?.data?.userType === 'COD' ){
       profileLink = '/cod/profile';
-    } else if (session?.data?.userType === 'ADMIN' || session?.data?.userType === 'DEAN'){
+    } else if (session?.data?.userType === 'DEAN'){
+      profileLink = '/dean/profile';
+    } else if (session?.data?.userType === 'ADMIN'){
       profileLink = '/Admin/profile';
-    }
+    } 
   
     const handleLogout = () => {
       if(session?.data?.userType === 'STUDENT'){

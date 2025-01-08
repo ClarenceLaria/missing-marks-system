@@ -286,6 +286,62 @@ export async function fetchLecturerMissingMarks(email: string){
     }
 }
 
+export async function fetchLecturerUnits(){
+    try{
+        const session = await getServerSession(authOptions);
+        const email = session?.user?.email!;
+        
+        const lec = await prisma.staff.findUnique({
+            where:{
+                email: email,
+            },
+        });
+        const lecId = lec?.id;
+
+        const units = await prisma.unit.findMany({
+            where:{
+                lecturerId: lecId,
+            },
+            include: {
+                courses:{
+                    select:{
+                        course:{
+                            include:{
+                                students: {
+                                    select:{
+                                        id: true,
+                                    }
+                                },
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        const unitDetails = units.map((unit) => {
+            // const totalDepartments = school.departments.length;
+            const totalStudents = unit.courses.reduce(
+              (acc, course) => acc + course.course.students.length,
+              0
+            );
+            
+            return {
+              id: unit.id,
+              name: unit.name,
+              code: unit.code,
+              year: unit.academicYear,
+              totalStudents,
+            };
+          });
+        
+
+        return unitDetails;
+    }catch(error){
+        console.error("Error fetching Units: ", error);
+    }
+}
+
 export async function fetchSingleUnclearedReport(email: string, reportId:number){
     try{
         const lecturer = await prisma.staff.findUnique({
@@ -428,7 +484,6 @@ export async function fetchDepartmentTotals(email: string) {
         return {totalReports, pendingTotals, clearedTotals, markFoundTotals, notFoundTotals, forwardedTotals};
     }catch(error){
         console.error('Error fetching department totals:', error)
-        throw new Error("Could not fetch missing mark Totals")
     }
 }
 
@@ -454,7 +509,7 @@ export async function fetchDepartmentUserTotals(email: string) {
         return {lecturers, students, totalUsers}
     }catch(error){
         console.error("Error fetching user totals", error)
-        throw new Error("Could not fetch User Totals")
+        // throw new Error("Could not fetch User Totals")
     }
 }
 
