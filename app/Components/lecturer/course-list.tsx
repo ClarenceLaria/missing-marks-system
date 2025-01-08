@@ -15,6 +15,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/app/Components/ui/table";
+import { fetchLecturerUnits } from "@/app/lib/actions";
+import { Semester } from "@prisma/client";
+import { useEffect, useState } from "react";
 
 const courses = [
   {
@@ -33,7 +36,27 @@ const courses = [
   },
 ];
 
+interface Course {
+  id: number;
+  name: string;
+  code: string;
+  year: string;
+  totalStudents: number;
+}
 export function CourseList() {
+  const [courses, setCourses] = useState<Course []>([]);
+
+  useEffect(() => {
+    const handleCourses = async () => {
+      try{
+        const courses = await fetchLecturerUnits();
+        setCourses(courses || []);
+      }catch(error){
+        console.error("Error fetching Courses: ", error);
+      }
+    };
+    handleCourses();
+  },[]);
   return (
     <Card>
       <CardHeader>
@@ -58,7 +81,7 @@ export function CourseList() {
                 <TableCell className="font-medium">{course.code}</TableCell>
                 <TableCell>{course.name}</TableCell>
                 <TableCell>{course.year}</TableCell>
-                <TableCell>{course.students}</TableCell>
+                <TableCell>{course.totalStudents}</TableCell>
               </TableRow>
             ))}
           </TableBody>
