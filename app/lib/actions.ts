@@ -282,8 +282,17 @@ export async function fetchLecturerMissingMarks(){
                 unitId: {
                     in: unitIds
                 },
-                reportStatus: { in: ["FOR_FURTHER_INVESTIGATION", "PENDING"] }
-            }
+                // reportStatus: { in: ["FOR_FURTHER_INVESTIGATION", "PENDING"] }
+            },
+            include:{
+                student: {
+                    select:{
+                        regNo: true,
+                        firstName: true,
+                        secondName: true,
+                    }
+                },
+            },
         })
         return reports;
     }catch(error){
