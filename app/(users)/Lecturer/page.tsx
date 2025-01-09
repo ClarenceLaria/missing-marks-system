@@ -17,13 +17,10 @@ export default function Page() {
   const [clearedMarks, setClearedMarks] = useState(Number);
   const [loading, setLoading] = useState(true);
 
-  const session = useSession();
-  const email = session.data?.user?.email!;
-
   useEffect(() => {
     const handleReportTotals = async () => {
       setLoading(true);
-      const totals = await fetchLecturerMissingMarksTotals(email);
+      const totals = await fetchLecturerMissingMarksTotals();
       setTotals(totals.totalLecsMissingMarks);
       setPendingTotals(totals.pendingTotals);
       setMarkFoundTotals(totals.markFoundTotals);
@@ -33,7 +30,7 @@ export default function Page() {
       setLoading(false);
     }
     handleReportTotals();
-  }, [email]);
+  }, []);
 
   if (loading) return <Loader/>;
   return (

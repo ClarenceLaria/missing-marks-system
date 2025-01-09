@@ -193,8 +193,11 @@ export async function fetchSingleReport(email: string, reportId: number){
     }
 }
 
-export async function fetchLecturerMissingMarksTotals(email:string){
+export async function fetchLecturerMissingMarksTotals(){
     try{
+        const session = await getServerSession(authOptions);
+        const email = session?.user?.email!;
+
         const lecturer = await prisma.staff.findUnique({
             where:{
                 email: email
@@ -256,11 +259,14 @@ export async function fetchLecturerMissingMarksTotals(email:string){
 
 }
 
-export async function fetchLecturerMissingMarks(email: string){
+export async function fetchLecturerMissingMarks(){
     try{
+        const session = await getServerSession(authOptions);
+        const email = session?.user?.email!;
+
         const lecturer = await prisma.staff.findUnique({
             where:{
-                email: email
+                email: email,
             }
         })
         const id = lecturer?.id;

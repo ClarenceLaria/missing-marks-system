@@ -47,8 +47,8 @@ export function MissingMarksTable() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Student</TableHead>
-              <TableHead>Admission No</TableHead>
+              <TableHead>Student Name</TableHead>
+              <TableHead>Registration No</TableHead>
               <TableHead>Course</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Reported On</TableHead>
