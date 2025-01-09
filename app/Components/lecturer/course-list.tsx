@@ -76,14 +76,22 @@ export function CourseList() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {courses.map((course) => (
-              <TableRow key={course.id}>
-                <TableCell className="font-medium">{course.code}</TableCell>
-                <TableCell>{course.name}</TableCell>
-                <TableCell>{course.year}</TableCell>
-                <TableCell>{course.totalStudents}</TableCell>
+            {courses.length > 0 ? (
+              courses.map((course) => (
+                <TableRow key={course.id}>
+                  <TableCell className="font-medium">{course.code}</TableCell>
+                  <TableCell>{course.name}</TableCell>
+                  <TableCell>{course.year}</TableCell>
+                  <TableCell>{course.totalStudents}</TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={4} className="text-center">
+                  You have no assigned courses
+                </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </CardContent>

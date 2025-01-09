@@ -16,6 +16,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/app/Components/ui/table";
+import { useEffect, useState } from "react";
+import { fetchLecturerMissingMarks } from "../../lib/actions";
+import { ExamType, ReportStatus, Semester } from "@prisma/client";
 
 const reports = [
   {
@@ -36,7 +39,39 @@ const reports = [
   },
 ];
 
+interface missingReport {
+  id: number;
+  createdAt: Date;
+  unitName: string;
+  unitCode: string;
+  lecturerName: string;
+  academicYear: string;
+  examType: ExamType;
+  reportStatus: ReportStatus;
+  yearOfStudy: number;
+  semester: Semester;
+  studentId: number;
+  unitId: number;
+  student: {
+    firstName: string;
+    secondName: string;
+    regNo: string;
+  };
+}
 export function MissingMarksTable() {
+  const [reports, setReports] = useState<missingReport[]>([]);
+
+  useEffect(() => {
+    const handleReports = async () => {
+      try{
+        const report = await fetchLecturerMissingMarks();
+        setReports(report);
+      }catch(error){
+        console.error("Error fetching missing marks reports", error);
+      }
+    };
+    handleReports();
+  },[]);
   return (
     <Card>
       <CardHeader>
@@ -55,21 +90,27 @@ export function MissingMarksTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {reports.map((report) => (
-              <TableRow key={report.id}>
-                <TableCell className="font-medium">{report.student}</TableCell>
-                <TableCell>{report.admissionNo}</TableCell>
-                <TableCell>{report.course}</TableCell>
-                <TableCell>
-                  <Badge
-                    variant={report.status === "pending" ? "secondary" : "success"}
-                  >
-                    {report.status}
-                  </Badge>
-                </TableCell>
-                <TableCell>{report.reportedAt}</TableCell>
+            {reports.length > 0 ? (
+              reports.map((report) => (
+                <TableRow key={report.id}>
+                  <TableCell className="font-medium">{report.student.firstName + " " + report.student.secondName}</TableCell>
+                  <TableCell>{report.student.regNo}</TableCell>
+                  <TableCell>{report.unitCode}</TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={report.reportStatus === ReportStatus.PENDING ? "secondary" : "success"}
+                    >
+                      {report.reportStatus}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>{report.createdAt.toDateString()}</TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={5} className="text-center">No missing marks reports found!</TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </CardContent>
