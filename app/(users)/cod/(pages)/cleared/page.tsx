@@ -28,12 +28,10 @@ export default function Page() {
   const [searchTerm, setSearchTerm] = useState<string | null>(null);
   const [searchDate, setSearchDate] = useState<Date | null>(null);
 
-  const session = useSession();
-  const email = session.data?.user?.email!;
   useEffect(() => {
     const handlefetchReports = async () => {
       try {
-        const reports = await fetchDepartmentReports(email);
+        const reports = await fetchDepartmentReports();
         setReports(reports?.clearedReports ?? []);
         setLoading(false);
       } catch (error) {
@@ -41,7 +39,7 @@ export default function Page() {
       }
     }
     handlefetchReports();
-  }, [email])
+  }, [])
 
   const transformedReports = reports.map(report => ({
     id: report.id,
