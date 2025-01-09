@@ -39,7 +39,7 @@ const reports = [
   },
 ];
 
-interface missingReport {
+interface MissingReport {
   id: number;
   createdAt: Date;
   unitName: string;
@@ -59,7 +59,7 @@ interface missingReport {
   };
 }
 export function MissingMarksTable() {
-  const [reports, setReports] = useState<missingReport[]>([]);
+  const [reports, setReports] = useState<MissingReport[]>([]);
 
   useEffect(() => {
     const handleReports = async () => {

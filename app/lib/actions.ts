@@ -553,14 +553,34 @@ export async function fetchDepartmentUsers(email:string){
     }
 }
 
-export async function fetchDepartmentReports(email: string){
+export async function fetchDepartmentReports(){
     try{
+        const session = await getServerSession(authOptions);
+        const email = session?.user?.email!;
+
         const cod = await prisma.staff.findUnique({
             where:{
                 email: email,
             }
         })
         const codDeptId = cod?.departmentId;
+
+        const allReports = await prisma.missingMarksReport.findMany({
+            where:{
+                student:{
+                    departmentId: codDeptId,
+                }
+            },
+            include:{
+                student: {
+                    select:{
+                        regNo: true,
+                        firstName: true,
+                        secondName: true,
+                    }
+                }
+            }
+        });
 
         const clearedReports = await prisma.missingMarksReport.findMany({
             where:{
@@ -586,7 +606,7 @@ export async function fetchDepartmentReports(email: string){
                 reportStatus: "FOR_FURTHER_INVESTIGATION",
             }
         })
-        return {pendingReports, forwardedReports, clearedReports};
+        return {pendingReports, forwardedReports, clearedReports, allReports};
     }catch(error){
         console.error("Error fetching Department Missing Marks:", error);
     }
