@@ -16,7 +16,7 @@ import {
   } from "@/app/Components/ui/table";
 import { Button } from "@/app/Components/ui/button";
 import { Trash2, EyeIcon } from "lucide-react";
-import React,{Suspense, use, useEffect, useState} from 'react'
+import React,{Suspense, useEffect, useState} from 'react'
 import Search from '@/app/(users)/Student/Components/Search'
 import { fetchDepartmentReports } from '@/app/lib/actions';
 import { ExamType, ReportStatus, Semester } from '@prisma/client';
@@ -85,6 +85,7 @@ export default function Page() {
           const matchesSearchTerm =
           !searchTerm ||
           report.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          report.regNo.toLowerCase().includes(searchTerm.toLowerCase()) ||
           report.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
           report.unitCode.toLowerCase().includes(searchTerm.toLowerCase());
     
