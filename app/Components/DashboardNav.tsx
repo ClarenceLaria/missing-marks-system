@@ -76,9 +76,14 @@ const routes = {
       href: "/cod",
     },
     {
-      title: "Departments",
-      icon: Building2,
-      href: "/cod/users",
+      title: "Lecturers",
+      icon: Users,
+      href: "/cod/lecturers",
+    },
+    {
+      title: "Students",
+      icon: GraduationCapIcon,
+      href: "/cod/students",
     },
     {
       title: "Courses",
