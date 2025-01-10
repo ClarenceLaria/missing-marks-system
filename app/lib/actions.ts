@@ -528,8 +528,11 @@ export async function fetchDepartmentUserTotals(email: string) {
     }
 }
 
-export async function fetchDepartmentUsers(email:string){
+export async function fetchDepartmentUsers(){
     try{
+        const session = await getServerSession(authOptions);
+        const email = session?.user?.email!;
+        
         const cod = await prisma.staff.findUnique({
             where:{
                 email: email,

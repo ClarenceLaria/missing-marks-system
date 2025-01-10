@@ -149,9 +149,6 @@ export default function Page() {
           </Table>
         </CardContent>
       </Card>
-
-      {/* <CreateSchoolDialog open={open} onOpenChange={setOpen}/>
-      <DeleteSchoolDialog id={id} open={openDelete}/> */}
     </div>
   )
 }
