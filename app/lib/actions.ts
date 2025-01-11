@@ -334,6 +334,8 @@ export async function fetchLecturerUnits(){
             }
         });
 
+        const totalUnits = units.length;
+
         const unitDetails = units.map((unit) => {
             // const totalDepartments = school.departments.length;
             const totalStudents = unit.courses.reduce(
@@ -351,7 +353,7 @@ export async function fetchLecturerUnits(){
           });
         
 
-        return unitDetails;
+        return {unitDetails, totalUnits};
     }catch(error){
         console.error("Error fetching Units: ", error);
     }

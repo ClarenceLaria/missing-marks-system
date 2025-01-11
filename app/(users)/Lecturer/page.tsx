@@ -1,6 +1,6 @@
 'use client'
 import Loader from '@/app/Components/Loader';
-import { fetchLecturerMissingMarksTotals } from '@/app/lib/actions';
+import { fetchLecturerMissingMarksTotals, fetchLecturerUnits } from '@/app/lib/actions';
 import { useSession } from 'next-auth/react';
 import React, { useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/Components/ui/card";
@@ -15,6 +15,7 @@ export default function Page() {
   const [notFoundTotals, setNotFoundTotals] = useState(Number);
   const [investigationTotals, setInvestigationTotals] = useState(Number);
   const [clearedMarks, setClearedMarks] = useState(Number);
+  const [unitTotals, setUnitTotals] = useState(Number);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -30,6 +31,16 @@ export default function Page() {
       setLoading(false);
     }
     handleReportTotals();
+  }, []);
+
+  useEffect(() => {
+    const handleUnitTotals = async () => {
+      setLoading(true);
+      const totals = await fetchLecturerUnits();
+      setUnitTotals(totals?.totalUnits || 0);
+      setLoading(false);
+    }
+    handleUnitTotals();
   }, []);
 
   if (loading) return <Loader/>;
@@ -70,7 +81,7 @@ export default function Page() {
               <BookOpen className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">8</div>
+              <div className="text-2xl font-bold">{unitTotals}</div>
             </CardContent>
           </Card>
           <Card>
@@ -79,7 +90,7 @@ export default function Page() {
               <AlertCircle className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">5</div>
+              <div className="text-2xl font-bold">{pendingTotals}</div>
             </CardContent>
           </Card>
           <Card>
@@ -88,7 +99,7 @@ export default function Page() {
               <CheckCircle className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">28</div>
+              <div className="text-2xl font-bold">{markFoundTotals}</div>
             </CardContent>
           </Card>
         </div>
