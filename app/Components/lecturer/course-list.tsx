@@ -50,7 +50,7 @@ export function CourseList() {
     const handleCourses = async () => {
       try{
         const courses = await fetchLecturerUnits();
-        setCourses(courses || []);
+        setCourses(courses?.unitDetails || []);
       }catch(error){
         console.error("Error fetching Courses: ", error);
       }
