@@ -48,6 +48,14 @@ export async function fetchUnits(academicYear: string, yearOfStudy: number, seme
                         courseId: true,
                     },
                 },
+                lecturer: {
+                    select: {
+                        id: true,
+                        firstName: true,
+                        secondName: true,
+                        phoneNumber: true,
+                    }
+                },
             },
         });
         return units;

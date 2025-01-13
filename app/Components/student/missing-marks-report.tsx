@@ -28,13 +28,13 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
-import { fetchUnits } from "@/app/lib/actions";
+import { fetchLecDetails, fetchStudentProfile, fetchUnits } from "@/app/lib/actions";
 import toast from "react-hot-toast";
+import { UserType } from "@prisma/client";
 
 const formSchema = z.object({
   academicYear: z.string(),
   course: z.string(),
-  lecturer: z.string(),
   examType: z.string(),
   semester: z.string(),
   yearOfStudy: z.string(),
@@ -48,10 +48,41 @@ interface Unit {
   yearOfStudy: number;
   semester: string; // Assuming Semester is a string, adjust if it's an enum or other type
   lecturerId: number;
+  lecturer: {
+    id: number;
+    firstName: string;
+    secondName: string;
+    phoneNumber: string;
+};
+}
+interface Lecturer {
+  id: number;
+  createdAt: Date;
+  email: string;
+  firstName: string;
+  secondName: string;
+  phoneNumber: string;
+  password: string;
+  userType: UserType;
+  departmentId: number;
+};
+interface Student {
+  id: number;
+  createdAt: Date;
+  email: string;
+  firstName: string;
+  secondName: string;
+  password: string;
+  regNo: string;
+  departmentId: number;
+  courseId: number;
+  userType: UserType;
 }
 export function MissingMarksReport() {
   const [loading, setLoading] = useState(false);
   const [units, setUnits] = useState<Unit[]>([]);
+  const [lecturer, setLecturer] = useState<Lecturer | null>(null);
+  const [student, setStudent] = useState<Student | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -68,6 +99,31 @@ export function MissingMarksReport() {
   const yearOfStudy = form.watch('yearOfStudy');
   const academicYear = form.watch('academicYear');
   const semester = form.watch('semester'); 
+  const selectedUnit = form.watch('course');
+  const unitMap = units.find((unit) => unit.code === selectedUnit);
+  const lecId = unitMap ? unitMap.lecturerId : null;
+  const lecName = unitMap ? unitMap.lecturer.firstName + ' ' + unitMap?.lecturer.secondName : null;
+  const lecPhoneNo = unitMap ? unitMap.lecturer.phoneNumber : null;
+  const unitName = unitMap ? unitMap.name : null;
+  const unitId = unitMap ? unitMap.id : null;
+
+
+  const message = `Dear ${lecturer?.firstName + ' ' + lecturer?.secondName}, \nA missing marks report has been submitted by: \n${student?.firstName + " " + student?.secondName}, (Reg No: ${student?.regNo}). \nDetails: \nYear of Study: ${yearOfStudy} \nAcademic Year: ${academicYear} \nUnit Name: ${unitName} \nUnit Code: ${form.getValues('course')}. \nPlease review the report at your earliest convenience. \nThank you.`;
+  function formatPhoneNumber(phoneNumber: string): string | null {
+    // Ensure the phone number starts with "0" and is followed by 9 digits
+    const phoneRegex = /^0\d{9}$/;
+  
+    if (phoneRegex.test(phoneNumber)) {
+      // Replace the leading "0" with "+254"
+      return phoneNumber.replace(/^0/, '+254');
+    } else {
+      console.error('Invalid phone number format');
+      return null;
+    }
+  }
+  const formattedPhoneNo = formatPhoneNumber(lecPhoneNo!);
+
+
   useEffect(() => {
     const handleFetchUnits = async () => {  
         try{
@@ -91,22 +147,96 @@ export function MissingMarksReport() {
     }
   }, [academicYear, yearOfStudy, semester]);
 
-  console.log(units);
-  const handlesubmit = async () => {
-    try{
+  const handleSubmit = async () => {
+    const reportData = {
+      academicYear,
+      yearOfStudy,
+      semester,
+      examType: form.getValues('examType'),
+      unitCode: form.getValues('course'),
+      unitName: unitName,
+      lecturerName: lecName,
+      unitId,
+    }
+
+    if(reportData.academicYear === ''|| reportData.academicYear===null || reportData.yearOfStudy === ''|| reportData.yearOfStudy===null || reportData.semester === ''|| reportData.semester===null || reportData.examType === ''|| reportData.examType===null || reportData.unitCode === ''|| reportData.unitCode===null || reportData.unitName===''|| reportData.unitName===null || reportData.lecturerName===''|| reportData.lecturerName===null){
+        toggleLoading();
+        toast.error('Please fill all the fields')
+    }
+    
+    try {
       const response = await fetch('/api/createReport', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(form.getValues()),
-      });
-      const data = await response.json();
-      console.log(data);
-    }catch(error){
-      console.error("Error Creating Report", error);
+        body: JSON.stringify(reportData),
+      })
+
+      if (response.ok) {
+        toast.success('Missing mark submitted successfully')
+            try{
+                const smsResponse = await fetch('/api/send-sms', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        phoneNo: formattedPhoneNo,
+                        message: message,
+                    }),
+                });
+                if (smsResponse.ok) {
+                    const data = await smsResponse.json();
+                    console.log('SMS sent successfully:', data);
+                } else {
+                    const errorData = await smsResponse.json();
+                    console.error('Failed to send SMS', errorData.error);
+                }
+            }catch(error){
+                console.error('Error sending SMS:', error);
+            }
+      } else if(response.status === 400) {
+        toast.error('Failed to submit report')
+      } 
+    } catch (error) {
+      console.error('Error submitting report:', error)
     }
-  };
+  console.log(reportData)
+
+  }
+
+  useEffect(() => {
+          const handleFetchPhoneNo = async () => {
+              try{
+                  if (lecId !== null) {
+                      const lecturer = await fetchLecDetails(lecId);
+                      if (lecturer) {
+                          setLecturer(lecturer);
+                      }
+                  }
+              }catch(error){
+                  console.error("Error fetching phone number: ", error)
+              };
+          }
+          handleFetchPhoneNo();
+  },[lecId]);
+
+  useEffect(() => {
+          const handlefetchStudent = async () => {
+              try{
+                  setLoading(true);
+                  const student = await fetchStudentProfile();
+                  if(student){
+                      setStudent(student);
+                  }
+                  setLoading(false);
+              } catch(error){
+                  console.error("Error fetching student: ", error)
+              }
+          };
+          handlefetchStudent();
+  },[]);
   return (
     <Card>
       <CardHeader>
@@ -233,7 +363,7 @@ export function MissingMarksReport() {
                 </FormItem>
               )}
             />
-            <FormField
+            {/* <FormField
               control={form.control}
               name="lecturer"
               render={({ field }) => (
@@ -253,8 +383,8 @@ export function MissingMarksReport() {
                   <FormMessage />
                 </FormItem>
               )}
-            />
-            <Button type="submit" className="w-full">Submit Report</Button>
+            /> */}
+            <Button type="submit" onClick={() => handleSubmit()} className="w-full">Submit Report</Button>
           </form>
         </Form>
       </CardContent>
