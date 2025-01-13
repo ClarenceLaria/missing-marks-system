@@ -25,14 +25,11 @@ interface StudentProfile {
 export default function Page() {
     const [student, setStudent] = useState<StudentProfile | null>(null);
     const [loading, setLoading] = useState(true);
-
-    const session = useSession();
-    const email = session.data?.user?.email!;
     
     useEffect(() => {
         async function fetchProfile(){
             try{
-                const studentProfile = await fetchStudentProfile(email);
+                const studentProfile = await fetchStudentProfile();
                 setStudent(studentProfile);
             }catch(error){
                 console.error('Error fetching student profile:', error)
@@ -41,7 +38,7 @@ export default function Page() {
             }
         }
         fetchProfile();
-    },[email])
+    },[])
     if (loading) return <Loader/>
   return (
     <div className='w-full h-full items-center mx-auto'>

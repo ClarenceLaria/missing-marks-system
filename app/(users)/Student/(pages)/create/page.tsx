@@ -55,8 +55,6 @@ export default function Page() {
     const [units, setUnits] = useState<Unit[]>([]);
     const [student, setStudent] = useState<Student | null>(null);
 
-    const session = useSession();
-    const email = session.data?.user?.email!; 
     const message = `Dear ${lecturer?.firstName + ' ' + lecturer?.secondName}, \nA missing marks report has been submitted by: \n${student?.firstName + " " + student?.secondName}, (Reg No: ${student?.regNo}). \nDetails: \nYear of Study: ${yearOfStudy} \nAcademic Year: ${academicYear} \nUnit Name: ${selectedUnitName} \nUnit Code: ${selectedUnitCode}. \nPlease review the report at your earliest convenience. \nThank you.`;
     const lecPhoneNo = lecturer?.phoneNumber!;
     function formatPhoneNumber(phoneNumber: string): string | null {
@@ -77,7 +75,7 @@ export default function Page() {
             try{
                 const year = parseInt(yearOfStudy);
                 toggleLoading();
-                const fetchedUnits = await fetchUnits(email, academicYear, year, semester);
+                const fetchedUnits = await fetchUnits(academicYear, year, semester);
                 setUnits(fetchedUnits);
                 toast.success('Units fetched ')
                 
@@ -93,7 +91,7 @@ export default function Page() {
         if(academicYear && yearOfStudy && semester){
             handleFetchUnits();
         }
-    }, [email, academicYear, yearOfStudy, semester])
+    }, [academicYear, yearOfStudy, semester])
     const toggleLoading = () => {
         setLoading((prevLoading) => !prevLoading);
       };
@@ -200,7 +198,7 @@ export default function Page() {
         const handlefetchStudent = async () => {
            try{
                 setLoading(true);
-               const student = await fetchStudentProfile(email)
+               const student = await fetchStudentProfile();
                if(student){
                    setStudent(student);
                 }
@@ -210,7 +208,7 @@ export default function Page() {
             }
         };
         handlefetchStudent();
-    },[email]);
+    },[]);
   return (
     <div className='w-full h-full lg:mx-10 lg:my-5 sm:mx-6 sm:my-4 mx-5 my-3'>
         <h1 className='font-semibold lg:text-2xl md:text-xl md:flex md:justify-center'>Make a Report of your missing mark</h1>

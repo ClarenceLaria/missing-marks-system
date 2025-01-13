@@ -27,6 +27,9 @@ import {
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
+import { fetchUnits } from "@/app/lib/actions";
+import toast from "react-hot-toast";
 
 const formSchema = z.object({
   academicYear: z.string(),
@@ -34,9 +37,22 @@ const formSchema = z.object({
   lecturer: z.string(),
   examType: z.string(),
   semester: z.string(),
+  yearOfStudy: z.string(),
 });
 
+interface Unit {
+  id: number;
+  name: string;
+  code: string;
+  academicYear: string;
+  yearOfStudy: number;
+  semester: string; // Assuming Semester is a string, adjust if it's an enum or other type
+  lecturerId: number;
+}
 export function MissingMarksReport() {
+  const [loading, setLoading] = useState(false);
+  const [units, setUnits] = useState<Unit[]>([]);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
@@ -44,8 +60,53 @@ export function MissingMarksReport() {
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
   }
+
+  const toggleLoading = () => {
+    setLoading((prevLoading) => !prevLoading);
+  };
+  
+  const yearOfStudy = form.watch('yearOfStudy');
   const academicYear = form.watch('academicYear');
-  console.log(academicYear);
+  const semester = form.watch('semester'); 
+  useEffect(() => {
+    const handleFetchUnits = async () => {  
+        try{
+            const year = parseInt(yearOfStudy);
+            toggleLoading();
+            const fetchedUnits = await fetchUnits(academicYear, year, semester);
+            setUnits(fetchedUnits);
+            toast.success('Units fetched ')
+            
+        }
+        catch(error){
+            console.error('Error fetching units:', error)
+            toast.error('Failed to fetch units')
+        }
+        finally{
+            toggleLoading();
+        }
+    }
+    if(academicYear && yearOfStudy && semester){
+        handleFetchUnits();
+    }
+  }, [academicYear, yearOfStudy, semester]);
+
+  console.log(units);
+  const handlesubmit = async () => {
+    try{
+      const response = await fetch('/api/createReport', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(form.getValues()),
+      });
+      const data = await response.json();
+      console.log(data);
+    }catch(error){
+      console.error("Error Creating Report", error);
+    }
+  };
   return (
     <Card>
       <CardHeader>
@@ -79,14 +140,14 @@ export function MissingMarksReport() {
             />
             <FormField
               control={form.control}
-              name="course"
+              name="yearOfStudy"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Course</FormLabel>
+                  <FormLabel>Select Year</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select Course" />
+                        <SelectValue placeholder="Select Year" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -159,8 +220,13 @@ export function MissingMarksReport() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="BCS203">BCS 203 - Database Systems</SelectItem>
-                      <SelectItem value="BCS204">BCS 204 - Software Engineering</SelectItem>
+                      {units.map((unit) => (
+                        <SelectItem key={unit.id} value={unit.code}>
+                          {unit.code} - {unit.name}
+                        </SelectItem>
+                      ))}
+                      {/* <SelectItem value="BCS203">BCS 203 - Database Systems</SelectItem>
+                      <SelectItem value="BCS204">BCS 204 - Software Engineering</SelectItem> */}
                     </SelectContent>
                   </Select>
                   <FormMessage />
