@@ -75,7 +75,7 @@ export async function POST(req: Request) {
     // Determine course based on regNo prefix
     let courseName;
     if (prefix === 'SIT') {
-      courseName = 'Bachelor of Science in (Information Technology)';
+      courseName = ' Bachelor of Science (Information Technology)';
     } else if (prefix === 'COM') {
       courseName = 'Bachelor of Science (Computer Science)';
     }
