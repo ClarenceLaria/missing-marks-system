@@ -8,7 +8,10 @@ import { UserType } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export async function fetchUnits(email: string, academicYear: string, yearOfStudy: number, semester: string) {
+export async function fetchUnits(academicYear: string, yearOfStudy: number, semester: string) {
+    const session = await getServerSession(authOptions);
+    const email = session?.user?.email!;
+
     console.log(academicYear, yearOfStudy, semester, email)
     const isValidSemester = Object.values(Semester).includes(semester as Semester);
 
@@ -54,8 +57,11 @@ export async function fetchUnits(email: string, academicYear: string, yearOfStud
     }
 };
 
-export async function fetchStudentProfile(email: string){
+export async function fetchStudentProfile(){
     try{
+        const session = await getServerSession(authOptions);
+        const email = session?.user?.email!;
+        
         const user = await prisma.student.findUnique({
             where: {
                 email: email,
