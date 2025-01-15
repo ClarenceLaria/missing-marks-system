@@ -125,7 +125,10 @@ export async function fetchMissingReports(email: string){
     }
 }
 
-export async function fetchReportNumbers(email: string){
+export async function fetchReportNumbers(){
+    const session = await getServerSession(authOptions);
+    const email = session?.user?.email!;
+    
     const student = await prisma.student.findUnique({
         where:{
             email: email
@@ -162,8 +165,23 @@ export async function fetchReportNumbers(email: string){
                 studentId: id,
                 reportStatus: "FOR_FURTHER_INVESTIGATION"
             }
+        });
+        const unitTotals = await prisma.unit.count({
+            where:{
+                courses:{
+                    some:{
+                        course:{
+                            students:{
+                                some:{
+                                    id: id,
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         })
-        return {TotalReports, pendingTotals, markFoundTotals, markNotFoundTotals, forInvestigationTotals} 
+        return {TotalReports, pendingTotals, markFoundTotals, markNotFoundTotals, forInvestigationTotals, unitTotals} 
     }catch(error){
         console.error("Error counting totals:", error)
         throw new Error("Could not count Reports")

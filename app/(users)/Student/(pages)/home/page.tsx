@@ -12,13 +12,11 @@ export default function Page() {
     const [notFoundTotals, setNotFoundTotals] = useState(Number)
     const [investigationTotals, setInvestigationTotals] = useState(Number)
 
-    const session = useSession();
-    const email = session.data?.user?.email!;
 
     useEffect(() => {
         const handleReportTotals = async () => {
             setLoading(true)
-            const totals = await fetchReportNumbers(email);
+            const totals = await fetchReportNumbers();
             setTotals(totals.TotalReports)
             setPendingTotals(totals.pendingTotals)
             setMarkFoundTotals(totals.markFoundTotals)
@@ -27,7 +25,7 @@ export default function Page() {
             setLoading(false)
         }
         handleReportTotals()
-    },[email])
+    },[])
     
     
     if (loading) return <Loader/>

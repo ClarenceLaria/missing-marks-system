@@ -6,8 +6,24 @@ import { EnrolledCourses } from "@/app/Components/student/enrolled-courses";
 import { MissingMarksReport } from "@/app/Components/student/missing-marks-report";
 import { ReportHistory } from "@/app/Components/student/report-history";
 import { BookOpen, FileCheck, AlertTriangle } from "lucide-react";
+import { useEffect, useState } from "react";
+import { fetchReportNumbers } from "@/app/lib/actions";
+import { set } from "react-hook-form";
 
 export default function StudentDashboard() {
+  const [unitTotals, setUnitTotals] = useState(Number);
+  const [pendingTotals, setPendingTotals] = useState(Number);
+  const [markFoundTotals, setMarkFoundTotals] = useState(Number);
+
+  useEffect(() => {
+    const handleTotals = async () => {
+      const totals = await fetchReportNumbers();
+      setUnitTotals(totals.unitTotals);
+      setPendingTotals(totals.pendingTotals);
+      setMarkFoundTotals(totals.markFoundTotals);
+    }
+    handleTotals();
+  },[]);
   return (
     <div className="space-y-8">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -17,7 +33,7 @@ export default function StudentDashboard() {
             <BookOpen className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">6</div>
+            <div className="text-2xl font-bold">{unitTotals}</div>
           </CardContent>
         </Card>
         <Card>
@@ -26,7 +42,7 @@ export default function StudentDashboard() {
             <AlertTriangle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">2</div>
+            <div className="text-2xl font-bold">{pendingTotals}</div>
           </CardContent>
         </Card>
         <Card>
@@ -35,7 +51,7 @@ export default function StudentDashboard() {
             <FileCheck className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">3</div>
+            <div className="text-2xl font-bold">{markFoundTotals}</div>
           </CardContent>
         </Card>
       </div>
