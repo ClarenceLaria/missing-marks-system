@@ -227,7 +227,29 @@ export async function fetchStudentUnits(){
         },
     });
 
-    return units;
+    const currentYear = new Date().getFullYear();
+    const prevYear = currentYear - 1;
+    const academicYear = `${prevYear}/${currentYear}`;
+    const getSemester = (): Semester => {
+        const currentMonth = new Date().getMonth(); // 0 = January, 11 = December
+      
+        if (currentMonth >= 0 && currentMonth <= 3) {
+          return Semester.SEMESTER2; // January to April
+        } else if (currentMonth >= 4 && currentMonth <= 6) {
+          return Semester.SEMESTER3; // May to July
+        } else if (currentMonth >= 8 && currentMonth <= 11) {
+          return Semester.SEMESTER1; // September to December
+        } else {
+          throw new Error("Invalid month for determining semester.");
+        }
+      };
+
+    const semester = getSemester();
+
+    
+    const currentUnits = units.filter(unit => unit.academicYear === academicYear && unit.semester === semester);
+
+    return {units, currentUnits};
     }catch(error){
         console.error("Error fetching student units:", error)
     }

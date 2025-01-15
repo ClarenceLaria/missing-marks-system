@@ -9,21 +9,26 @@ import { BookOpen, FileCheck, AlertTriangle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { fetchReportNumbers } from "@/app/lib/actions";
 import { set } from "react-hook-form";
+import Loader from "@/app/Components/Loader";
 
 export default function StudentDashboard() {
   const [unitTotals, setUnitTotals] = useState(Number);
   const [pendingTotals, setPendingTotals] = useState(Number);
   const [markFoundTotals, setMarkFoundTotals] = useState(Number);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const handleTotals = async () => {
+      setLoading(true);
       const totals = await fetchReportNumbers();
       setUnitTotals(totals.unitTotals);
       setPendingTotals(totals.pendingTotals);
       setMarkFoundTotals(totals.markFoundTotals);
+      setLoading(false);
     }
     handleTotals();
   },[]);
+  if (loading) return <Loader />
   return (
     <div className="space-y-8">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
