@@ -19,23 +19,6 @@ import { fetchStudentUnits } from "@/app/lib/actions";
 import { Semester } from "@prisma/client";
 import { useEffect, useState } from "react";
 
-const courses = [
-  {
-    id: 1,
-    code: "BCS 203",
-    name: "Database Systems",
-    lecturer: "Dr. Jane Smith",
-    year: "2023/2024",
-  },
-  {
-    id: 2,
-    code: "BCS 204",
-    name: "Software Engineering",
-    lecturer: "Prof. John Doe",
-    year: "2023/2024",
-  },
-];
-
 interface Unit{
   id: number;
   name: string;
@@ -49,21 +32,21 @@ interface Unit{
     secondName: string;
   }
 }
-export function EnrolledCourses() {
+export default function Page() {
   const [units, setUnits] = useState<Unit []>([]);
-console.log(units)
+
   useEffect(() => {
     const handleUnits = async () => {
       const units = await fetchStudentUnits();
-      setUnits(units?.currentUnits || []); 
+      setUnits(units?.units || []); 
     };
     handleUnits();
   },[]);
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Current Courses</CardTitle>
-        <CardDescription>Your enrolled courses this semester</CardDescription>
+        <CardTitle>Courses</CardTitle>
+        <CardDescription>A list of all your courses</CardDescription>
       </CardHeader>
       <CardContent>
         <Table>
@@ -76,14 +59,19 @@ console.log(units)
             </TableRow>
           </TableHeader>
           <TableBody>
-            {units.map((unit) => (
+            {units.length > 0 ?
+            units.map((unit) => (
               <TableRow key={unit.id}>
                 <TableCell className="font-medium">{unit.code}</TableCell>
                 <TableCell>{unit.name}</TableCell>
                 <TableCell>{unit.lecturer.firstName + " " + unit.lecturer.secondName}</TableCell>
                 <TableCell>{unit.academicYear}</TableCell>
               </TableRow>
-            ))}
+            )) : (
+                <TableRow>
+                  <TableCell colSpan={4} className="text-center">No courses found for this semester</TableCell>
+                </TableRow>
+            )}
           </TableBody>
         </Table>
       </CardContent>
