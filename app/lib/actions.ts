@@ -128,7 +128,7 @@ export async function fetchMissingReports(email: string){
 export async function fetchReportNumbers(){
     const session = await getServerSession(authOptions);
     const email = session?.user?.email!;
-    
+
     const student = await prisma.student.findUnique({
         where:{
             email: email
@@ -185,6 +185,48 @@ export async function fetchReportNumbers(){
     }catch(error){
         console.error("Error counting totals:", error)
         throw new Error("Could not count Reports")
+    }
+}
+
+export async function fetchStudentUnits(){
+    try{
+        const session = await getServerSession(authOptions);
+        const email = session?.user?.email!;
+
+        const student = await prisma.student.findUnique({
+            where:{
+                email: email
+            }
+        })
+        const id = student?.id;
+
+        const units = await prisma.unit.findMany({
+            where:{
+                courses:{
+                    some:{
+                        course:{
+                            students:{
+                                some:{
+                                    id: id,
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            include:{
+                lecturer: {
+                    select:{
+                        firstName: true,
+                        secondName: true,
+                },
+            }
+        },
+    });
+
+    return units;
+    }catch(error){
+        console.error("Error fetching student units:", error)
     }
 }
 
