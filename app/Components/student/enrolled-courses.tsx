@@ -15,6 +15,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/app/Components/ui/table";
+import { fetchStudentUnits } from "@/app/lib/actions";
+import { Semester } from "@prisma/client";
+import { useEffect, useState } from "react";
 
 const courses = [
   {
@@ -33,7 +36,29 @@ const courses = [
   },
 ];
 
+interface Unit{
+  id: number;
+  name: string;
+  code: string;
+  academicYear: string;
+  yearOfStudy: number;
+  semester: Semester;
+  lecturerId: number;
+  lecturer: {
+    firstName: string;
+    secondName: string;
+  }
+}
 export function EnrolledCourses() {
+  const [units, setUnits] = useState<Unit []>([]);
+
+  useEffect(() => {
+    const handleUnits = async () => {
+      const units = await fetchStudentUnits();
+      setUnits(units || []); 
+    };
+    handleUnits();
+  },[]);
   return (
     <Card>
       <CardHeader>
@@ -51,12 +76,12 @@ export function EnrolledCourses() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {courses.map((course) => (
-              <TableRow key={course.id}>
-                <TableCell className="font-medium">{course.code}</TableCell>
-                <TableCell>{course.name}</TableCell>
-                <TableCell>{course.lecturer}</TableCell>
-                <TableCell>{course.year}</TableCell>
+            {units.map((unit) => (
+              <TableRow key={unit.id}>
+                <TableCell className="font-medium">{unit.code}</TableCell>
+                <TableCell>{unit.name}</TableCell>
+                <TableCell>{unit.lecturer.firstName + " " + unit.lecturer.secondName}</TableCell>
+                <TableCell>{unit.academicYear}</TableCell>
               </TableRow>
             ))}
           </TableBody>
