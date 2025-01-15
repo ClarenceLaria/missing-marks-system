@@ -30,17 +30,11 @@ export default function Page() {
   const [searchTerm, setSearchTerm] = useState<string | null>(null);
   const [searchDate, setSearchDate] = useState<Date | null>(null);
 
-  const session = useSession();
-  const email = session.data?.user?.email!;
   useEffect(() => {
     const handleFetchReports = async () => {
-        if (!email) {
-            setError('Email is required');
-            return;
-          }
         try{
             setLoading(true)
-            const fetchedReports = await fetchMissingReports(email);
+            const fetchedReports = await fetchMissingReports();
             setReports(fetchedReports);
             setLoading(false)
         }catch(error){
@@ -48,7 +42,7 @@ export default function Page() {
         }
     }
     handleFetchReports();
-  }, [email])
+  }, [])
   if (loading) return <Loader/>
   const transformedReports = reports.map(report => ({
     id: report.id,
