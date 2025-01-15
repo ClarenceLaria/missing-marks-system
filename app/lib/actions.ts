@@ -102,7 +102,10 @@ export async function fetchStaffProfile(){
 }
 
 
-export async function fetchMissingReports(email: string){
+export async function fetchMissingReports(){
+    const session = await getServerSession(authOptions);
+    const email = session?.user?.email!;
+
     const student = await prisma.student.findUnique({
         where:{
             email: email,
@@ -116,7 +119,7 @@ export async function fetchMissingReports(email: string){
         const reports = await prisma.missingMarksReport.findMany({
             where: {
                 studentId: id,
-            }
+            },
         })
         return reports;
     }catch(error){
