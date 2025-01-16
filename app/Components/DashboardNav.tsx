@@ -125,9 +125,9 @@ const routes = {
       href: "/Student/courses",
     },
     {
-      title: "Report Missing Mark",
+      title: "My Missing Mark",
       icon: FileSpreadsheet,
-      href: "/Student/report",
+      href: "/Student/reported",
     },
   ],
 };

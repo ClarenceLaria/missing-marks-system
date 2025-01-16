@@ -1,8 +1,26 @@
 'use client'
+"use client";
+
+import { Badge } from "@/app/Components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/app/Components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/app/Components/ui/table";
 import React, {Suspense, useEffect, useState} from 'react'
 import Search from '../../Components/Search'
-import Card from '../../Components/Card'
-import Table from '../../Components/Table'
+// import Card from '../../Components/Card'
+// import Table from '../../Components/Table'
 import { useSession } from 'next-auth/react';
 import { ExamType, ReportStatus, Semester } from '@prisma/client';
 import { fetchMissingReports } from '@/app/lib/actions';
@@ -25,7 +43,6 @@ interface missingReport {
 const Loading = () => <div>Loading...</div>;
 export default function Page() {
   const [reports, setReports] = useState<missingReport[]>([]);
-  const [error, setError] = useState<string | null>(null);
   const [loading,setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState<string | null>(null);
   const [searchDate, setSearchDate] = useState<Date | null>(null);
@@ -49,7 +66,8 @@ export default function Page() {
     title: report.unitName,
     unitCode: report.unitCode,
     date: report.createdAt,
-    status: report.reportStatus,
+    reportStatus: report.reportStatus,
+    lecturerName: report.lecturerName
   }));
   
   const filteredReports = transformedReports.filter(
@@ -58,7 +76,8 @@ export default function Page() {
       !searchTerm ||
       report.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       report.unitCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      report.status.toLowerCase().includes(searchTerm.toLowerCase());
+      report.lecturerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      report.reportStatus.toLowerCase().includes(searchTerm.toLowerCase());
 
       const matchesDate = 
       !searchDate || report.date.toDateString() === searchDate.toDateString();
@@ -77,7 +96,49 @@ export default function Page() {
             ></Search>
         </Suspense>
         <Suspense fallback={<Loading/>}>
-          <Table reports={filteredReports} ></Table>
+          {/* <Table reports={filteredReports} ></Table> */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Missing Marks History</CardTitle>
+              <CardDescription>Your reported missing marks and their status</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Course Name</TableHead>
+                    <TableHead>Course Code</TableHead>
+                    <TableHead>Lecturer</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Reported On</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredReports.length > 0 ?
+                  filteredReports.map((report) => (
+                    <TableRow key={report.id}>
+                      <TableCell className="font-medium">{report.title}</TableCell>
+                      <TableCell className="font-medium">{report.unitCode}</TableCell>
+                      <TableCell>{report.lecturerName}</TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={report.reportStatus === ReportStatus.PENDING ? "destructive" : "success"}
+                        >
+                          {report.reportStatus}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>{report.date.toDateString()}</TableCell>
+                    </TableRow>
+                  )) : (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center">No reports found</TableCell>
+                    </TableRow>
+                  )
+                }
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
         </Suspense>
        
     </div>
