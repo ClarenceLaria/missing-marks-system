@@ -51,7 +51,7 @@ export default function AuthForm() {
     if (status === 'authenticated') {
       const userType = session.userType as UserType
       if(userType === 'STUDENT'){
-        router.push('/Student/home');
+        router.push('/Student');
       }else if (userType === 'LECTURER') {
         router.push('/Lecturer');
       }
