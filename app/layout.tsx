@@ -6,6 +6,8 @@ import ToasterContext from './context/ToasterContext'
 import { usePathname } from 'next/navigation'
 import clsx from 'clsx'
 import NavBar from './Components/NavBar'
+import { ThemeProvider } from '@/app/Components/ThemeProvider';
+import { Toaster } from '@/app/Components/ui/toaster';
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -30,18 +32,33 @@ export default function RootLayout({
 
 
   return (
-    <html lang="en">
+    // <html lang="en">
+    //   <body className={inter.className}>
+    //     <AuthContext>
+    //       <ToasterContext/>
+    //       {/* <div className='w-screen h-screen flex flex-col overflow-hidden gap-1'> */}
+    //         {/* <div className={clsx(`w-full bg-gray-200 shadow-md h-[10vh]`,  pathname === '/login' && 'hidden' || pathname === '/' && 'hidden')}>
+    //           <NavBar></NavBar>
+    //         </div> */}
+    //         {/* <div className='w-full  max-h-full h-full flex flex-row'> */}
+    //           <div className='h-full overflow-y-scroll w-full  overflow-x-clip'>{children}</div>
+    //         {/* </div> */}
+    //       {/* </div> */}
+    //     </AuthContext>
+    //   </body>
+    // </html>
+    <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <AuthContext>
-          <ToasterContext/>
-          <div className='w-screen h-screen flex flex-col overflow-hidden gap-1'>
-            {/* <div className={clsx(`w-full bg-gray-200 shadow-md h-[10vh]`,  pathname === '/login' && 'hidden' || pathname === '/' && 'hidden')}>
-              <NavBar></NavBar>
-            </div> */}
-            <div className='w-full  max-h-full h-full flex flex-row'>
-              <div className='h-full overflow-y-auto w-full  overflow-x-clip'>{children}</div>
-            </div>
-          </div>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+            <Toaster />
+          </ThemeProvider>
         </AuthContext>
       </body>
     </html>
