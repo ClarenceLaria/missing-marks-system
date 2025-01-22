@@ -194,7 +194,7 @@ export default function AuthForm() {
   };
   return (
     <>
-      <div className=' mx-16 bg-white px-4 lg:px-10 py-6 mt-2 gap-2 rounded-md  shadow-lg'>
+      <div className=' mx-16 bg-card px-4 lg:px-10 py-6 mt-2 gap-2 rounded-md  shadow-lg border-2'>
         <form>
           {variant === 'REGISTER' && (
              <>
@@ -268,7 +268,7 @@ export default function AuthForm() {
              )}
            </div>
           </div>
-          <div className='mt-4 text-gray-100'>
+          <div className='mt-4 text-card'>
             <Button
               type='submit'
               fullWidth
