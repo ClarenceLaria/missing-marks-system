@@ -85,7 +85,7 @@ export default function Page() {
       return matchesSearchTerm && matchesDate;
   });
   return (
-    <div className='w-full h-full p-10'>
+    <div className='space-y-8'>
         <Suspense fallback={<Loading/>}>
             <Search 
               placeholder='Search for a Pending Missing Mark...'
