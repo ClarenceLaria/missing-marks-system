@@ -42,9 +42,9 @@ export default function Page() {
     if (loading) return <Loader/>
   return (
     <div className='w-full h-full items-center mx-auto'>
-        <div className='my-10 bg-gray-50 rounded-lg w-1/3 h-3/4 mx-auto border-black'>
+        <div className='my-10 bg-card rounded-lg w-1/3 h-3/4 mx-auto border-2'>
             <div className='pt-1'>
-            <Image src={dp} width={1400} height={1400} className='rounded-full mx-auto w-20 my-5 h-20' alt='Profile Picture'/>
+            <Image src={dp} width={1400} height={1400} className='rounded-full mx-auto w-20 my-5 h-20 border-2 dark:border-white' alt='Profile Picture'/>
             </div>
             <div className='w-[18vw] mx-auto'>
                 <Input
