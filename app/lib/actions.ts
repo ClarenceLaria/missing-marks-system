@@ -1651,3 +1651,27 @@ export async function fetchDepartmentsBySchoolId(schoolId: number) {
         console.error("Error fetching units: ", error)
     }
   }
+
+  export async function checkYear(){
+    try{
+        const session = await getServerSession(authOptions);
+        const email = session?.user?.email!;
+
+        const student = await prisma.student.findUnique({
+            where:{
+                email,
+            }
+        });
+        const studYear = student?.yearOfStudy;
+        let isempty;
+        if (studYear === null || studYear === undefined){
+            isempty = true;
+        } else {
+            isempty = false;
+        }
+
+        return isempty;
+    }catch(error){
+        console.error("Error checking student's year :", error);
+    }
+  }
