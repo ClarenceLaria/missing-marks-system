@@ -7,14 +7,16 @@ import { MissingMarksReport } from "@/app/Components/student/missing-marks-repor
 import { ReportHistory } from "@/app/Components/student/report-history";
 import { BookOpen, FileCheck, AlertTriangle } from "lucide-react";
 import { useEffect, useState } from "react";
-import { fetchReportNumbers } from "@/app/lib/actions";
+import { checkYear, fetchReportNumbers } from "@/app/lib/actions";
 import { set } from "react-hook-form";
 import Loader from "@/app/Components/Loader";
+import { SetYearDialog } from "@/app/Components/student/student-year";
 
 export default function StudentDashboard() {
   const [unitTotals, setUnitTotals] = useState(Number);
   const [pendingTotals, setPendingTotals] = useState(Number);
   const [markFoundTotals, setMarkFoundTotals] = useState(Number);
+  const [isEmpty, setIsEmpty] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -27,6 +29,17 @@ export default function StudentDashboard() {
       setLoading(false);
     }
     handleTotals();
+  },[]);
+  useEffect(() => {
+    const handleCheck = async () => {
+      try{
+        const result = await checkYear();
+        setIsEmpty(result!);
+      }catch(error){
+        console.error("Error checking year :", error);
+      }
+    };
+    handleCheck();
   },[]);
   if (loading) return <Loader />
   return (
@@ -65,6 +78,7 @@ export default function StudentDashboard() {
         <MissingMarksReport />
       </div>
       <ReportHistory />
+      <SetYearDialog open={isEmpty} />
     </div>
   );
 }
