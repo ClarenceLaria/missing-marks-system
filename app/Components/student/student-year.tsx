@@ -28,6 +28,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 const formSchema = z.object({
   year: z.string().min(1, "Year of Study is required"),
@@ -46,6 +47,8 @@ export function SetYearDialog({ open}: DeleteSchoolDialogProps) {
     },
   });
 
+  const year = form.watch('year');
+
   useEffect(() => {
     if (open) {
       setIsOpen(true);
@@ -53,14 +56,36 @@ export function SetYearDialog({ open}: DeleteSchoolDialogProps) {
   }, [open]);
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
     setIsOpen(false);
     form.reset();
   }
 
   const handleSubmit = async () => {
-    try{}catch(error){
-      console.error("Error Submiting Year: ",error);
+    try{
+      toast.loading("Sending request...");
+
+      const response = await fetch('/api/setYear', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({year: parseInt(year)})
+      });
+
+      toast.dismiss();
+
+      if (response.ok && response.status === 200) {
+        toast.success('User Year of study set successfully');
+      } else if (response.status === 400) {
+        const errorData = await response.json();
+        toast.error(errorData.error);
+        setIsOpen(true);
+      } else {
+        toast.error('Unexpected error occurred');
+        setIsOpen(true);
+      }
+    }catch(error){
+      toast.error("Failed to send request. Please try again.");
     }
   };
   return (
