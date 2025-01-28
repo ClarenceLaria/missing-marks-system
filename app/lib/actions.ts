@@ -202,9 +202,11 @@ export async function fetchStudentUnits(){
             }
         })
         const id = student?.id;
+        const yearOfStudy = student?.yearOfStudy!;
 
         const units = await prisma.unit.findMany({
             where:{
+                yearOfStudy: yearOfStudy,
                 courses:{
                     some:{
                         course:{
