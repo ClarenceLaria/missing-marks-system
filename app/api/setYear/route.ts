@@ -15,7 +15,7 @@ export async function PUT(req: Request){
 
         if(!year){
             return NextResponse.json(
-                { error: "Please fill all the fields" },
+                { error: "Please fill the year fields" },
                 { status: 400 }
             );
         }

@@ -51,7 +51,6 @@ interface Unit{
 }
 export function EnrolledCourses() {
   const [units, setUnits] = useState<Unit []>([]);
-console.log(units)
   useEffect(() => {
     const handleUnits = async () => {
       const units = await fetchStudentUnits();
